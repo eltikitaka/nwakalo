@@ -3,49 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartelera - nwakalo</title>
+    <title>NWAKALO TV - En Directo</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 15px; }
-        header { text-align: center; padding: 20px 0; border-bottom: 2px solid #333; margin-bottom: 20px; }
-        h1 { margin: 0; color: #00e676; font-size: 24px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 10px; }
+        header { text-align: center; padding: 15px 0; border-bottom: 1px solid #333; margin-bottom: 20px; }
+        h1 { margin: 0; color: #00e676; font-size: 22px; letter-spacing: 1px; }
         
-        .lista-eventos { display: flex; flex-direction: column; gap: 15px; }
+        .lista-eventos { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: auto; }
         
         .tarjeta {
-            background: #2d2d2d;
-            border-radius: 12px;
+            background: #1e1e1e;
+            border-radius: 15px;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
         }
 
-        .info-superior { display: flex; width: 100%; justify-content: space-between; font-size: 14px; color: #aaa; margin-bottom: 10px; }
-        .hora { font-weight: bold; color: #fff; background: #444; padding: 2px 8px; border-radius: 5px; }
+        .info-superior { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; color: #bbb; }
+        .hora { background: #333; color: #00e676; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+        .canal-tag { color: #fff; font-weight: bold; text-transform: uppercase; }
 
-        .partido { display: flex; align-items: center; justify-content: space-around; width: 100%; margin: 10px 0; }
+        .partido { display: flex; align-items: center; justify-content: space-around; margin-bottom: 15px; }
         .equipo { text-align: center; flex: 1; }
-        .equipo img { width: 60px; height: 60px; object-fit: contain; }
-        .equipo p { font-size: 13px; margin: 5px 0 0; font-weight: bold; }
-        
-        .vs { font-weight: bold; color: #00e676; font-size: 18px; }
+        .equipo img { width: 55px; height: 55px; object-fit: contain; }
+        .equipo p { font-size: 12px; margin: 5px 0 0; font-weight: bold; }
+        .vs { font-weight: bold; color: #00e676; font-size: 16px; }
 
-        .btn-ver {
-            background: #00e676;
-            color: #000;
+        .grid-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-top: 10px; }
+        .btn-link {
+            background: #252525;
+            color: #00e676;
             text-decoration: none;
             font-weight: bold;
-            width: 100%;
+            font-size: 11px;
             text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
+            padding: 10px 5px;
+            border-radius: 6px;
+            border: 1px solid #00e676;
             transition: 0.3s;
         }
-        .btn-ver:hover { background: #00c864; }
-
-        #no-eventos { text-align: center; color: #666; margin-top: 50px; }
+        .btn-link:hover { background: #00e676; color: #000; }
+        
+        #no-eventos { text-align: center; color: #666; margin-top: 50px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -54,61 +53,59 @@
         <h1>NWAKALO TV</h1>
     </header>
 
-    <div id="contenedor" class="lista-eventos">
-        <!-- Los partidos se cargarán aquí -->
-    </div>
-
-    <div id="no-eventos" style="display:none;">
-        No hay eventos programados para hoy.
-    </div>
+    <div id="contenedor" class="lista-eventos"></div>
+    <div id="no-eventos" style="display:none;">No hay partidos programados actualmente.</div>
 
     <script>
         const RUTA_LOGOS = "assets/equipos/";
 
-        async function cargarCartelera() {
+        async function cargar() {
             try {
-                // Forzamos que no use la caché para ver los cambios al instante
-                const respuesta = await fetch('eventos.json?t=' + Date.now());
-                const eventos = await respuesta.json();
-                
+                const res = await fetch('eventos.json?t=' + Date.now());
+                const eventos = await res.json();
                 const contenedor = document.getElementById('contenedor');
                 
-                if (eventos.length === 0) {
+                if (!eventos || eventos.length === 0) {
                     document.getElementById('no-eventos').style.display = 'block';
                     return;
                 }
 
                 eventos.forEach(ev => {
-                    const html = `
+                    // Creamos los botones de opciones dinámicamente
+                    let linksHTML = "";
+                    if (ev.links && Array.isArray(ev.links)) {
+                        ev.links.forEach((id, index) => {
+                            linksHTML += `<a href="acestream://${id}" class="btn-link">OPCIÓN ${index + 1}</a>`;
+                        });
+                    }
+
+                    const card = `
                         <div class="tarjeta">
                             <div class="info-superior">
                                 <span class="hora">${ev.hora}</span>
-                                <span class="canal">${ev.canal}</span>
+                                <span class="canal-tag">${ev.canal}</span>
                             </div>
                             <div class="partido">
                                 <div class="equipo">
-                                    <img src="${RUTA_LOGOS}${ev.logo1}" alt="logo">
+                                    <img src="${RUTA_LOGOS}${ev.logo1}">
                                     <p>${ev.e1}</p>
                                 </div>
                                 <div class="vs">VS</div>
                                 <div class="equipo">
-                                    <img src="${RUTA_LOGOS}${ev.logo2}" alt="logo">
+                                    <img src="${RUTA_LOGOS}${ev.logo2}">
                                     <p>${ev.e2}</p>
                                 </div>
                             </div>
-                            <a href="${ev.link}" class="btn-ver">VER AHORA (ACESTREAM)</a>
+                            <div class="grid-links">${linksHTML}</div>
                         </div>
                     `;
-                    contenedor.innerHTML += html;
+                    contenedor.innerHTML += card;
                 });
-            } catch (error) {
-                console.error("Error cargando el JSON:", error);
-                document.getElementById('no-eventos').innerText = "Error cargando la cartelera.";
+            } catch (e) {
                 document.getElementById('no-eventos').style.display = 'block';
             }
         }
-
-        cargarCartelera();
+        cargar();
     </script>
 </body>
 </html>
