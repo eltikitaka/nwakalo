@@ -5,65 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin nwakalo 25/26</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; border: 1px solid #ccc; padding: 15px; max-height: 400px; overflow-y: auto; margin-bottom: 20px; background: #fafafa; }
-        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; padding: 5px; border-radius: 8px; background: white; }
-        .logo-item:hover { border-color: #1877f2; }
-        .logo-item img { width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto 5px; pointer-events: none; }
-        .logo-item small { font-size: 10px; font-weight: bold; pointer-events: none; text-transform: uppercase; }
-        .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
-        .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
-        .form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        input, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
-        button { background: #28a745; color: white; font-weight: bold; cursor: pointer; grid-column: span 3; border: none; }
-        textarea { width: 100%; height: 120px; font-family: monospace; padding: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ccc; }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f4f7f6; margin: 0; }
+        .container { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
+        .instrucciones { background: #fff8e1; padding: 12px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px; border-left: 5px solid #ffc107; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; border: 1px solid #ddd; padding: 15px; max-height: 400px; overflow-y: auto; background: #fafafa; border-radius: 8px; }
+        .logo-item { cursor: pointer; text-align: center; border: 3px solid transparent; padding: 10px; border-radius: 10px; background: white; transition: 0.2s; }
+        .logo-item:hover { border-color: #1a73e8; }
+        .logo-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
+        .logo-item small { display: block; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #333; }
+        .selected-e1 { border-color: #1a73e8 !important; background: #e8f0fe; }
+        .selected-e2 { border-color: #d93025 !important; background: #fce8e6; }
+        .form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        input { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
+        .btn-gen { background: #34a853; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; grid-column: span 3; margin-top: 10px; }
+        .btn-gen:hover { background: #2d8e47; }
+        textarea { width: 100%; height: 140px; margin-top: 20px; font-family: monospace; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f8f9fa; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center">Admin nwakalo</h2>
-    <p style="text-align:center; font-size: 12px; color: #666;">Click Izquierdo: Local | Click Derecho: Visitante</p>
+    <h2>Panel Admin - Temporada 25/26</h2>
+    
+    <div class="instrucciones">
+        <b>Manual rápido:</b><br>
+        1. Clic normal para <b>Local</b> (Borde Azul).<br>
+        2. Clic derecho (o mantener pulsado) para <b>Visitante</b> (Borde Rojo).
+    </div>
     
     <div id="listaEquipos" class="grid"></div>
 
     <div class="form">
         <input type="time" id="hora">
-        <input type="text" id="canal" placeholder="Canal">
-        <input type="text" id="ace" placeholder="ID Acestream">
-        <button onclick="generar()">GENERAR CÓDIGO</button>
+        <input type="text" id="canal" placeholder="Canal (Ej: DAZN 1)">
+        <input type="text" id="ace" placeholder="ID Acestream (solo código)">
+        <button class="btn-gen" onclick="generar()">GENERAR CÓDIGO PARA EVENTOS.JSON</button>
     </div>
 
     <textarea id="resultado" readonly placeholder="Copia el código aquí..."></textarea>
 </div>
 
 <script>
-    // DATOS DE TUS ARCHIVOS
+    // LISTADO DE EQUIPOS SEGÚN TU IMAGEN
     const EQUIPOS = [
         { n: "Real Madrid CF", f: "rmadrid.png" }, { n: "FC Barcelona", f: "fcb.png" },
         { n: "Atlético de Madrid", f: "atm.png" }, { n: "Athletic Club", f: "ath.png" },
         { n: "Villarreal CF", f: "vil.png" }, { n: "Real Sociedad", f: "rsoc.png" },
-        { n: "Real Betis", f: "bet.png" }, { n: "Valencia CF", f: "vcf.png" },
-        { n: "Girona FC", f: "gir.png" }, { n: "RC Celta", f: "cel.png" },
+        { n: "Real Betis Balompié", f: "bet.png" }, { n: "Valencia CF", f: "vcf.png" },
+        { n: "Girona FC", f: "gir.png" }, { n: "RC Celta de Vigo", f: "cel.png" },
         { n: "Sevilla FC", f: "sev.png" }, { n: "RCD Espanyol", f: "esp.png" },
         { n: "Rayo Vallecano", f: "ray.png" }, { n: "CA Osasuna", f: "osa.png" },
         { n: "Elche CF", f: "elc.png" }, { n: "Levante UD", f: "lev.png" },
         { n: "RCD Mallorca", f: "mal.png" }, { n: "Getafe CF", f: "get.png" },
-        { n: "Real Oviedo", f: "ovi.png" }, { n: "Alaves", f: "ala.png" }
+        { n: "Real Oviedo", f: "ovi.png" }, { n: "Deportivo Alavés", f: "ala.png" }
     ];
 
     // USAMOS RUTA RELATIVA DIRECTA
-    const RUTA_BASE = "assets/equipos/";
+    const RUTA_BASE = "assets/equipos/"; 
     let e1 = null, e2 = null;
 
-    const contenedor = document.getElementById('listaEquipos');
-    
+    const lista = document.getElementById('listaEquipos');
+
     EQUIPOS.forEach(eq => {
         const div = document.createElement('div');
         div.className = 'logo-item';
+        
+        // Creamos la imagen con una ruta simple
+        const imgPath = RUTA_BASE + eq.f;
+        
         div.innerHTML = `
-            <img src="${RUTA_BASE}${eq.f}" onerror="this.src='https://placeholder.com'">
+            <img src="${imgPath}" onerror="this.onerror=null; this.src='https://placeholder.com';">
             <small>${eq.n}</small>
         `;
         
@@ -80,7 +92,7 @@
             e2 = eq;
         };
         
-        contenedor.appendChild(div);
+        lista.appendChild(div);
     });
 
     function generar() {
@@ -95,6 +107,9 @@
         };
         res.value = (res.value ? res.value + ",\n" : "") + JSON.stringify(ev, null, 2);
     }
+
+    // Esto detiene el "giro" de carga si algún recurso tarda demasiado
+    window.onload = () => { window.stop(); };
 </script>
 
 </body>
