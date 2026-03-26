@@ -1,11 +1,13 @@
-[
-  {
-    "hora": "21:00",
-    "e1": "Real Madrid CF",
-    "logo1": "rmadrid.png",
-    "e2": "FC Barcelona",
-    "logo2": "fcb.png",
-    "canal": "DAZN 1",
-    "link": "acestream://1234567890"
-  }
-]
+{
+  "hora": "21:00",
+  "e1": "FC Barcelona",
+  "logo1": "fcb.png",
+  "e2": "Atlético de Madrid",
+  "logo2": "atm.png",
+  "canal": "Movistar la Liga",
+  "links": [
+    "31c19ffb3472c289c5bbbbc174449c8ed0d19e38",
+    "b3bdd6ef7f795c4f321a3ce5cf4907338f462929",
+    "af468a318ad209b29a042a9080b519c6b40cec79"
+  ]
+}
