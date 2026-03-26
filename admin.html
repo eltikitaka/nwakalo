@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Generador de Cartelera</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; padding: 5px; }
+        .logo-item:hover { border-color: #007bff; }
+        .logo-item img { width: 50px; height: 50px; object-fit: contain; }
+        .selected { border-color: #28a745 !important; background: #e9f7ef; }
+        .form-group { margin-bottom: 15px; background: white; padding: 15px; border-radius: 8px; }
+        textarea { width: 100%; height: 120px; font-family: monospace; margin-top: 10px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>1. Selecciona Local y Visitante</h2>
+    <div id="listaEquipos" class="grid">
+        <!-- Aquí cargaremos tus logos automáticamente luego -->
+        <div class="logo-item" onclick="seleccionar('equipo1', 'Madrid', 'madrid.png', this)">
+            <img src="assets/equipos/madrid.png"> <br><small>Madrid</small>
+        </div>
+        <!-- Añade aquí manualmente un par más para probar, o espera al script automático -->
+    </div>
+
+    <div class="form-group">
+        <h3>2. Datos del Evento</h3>
+        Hora: <input type="time" id="hora"> | 
+        Canal: <input type="text" id="canal" placeholder="Ej: DAZN"> | 
+        ID Acestream: <input type="text" id="ace" placeholder="id_del_canal">
+        <br><br>
+        <button onclick="generarJSON()">Generar Código para Eventos.json</button>
+    </div>
+
+    <h3>3. Copia este código en tu archivo eventos.json</h3>
+    <textarea id="resultado" readonly></textarea>
+
+    <script>
+        let datos = { e1: "", l1: "", e2: "", l2: "" };
+
+        function seleccionar(tipo, nombre, logo, el) {
+            // Lógica simple para marcar quién es quién
+            if(tipo === 'equipo1') {
+                datos.e1 = nombre; datos.l1 = logo;
+            } else {
+                datos.e2 = nombre; datos.l2 = logo;
+            }
+            el.classList.add('selected');
+        }
+
+        function generarJSON() {
+            const evento = {
+                hora: document.getElementById('hora').value,
+                equipo1: datos.e1, logo1: datos.l1,
+                equipo2: datos.e2, logo2: datos.l2,
+                canal: document.getElementById('canal').value,
+                link: "acestream://" + document.getElementById('ace').value
+            };
+            document.getElementById('resultado').value = JSON.stringify(evento, null, 2) + ",";
+        }
+    </script>
+</body>
+</html>
