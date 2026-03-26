@@ -3,99 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - nwakalo</title>
+    <title>Admin - nwakalo 25/26</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; border: 1px solid #ccc; padding: 15px; max-height: 400px; overflow-y: auto; margin-bottom: 20px; background: #fafafa; }
-        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; padding: 5px; border-radius: 8px; }
-        .logo-item:hover { background: #e7f3ff; }
-        .logo-item img { width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto; }
-        .logo-item small { font-size: 10px; color: #555; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; border: 1px solid #ccc; padding: 15px; max-height: 450px; overflow-y: auto; margin-bottom: 20px; background: #fafafa; }
+        .logo-item { cursor: pointer; text-align: center; border: 3px solid transparent; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        .logo-item:hover { background: #e7f3ff; border-color: #1877f2; }
+        .logo-item img { width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto 5px; }
+        .logo-item small { font-size: 11px; font-weight: bold; color: #333; text-transform: uppercase; }
         .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
         .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
         .form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         input, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
-        button { background: #28a745; color: white; font-weight: bold; cursor: pointer; grid-column: span 3; }
-        textarea { width: 100%; height: 150px; font-family: monospace; padding: 10px; box-sizing: border-box; border-radius: 8px; }
+        button { background: #28a745; color: white; font-weight: bold; cursor: pointer; grid-column: span 3; border: none; }
+        button:hover { background: #218838; }
+        textarea { width: 100%; height: 150px; font-family: monospace; padding: 10px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Panel de Cartelera (Modo Directo)</h2>
-    <p><small>Click: Local | Click Derecho: Visitante</small></p>
+    <h2>Panel Admin - Temporada 25/26</h2>
+    <p style="font-size: 0.9em; color: #666;"><b>Instrucciones:</b> Clic izquierdo para Local | Clic derecho para Visitante</p>
     
     <div id="listaEquipos" class="grid"></div>
 
     <div class="form">
-        <input type="time" id="hora">
-        <input type="text" id="canal" placeholder="Canal (Ej: DAZN)">
+        <input type="time" id="hora" title="Hora del partido">
+        <input type="text" id="canal" placeholder="Canal (Ej: DAZN 1)">
         <input type="text" id="ace" placeholder="ID Acestream">
-        <button onclick="generar()">GENERAR CÓDIGO</button>
+        <button onclick="generar()">GENERAR CÓDIGO PARA EVENTOS.JSON</button>
     </div>
 
-    <textarea id="resultado" readonly placeholder="Copia este código en tu eventos.json..."></textarea>
+    <textarea id="resultado" readonly placeholder="Copia este código y pégalo dentro de los corchetes [] de tu archivo eventos.json..."></textarea>
 </div>
 
 <script>
-    // 1. ESCRIBE AQUÍ LOS NOMBRES EXACTOS (Tal cual están en tu carpeta de GitHub)
-    // Si tus archivos son .PNG (en mayúsculas) cámbialo aquí también.
-    const MIS_EQUIPOS = [
-        "madrid.png", "barca.png", "atletico.png", "sevilla.png", 
-        "betis.png", "valencia.png", "sociedad.png", "athletic.png",
-        "villarreal.png", "girona.png", "osasuna.png", "getafe.png",
-        "rayo.png", "celta.png", "mallorca.png", "alaves.png",
-        "laspalmas.png", "leganes.png", "valladolid.png", "espanyol.png"
+    // LISTA OFICIAL PRIMERA DIVISIÓN 25/26
+    const EQUIPOS_25_26 = [
+        "madrid.png", "barca.png", "atletico.png", "villarreal.png",
+        "sociedad.png", "athletic.png", "betis.png", "valencia.png",
+        "sevilla.png", "girona.png", "osasuna.png", "getafe.png",
+        "celta.png", "mallorca.png", "alaves.png", "rayo.png",
+        "espanyol.png", "oviedo.png", "levante.png", "elche.png"
     ];
 
-    // Esta línea detecta automáticamente si tu web está en la raíz para no perderse
-    const RUTA_BASE = "assets/equipos/";
-    let e1 = null, e2 = null;
+    const RUTA_LOGOS = "assets/equipos/";
+    let local = null, visitante = null;
 
     const contenedor = document.getElementById('listaEquipos');
     
-    MIS_EQUIPOS.forEach(nombreArchivo => {
+    EQUIPOS_25_26.forEach(archivo => {
         const div = document.createElement('div');
         div.className = 'logo-item';
-        
-        // Usamos una ruta relativa que funciona mejor en GitHub Pages
-        const rutaImagen = "./" + RUTA_BASE + nombreArchivo;
-        
+        // Usamos ruta relativa "./" para asegurar que cargue en GitHub Pages
+        const path = "./" + RUTA_LOGOS + archivo;
+        const nombre = archivo.replace('.png', '');
+
         div.innerHTML = `
-            <img src="${rutaImagen}" onerror="this.src='https://placeholder.com'">
-            <small>${nombreArchivo.split('.')[0].toUpperCase()}</small>
+            <img src="${path}" onerror="this.src='https://placeholder.com'">
+            <small>${nombre}</small>
         `;
         
-        div.onclick = () => {
+        div.addEventListener('click', () => {
             document.querySelectorAll('.logo-item').forEach(i => i.classList.remove('selected-e1'));
             div.classList.add('selected-e1');
-            e1 = nombreArchivo;
-        };
-        div.oncontextmenu = (e) => {
+            local = archivo;
+        });
+
+        div.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             document.querySelectorAll('.logo-item').forEach(i => i.classList.remove('selected-e2'));
             div.classList.add('selected-e2');
-            e2 = nombreArchivo;
-        };
+            visitante = archivo;
+        });
+
         contenedor.appendChild(div);
     });
 
     function generar() {
-        if (!e1 || !e2) return alert("Selecciona ambos equipos");
-        const evento = {
+        if (!local || !visitante) return alert("Por favor, selecciona Local y Visitante");
+        
+        const info = {
             hora: document.getElementById('hora').value || "00:00",
-            equipo1: e1.split('.')[0],
-            logo1: e1,
-            equipo2: e2.split('.')[0],
-            logo2: e2,
-            canal: document.getElementById('canal').value || "TV",
+            e1: local.replace('.png', '').toUpperCase(),
+            logo1: local,
+            e2: visitante.replace('.png', '').toUpperCase(),
+            logo2: visitante,
+            canal: document.getElementById('canal').value || "M+ LALIGA",
             link: "acestream://" + (document.getElementById('ace').value || "0")
         };
         
-        const area = document.getElementById('resultado');
-        const actual = area.value;
-        // Formateamos para que sea fácil de copiar
-        area.value = (actual ? actual + ",\n" : "") + JSON.stringify(evento, null, 2);
+        const res = document.getElementById('resultado');
+        const previo = res.value;
+        res.value = (previo ? previo + ",\n" : "") + JSON.stringify(info, null, 2);
     }
 </script>
+
+</body>
+</html>
