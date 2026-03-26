@@ -3,114 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin nwakalo 25/26</title>
+    <title>Admin Multi-Link nwakalo</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f4f7f6; margin: 0; }
-        .container { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
-        .instrucciones { background: #fff8e1; padding: 12px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px; border-left: 5px solid #ffc107; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; border: 1px solid #ddd; padding: 15px; max-height: 400px; overflow-y: auto; background: #fafafa; border-radius: 8px; }
-        .logo-item { cursor: pointer; text-align: center; border: 3px solid transparent; padding: 10px; border-radius: 10px; background: white; transition: 0.2s; }
-        .logo-item:hover { border-color: #1a73e8; }
-        .logo-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto; }
-        .logo-item small { display: block; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #333; }
-        .selected-e1 { border-color: #1a73e8 !important; background: #e8f0fe; }
-        .selected-e2 { border-color: #d93025 !important; background: #fce8e6; }
-        .form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
-        .btn-gen { background: #34a853; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; grid-column: span 3; margin-top: 10px; }
-        .btn-gen:hover { background: #2d8e47; }
-        textarea { width: 100%; height: 140px; margin-top: 20px; font-family: monospace; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f8f9fa; box-sizing: border-box; }
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .seccion { margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; border: 1px solid #ccc; padding: 15px; max-height: 300px; overflow-y: auto; background: #fafafa; }
+        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; padding: 5px; border-radius: 8px; }
+        .logo-item img { width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto; pointer-events: none; }
+        .logo-item small { font-size: 10px; font-weight: bold; pointer-events: none; }
+        .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
+        .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
+        .canal-btn { padding: 10px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 8px; font-weight: bold; margin-right: 5px; }
+        .canal-btn.active { background: #28a745; color: white; border-color: #1e7e34; }
+        .form { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        input, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+        .btn-gen { background: #1877f2; color: white; font-weight: bold; cursor: pointer; border: none; width: 100%; margin-top: 20px; font-size: 16px; }
+        textarea { width: 100%; height: 150px; margin-top: 20px; font-family: monospace; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Panel Admin - Temporada 25/26</h2>
-    
-    <div class="instrucciones">
-        <b>Manual rápido:</b><br>
-        1. Clic normal para <b>Local</b> (Borde Azul).<br>
-        2. Clic derecho (o mantener pulsado) para <b>Visitante</b> (Borde Rojo).
-    </div>
-    
-    <div id="listaEquipos" class="grid"></div>
+    <h2>Panel Admin Pro - 25/26</h2>
 
-    <div class="form">
-        <input type="time" id="hora">
-        <input type="text" id="canal" placeholder="Canal (Ej: DAZN 1)">
-        <input type="text" id="ace" placeholder="ID Acestream (solo código)">
-        <button class="btn-gen" onclick="generar()">GENERAR CÓDIGO PARA EVENTOS.JSON</button>
+    <div class="seccion">
+        <h3>1. Selecciona Equipos (Click Izq / Click Der)</h3>
+        <div id="listaEquipos" class="grid"></div>
     </div>
 
-    <textarea id="resultado" readonly placeholder="Copia el código aquí..."></textarea>
+    <div class="seccion">
+        <h3>2. Selecciona Canal (Multi-Opción)</h3>
+        <div id="listaCanales">Cargando canales...</div>
+    </div>
+
+    <div class="seccion">
+        <h3>3. Datos finales</h3>
+        <div class="form">
+            <span>Hora:</span> <input type="time" id="hora">
+            <button class="btn-gen" onclick="generar()">GENERAR EVENTO CON MULTI-LINK</button>
+        </div>
+    </div>
+
+    <textarea id="resultado" readonly placeholder="Copia este código en tu eventos.json..."></textarea>
 </div>
 
 <script>
-    // LISTADO DE EQUIPOS SEGÚN TU IMAGEN
     const EQUIPOS = [
         { n: "Real Madrid CF", f: "rmadrid.png" }, { n: "FC Barcelona", f: "fcb.png" },
         { n: "Atlético de Madrid", f: "atm.png" }, { n: "Athletic Club", f: "ath.png" },
         { n: "Villarreal CF", f: "vil.png" }, { n: "Real Sociedad", f: "rsoc.png" },
-        { n: "Real Betis Balompié", f: "bet.png" }, { n: "Valencia CF", f: "vcf.png" },
-        { n: "Girona FC", f: "gir.png" }, { n: "RC Celta de Vigo", f: "cel.png" },
+        { n: "Real Betis", f: "bet.png" }, { n: "Valencia CF", f: "vcf.png" },
+        { n: "Girona FC", f: "gir.png" }, { n: "RC Celta", f: "cel.png" },
         { n: "Sevilla FC", f: "sev.png" }, { n: "RCD Espanyol", f: "esp.png" },
         { n: "Rayo Vallecano", f: "ray.png" }, { n: "CA Osasuna", f: "osa.png" },
         { n: "Elche CF", f: "elc.png" }, { n: "Levante UD", f: "lev.png" },
         { n: "RCD Mallorca", f: "mal.png" }, { n: "Getafe CF", f: "get.png" },
-        { n: "Real Oviedo", f: "ovi.png" }, { n: "Deportivo Alavés", f: "ala.png" }
+        { n: "Real Oviedo", f: "ovi.png" }, { n: "Alaves", f: "ala.png" }
     ];
 
-    // USAMOS RUTA RELATIVA DIRECTA
-    const RUTA_BASE = "assets/equipos/"; 
-    let e1 = null, e2 = null;
+    let canalSeleccionado = null;
+    let local = null, visitante = null;
 
-    const lista = document.getElementById('listaEquipos');
-
+    // Cargar equipos
+    const contEq = document.getElementById('listaEquipos');
     EQUIPOS.forEach(eq => {
         const div = document.createElement('div');
         div.className = 'logo-item';
-        
-        // Creamos la imagen con una ruta simple
-        const imgPath = RUTA_BASE + eq.f;
-        
-        div.innerHTML = `
-            <img src="${imgPath}" onerror="this.onerror=null; this.src='https://placeholder.com';">
-            <small>${eq.n}</small>
-        `;
-        
+        div.innerHTML = `<img src="assets/equipos/${eq.f}" onerror="this.src='https://placeholder.com'"><small>${eq.n}</small>`;
         div.onclick = () => {
             document.querySelectorAll('.logo-item').forEach(i => i.classList.remove('selected-e1'));
-            div.classList.add('selected-e1');
-            e1 = eq;
+            div.classList.add('selected-e1'); local = eq;
         };
-        
         div.oncontextmenu = (e) => {
             e.preventDefault();
             document.querySelectorAll('.logo-item').forEach(i => i.classList.remove('selected-e2'));
-            div.classList.add('selected-e2');
-            e2 = eq;
+            div.classList.add('selected-e2'); visitante = eq;
         };
-        
-        lista.appendChild(div);
+        contEq.appendChild(div);
     });
 
-    function generar() {
-        if (!e1 || !e2) return alert("Selecciona Local y Visitante");
-        const res = document.getElementById('resultado');
-        const ev = {
-            hora: document.getElementById('hora').value || "00:00",
-            e1: e1.n, logo1: e1.f,
-            e2: e2.n, logo2: e2.f,
-            canal: document.getElementById('canal').value || "TV",
-            link: "acestream://" + (document.getElementById('ace').value || "0")
-        };
-        res.value = (res.value ? res.value + ",\n" : "") + JSON.stringify(ev, null, 2);
+    // Cargar canales desde canales.json
+    async function cargarCanales() {
+        const res = await fetch('canales.json?t=' + Date.now());
+        const canales = await res.json();
+        const contCan = document.getElementById('listaCanales');
+        contCan.innerHTML = "";
+
+        Object.keys(canales).forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = 'canal-btn';
+            btn.innerText = canales[key].nombre;
+            btn.onclick = () => {
+                document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                canalSeleccionado = canales[key];
+            };
+            contCan.appendChild(btn);
+        });
     }
 
-    // Esto detiene el "giro" de carga si algún recurso tarda demasiado
-    window.onload = () => { window.stop(); };
-</script>
+    function generar() {
+        if (!local || !visitante || !canalSeleccionado) return alert("Faltan datos (Equipos o Canal)");
+        
+        const evento = {
+            hora: document.getElementById('hora').value || "00:00",
+            e1: local.n, logo1: local.f,
+            e2: visitante.n, logo2: visitante.f,
+            canal: canalSeleccionado.nombre,
+            links: canalSeleccionado.opciones // Aquí metemos los 3 IDs automáticamente
+        };
 
+        const area = document.getElementById('resultado');
+        area.value = (area.value ? area.value + ",\n" : "") + JSON.stringify(evento, null, 2);
+    }
+
+    cargarCanales();
+</script>
 </body>
 </html>
