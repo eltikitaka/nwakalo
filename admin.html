@@ -6,48 +6,52 @@
     <title>Admin - Generador de Cartelera</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f0f2f5; color: #1c1e21; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1877f2; }
-        .instrucciones { background: #e7f3ff; padding: 10px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px; border-left: 4px solid #1877f2; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 10px; margin-bottom: 20px; background: #fafafa; }
-        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; border-radius: 10px; padding: 8px; transition: 0.3s; background: white; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1877f2; margin-top: 0; }
+        .instrucciones { background: #e7f3ff; padding: 12px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px; border-left: 5px solid #1877f2; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 10px; margin-bottom: 20px; background: #fafafa; }
+        .logo-item { cursor: pointer; text-align: center; border: 3px solid transparent; border-radius: 10px; padding: 8px; transition: 0.3s; background: white; position: relative; }
         .logo-item:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: #1877f2; }
-        .logo-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
-        .logo-item small { display: block; font-size: 0.75em; color: #65676b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .logo-item img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 5px; pointer-events: none; }
+        .logo-item small { display: block; font-size: 0.7em; color: #65676b; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
         .selected-e1 { border-color: #1877f2 !important; background: #e7f3ff; }
+        .selected-e1::after { content: "LOCAL"; position: absolute; top: -10px; left: 0; right: 0; background: #1877f2; color: white; font-size: 8px; border-radius: 4px; padding: 2px; }
         .selected-e2 { border-color: #fa3e3e !important; background: #fff0f0; }
+        .selected-e2::after { content: "VISITANTE"; position: absolute; top: -10px; left: 0; right: 0; background: #fa3e3e; color: white; font-size: 8px; border-radius: 4px; padding: 2px; }
         .form-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; flex: 1; min-width: 140px; font-size: 16px; }
-        .btn-generar { background: #00a884; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
-        .btn-generar:hover { background: #008f6f; }
-        textarea { width: 100%; height: 120px; margin-top: 20px; font-family: 'Courier New', monospace; border-radius: 8px; padding: 12px; border: 1px solid #ddd; background: #f9f9f9; resize: none; font-size: 13px; }
+        .btn-generar { background: #00a884; color: white; border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 18px; transition: 0.3s; }
+        .btn-generar:hover { background: #008f6f; box-shadow: 0 4px 12px rgba(0,168,132,0.3); }
+        textarea { width: 100%; height: 130px; margin-top: 20px; font-family: 'Courier New', monospace; border-radius: 8px; padding: 12px; border: 1px solid #ddd; background: #f9f9f9; resize: none; font-size: 13px; box-sizing: border-box; }
+        .status-msg { color: red; text-align: center; padding: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Panel de Cartelera</h2>
+    <h2>Panel de Control - nwakalo</h2>
     
     <div class="instrucciones">
-        <b>Móvil:</b> Pulsa normal para Local, mantén pulsado para Visitante.<br>
-        <b>PC:</b> Clic izquierdo para Local, Clic derecho para Visitante.
+        <b>Instrucciones:</b><br>
+        1. Haz clic normal en el escudo <b>Local</b>.<br>
+        2. Haz clic derecho (o mantén pulsado en móvil) en el escudo <b>Visitante</b>.
     </div>
     
-    <div id="listaEquipos" class="grid">Cargando escudos...</div>
+    <div id="listaEquipos" class="grid">Cargando escudos desde GitHub...</div>
 
     <div class="form-row">
         <input type="time" id="hora" title="Hora del evento">
-        <input type="text" id="canal" placeholder="Nombre Canal (Ej: DAZN 1)">
-        <input type="text" id="ace" placeholder="ID Acestream">
+        <input type="text" id="canal" placeholder="Canal (Ej: Movistar+)">
+        <input type="text" id="ace" placeholder="ID Acestream (solo el código)">
     </div>
 
-    <button class="btn-generar" onclick="generarJSON()">GENERAR CÓDIGO EVENTO</button>
+    <button class="btn-generar" onclick="generarJSON()">CREAR CÓDIGO DE EVENTO</button>
 
-    <textarea id="resultado" placeholder="El código aparecerá aquí para copiarlo a eventos.json..." readonly></textarea>
+    <textarea id="resultado" placeholder="Aquí aparecerá el código que debes pegar en eventos.json..." readonly></textarea>
 </div>
 
 <script>
-    // DATOS ACTUALIZADOS
+    // DATOS DE TU CUENTA
     const USUARIO = "eltikitaka"; 
     const REPO = "nwakalo"; 
     const RUTA_LOGOS = "assets/equipos";
@@ -56,48 +60,61 @@
 
     async function cargarLogos() {
         const url = `https://github.com{USUARIO}/${REPO}/contents/${RUTA_LOGOS}`;
+        const contenedor = document.getElementById('listaEquipos');
+
         try {
             const res = await fetch(url);
-            if (!res.ok) throw new Error("No se pudo conectar con GitHub");
+            if (!res.ok) throw new Error("No se encuentra la carpeta de logos");
+            
             const archivos = await res.json();
-            const contenedor = document.getElementById('listaEquipos');
             contenedor.innerHTML = "";
 
             archivos.forEach(file => {
-                if(file.name.toLowerCase().endsWith('.png') || file.name.toLowerCase().endsWith('.jpg')) {
+                const extensiones = ['.png', '.jpg', '.jpeg', '.svg', '.webp'];
+                const nombreArchivo = file.name.toLowerCase();
+                
+                if(extensiones.some(ext => nombreArchivo.endsWith(ext))) {
                     const div = document.createElement('div');
                     div.className = 'logo-item';
-                    const nombreLimpio = file.name.split('.')[0].toUpperCase();
-                    div.innerHTML = `<img src="${file.download_url}"><small>${nombreLimpio}</small>`;
+                    const nombreVisible = file.name.split('.')[0].toUpperCase();
+                    div.innerHTML = `<img src="${file.download_url}" alt="${nombreVisible}"><small>${nombreVisible}</small>`;
                     
-                    div.onclick = () => seleccionar(file, div, 'e1');
-                    div.oncontextmenu = (e) => { e.preventDefault(); seleccionar(file, div, 'e2'); };
+                    // Manejo de selección
+                    div.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        seleccionar(file.name, div, 'e1');
+                    });
                     
-                    contenedor.appendChild(div);
+                    div.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        seleccionar(file.name, div, 'e2');
+                    });
                 }
             });
         } catch (error) {
-            document.getElementById('listaEquipos').innerHTML = `<p style="color:red; padding:20px;">Error: No se encuentran logos en "${RUTA_LOGOS}". Verifica que has subido imágenes a esa carpeta.</p>`;
+            contenedor.innerHTML = `<div class="status-msg">ERROR: No se han encontrado logos en "${RUTA_LOGOS}".<br>Revisa que la carpeta exista y tenga imágenes dentro.</div>`;
+            console.error(error);
         }
     }
 
-    function seleccionar(archivo, elemento, tipo) {
+    function seleccionar(nombreArchivo, elemento, tipo) {
         if(tipo === 'e1') {
             document.querySelectorAll('.logo-item').forEach(el => el.classList.remove('selected-e1'));
             elemento.classList.add('selected-e1');
-            e1 = { nombre: archivo.name.split('.')[0], logo: archivo.name };
+            e1 = { nombre: nombreArchivo.split('.')[0], logo: nombreArchivo };
         } else {
             document.querySelectorAll('.logo-item').forEach(el => el.classList.remove('selected-e2'));
             elemento.classList.add('selected-e2');
-            e2 = { nombre: archivo.name.split('.')[0], logo: archivo.name };
+            e2 = { nombre: nombreArchivo.split('.')[0], logo: nombreArchivo };
         }
     }
 
     function generarJSON() {
-        if(!e1 || !e2) return alert("Por favor, selecciona Local y Visitante");
+        if(!e1 || !e2) return alert("Selecciona Local y Visitante primero.");
+        
         const horaVal = document.getElementById('hora').value || "00:00";
-        const canalVal = document.getElementById('canal').value || "Canal Desconocido";
-        const aceVal = document.getElementById('ace').value || "id_vacio";
+        const canalVal = document.getElementById('canal').value || "Sin Canal";
+        const aceVal = document.getElementById('ace').value || "0";
 
         const evento = {
             hora: horaVal,
@@ -109,11 +126,12 @@
             link: "acestream://" + aceVal
         };
 
-        const actual = document.getElementById('resultado').value;
-        const nuevoEvento = JSON.stringify(evento, null, 2);
-        document.getElementById('resultado').value = actual ? actual + ",\n" + nuevoEvento : nuevoEvento;
+        const campoTexto = document.getElementById('resultado');
+        const prefijo = campoTexto.value ? campoTexto.value + ",\n" : "";
+        campoTexto.value = prefijo + JSON.stringify(evento, null, 2);
     }
 
+    // Arrancamos
     cargarLogos();
 </script>
 
