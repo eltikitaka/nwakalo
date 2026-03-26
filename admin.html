@@ -14,11 +14,17 @@
         .logo-item small { font-size: 10px; font-weight: bold; pointer-events: none; }
         .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
         .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
-        .canal-btn { padding: 10px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 8px; font-weight: bold; margin-right: 5px; }
+        .canal-btn { padding: 10px; border: 1px solid #ccc; background: white; cursor: pointer; border-radius: 8px; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
         .canal-btn.active { background: #28a745; color: white; border-color: #1e7e34; }
-        .form { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .form { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
         input, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
-        .btn-gen { background: #1877f2; color: white; font-weight: bold; cursor: pointer; border: none; width: 100%; margin-top: 20px; font-size: 16px; }
+        
+        /* BOTONES DE ACCIÓN */
+        .btn-gen { background: #1877f2; color: white; font-weight: bold; cursor: pointer; border: none; flex: 2; font-size: 16px; }
+        .btn-borrar { background: #ff9800; color: white; font-weight: bold; cursor: pointer; border: none; flex: 1; font-size: 16px; }
+        .btn-gen:hover { background: #166fe5; }
+        .btn-borrar:hover { background: #e68a00; }
+
         textarea { width: 100%; height: 150px; margin-top: 20px; font-family: monospace; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
@@ -41,7 +47,8 @@
         <h3>3. Datos finales</h3>
         <div class="form">
             <span>Hora:</span> <input type="time" id="hora">
-            <button class="btn-gen" onclick="generar()">GENERAR EVENTO CON MULTI-LINK</button>
+            <button class="btn-gen" onclick="generar()">GENERAR EVENTO</button>
+            <button class="btn-borrar" onclick="limpiarTodo()">BORRAR SELECCIÓN</button>
         </div>
     </div>
 
@@ -83,24 +90,41 @@
         contEq.appendChild(div);
     });
 
-    // Cargar canales desde canales.json
+    // Cargar canales
     async function cargarCanales() {
-        const res = await fetch('canales.json?t=' + Date.now());
-        const canales = await res.json();
-        const contCan = document.getElementById('listaCanales');
-        contCan.innerHTML = "";
+        try {
+            const res = await fetch('canales.json?t=' + Date.now());
+            const canales = await res.json();
+            const contCan = document.getElementById('listaCanales');
+            contCan.innerHTML = "";
 
-        Object.keys(canales).forEach(key => {
-            const btn = document.createElement('button');
-            btn.className = 'canal-btn';
-            btn.innerText = canales[key].nombre;
-            btn.onclick = () => {
-                document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                canalSeleccionado = canales[key];
-            };
-            contCan.appendChild(btn);
+            Object.keys(canales).forEach(key => {
+                const btn = document.createElement('button');
+                btn.className = 'canal-btn';
+                btn.innerText = canales[key].nombre;
+                btn.onclick = () => {
+                    document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    canalSeleccionado = canales[key];
+                };
+                contCan.appendChild(btn);
+            });
+        } catch (e) { console.error("Error cargando canales:", e); }
+    }
+
+    // Función para borrar la selección actual
+    function limpiarTodo() {
+        local = null;
+        visitante = null;
+        canalSeleccionado = null;
+        document.getElementById('hora').value = "";
+        document.getElementById('resultado').value = "";
+        document.querySelectorAll('.logo-item').forEach(i => {
+            i.classList.remove('selected-e1');
+            i.classList.remove('selected-e2');
         });
+        document.querySelectorAll('.canal-btn').forEach(b => b.classList.remove('active'));
+        alert("Selección borrada");
     }
 
     function generar() {
@@ -111,7 +135,7 @@
             e1: local.n, logo1: local.f,
             e2: visitante.n, logo2: visitante.f,
             canal: canalSeleccionado.nombre,
-            links: canalSeleccionado.opciones // Aquí metemos los 3 IDs automáticamente
+            links: canalSeleccionado.opciones
         };
 
         const area = document.getElementById('resultado');
