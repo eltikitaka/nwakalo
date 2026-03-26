@@ -5,65 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Generador de Cartelera</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #ececec; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
-        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; border-radius: 8px; transition: 0.2s; padding: 10px; }
-        .logo-item:hover { background: #f0f7ff; border-color: #007bff; }
-        .logo-item img { width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto 5px; }
-        .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
-        .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
-        .form-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; min-width: 150px; }
-        button { background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
-        button:hover { background: #218838; }
-        textarea { width: 100%; height: 150px; margin-top: 20px; font-family: monospace; border-radius: 8px; padding: 10px; border: 1px solid #ccc; }
-        .instrucciones { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f0f2f5; color: #1c1e21; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1877f2; }
+        .instrucciones { background: #e7f3ff; padding: 10px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px; border-left: 4px solid #1877f2; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 12px; max-height: 350px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 10px; margin-bottom: 20px; background: #fafafa; }
+        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; border-radius: 10px; padding: 8px; transition: 0.3s; background: white; }
+        .logo-item:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-color: #1877f2; }
+        .logo-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
+        .logo-item small { display: block; font-size: 0.75em; color: #65676b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .selected-e1 { border-color: #1877f2 !important; background: #e7f3ff; }
+        .selected-e2 { border-color: #fa3e3e !important; background: #fff0f0; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; flex: 1; min-width: 140px; font-size: 16px; }
+        .btn-generar { background: #00a884; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        .btn-generar:hover { background: #008f6f; }
+        textarea { width: 100%; height: 120px; margin-top: 20px; font-family: 'Courier New', monospace; border-radius: 8px; padding: 12px; border: 1px solid #ddd; background: #f9f9f9; resize: none; font-size: 13px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Panel de Control - Cartelera</h2>
-    <p class="instrucciones">1. Haz clic en el <b>Local</b>. 2. Haz clic derecho (o mantén pulsado) en el <b>Visitante</b>.</p>
+    <h2>Panel de Cartelera</h2>
+    
+    <div class="instrucciones">
+        <b>Móvil:</b> Pulsa normal para Local, mantén pulsado para Visitante.<br>
+        <b>PC:</b> Clic izquierdo para Local, Clic derecho para Visitante.
+    </div>
     
     <div id="listaEquipos" class="grid">Cargando escudos...</div>
 
     <div class="form-row">
-        <input type="time" id="hora" title="Hora del partido">
-        <input type="text" id="canal" placeholder="Nombre del Canal (Ej: DAZN)">
+        <input type="time" id="hora" title="Hora del evento">
+        <input type="text" id="canal" placeholder="Nombre Canal (Ej: DAZN 1)">
         <input type="text" id="ace" placeholder="ID Acestream">
     </div>
 
-    <button onclick="generarJSON()">GENERAR EVENTO</button>
+    <button class="btn-generar" onclick="generarJSON()">GENERAR CÓDIGO EVENTO</button>
 
-    <textarea id="resultado" placeholder="Aquí aparecerá el código para copiar..." readonly></textarea>
+    <textarea id="resultado" placeholder="El código aparecerá aquí para copiarlo a eventos.json..." readonly></textarea>
 </div>
 
 <script>
-    // CONFIGURACIÓN: Cambia esto por tus datos
+    // DATOS ACTUALIZADOS
     const USUARIO = "eltikitaka"; 
-    const REPO = "nwakalo"; // Cambia al nombre real de tu repositorio si es distinto
+    const REPO = "nwakalo"; 
     const RUTA_LOGOS = "assets/equipos";
 
     let e1 = null, e2 = null;
 
-    // 1. Cargar logos automáticamente desde GitHub API
     async function cargarLogos() {
         const url = `https://github.com{USUARIO}/${REPO}/contents/${RUTA_LOGOS}`;
         try {
             const res = await fetch(url);
+            if (!res.ok) throw new Error("No se pudo conectar con GitHub");
             const archivos = await res.json();
             const contenedor = document.getElementById('listaEquipos');
             contenedor.innerHTML = "";
 
             archivos.forEach(file => {
-                if(file.name.endsWith('.png') || file.name.endsWith('.jpg')) {
+                if(file.name.toLowerCase().endsWith('.png') || file.name.toLowerCase().endsWith('.jpg')) {
                     const div = document.createElement('div');
                     div.className = 'logo-item';
-                    div.innerHTML = `<img src="${file.download_url}"><small>${file.name.split('.')[0]}</small>`;
+                    const nombreLimpio = file.name.split('.')[0].toUpperCase();
+                    div.innerHTML = `<img src="${file.download_url}"><small>${nombreLimpio}</small>`;
                     
-                    // Clic izquierdo: Local | Clic derecho: Visitante
                     div.onclick = () => seleccionar(file, div, 'e1');
                     div.oncontextmenu = (e) => { e.preventDefault(); seleccionar(file, div, 'e2'); };
                     
@@ -71,7 +77,7 @@
                 }
             });
         } catch (error) {
-            document.getElementById('listaEquipos').innerText = "Error al cargar logos. Revisa el nombre del usuario y repo en el script.";
+            document.getElementById('listaEquipos').innerHTML = `<p style="color:red; padding:20px;">Error: No se encuentran logos en "${RUTA_LOGOS}". Verifica que has subido imágenes a esa carpeta.</p>`;
         }
     }
 
@@ -88,19 +94,21 @@
     }
 
     function generarJSON() {
-        if(!e1 || !e2) return alert("Selecciona ambos equipos");
-        
+        if(!e1 || !e2) return alert("Por favor, selecciona Local y Visitante");
+        const horaVal = document.getElementById('hora').value || "00:00";
+        const canalVal = document.getElementById('canal').value || "Canal Desconocido";
+        const aceVal = document.getElementById('ace').value || "id_vacio";
+
         const evento = {
-            hora: document.getElementById('hora').value,
+            hora: horaVal,
             equipo1: e1.nombre, 
             logo1: e1.logo,
             equipo2: e2.nombre, 
             logo2: e2.logo,
-            canal: document.getElementById('canal').value,
-            link: "acestream://" + document.getElementById('ace').value
+            canal: canalVal,
+            link: "acestream://" + aceVal
         };
 
-        // Mostramos el código formateado
         const actual = document.getElementById('resultado').value;
         const nuevoEvento = JSON.stringify(evento, null, 2);
         document.getElementById('resultado').value = actual ? actual + ",\n" + nuevoEvento : nuevoEvento;
