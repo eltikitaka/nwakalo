@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartelera - nwakalo</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; margin: 0; padding: 15px; }
+        header { text-align: center; padding: 20px 0; border-bottom: 2px solid #333; margin-bottom: 20px; }
+        h1 { margin: 0; color: #00e676; font-size: 24px; }
+        
+        .lista-eventos { display: flex; flex-direction: column; gap: 15px; }
+        
+        .tarjeta {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .info-superior { display: flex; width: 100%; justify-content: space-between; font-size: 14px; color: #aaa; margin-bottom: 10px; }
+        .hora { font-weight: bold; color: #fff; background: #444; padding: 2px 8px; border-radius: 5px; }
+
+        .partido { display: flex; align-items: center; justify-content: space-around; width: 100%; margin: 10px 0; }
+        .equipo { text-align: center; flex: 1; }
+        .equipo img { width: 60px; height: 60px; object-fit: contain; }
+        .equipo p { font-size: 13px; margin: 5px 0 0; font-weight: bold; }
+        
+        .vs { font-weight: bold; color: #00e676; font-size: 18px; }
+
+        .btn-ver {
+            background: #00e676;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        .btn-ver:hover { background: #00c864; }
+
+        #no-eventos { text-align: center; color: #666; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NWAKALO TV</h1>
+    </header>
+
+    <div id="contenedor" class="lista-eventos">
+        <!-- Los partidos se cargarán aquí -->
+    </div>
+
+    <div id="no-eventos" style="display:none;">
+        No hay eventos programados para hoy.
+    </div>
+
+    <script>
+        const RUTA_LOGOS = "assets/equipos/";
+
+        async function cargarCartelera() {
+            try {
+                // Forzamos que no use la caché para ver los cambios al instante
+                const respuesta = await fetch('eventos.json?t=' + Date.now());
+                const eventos = await respuesta.json();
+                
+                const contenedor = document.getElementById('contenedor');
+                
+                if (eventos.length === 0) {
+                    document.getElementById('no-eventos').style.display = 'block';
+                    return;
+                }
+
+                eventos.forEach(ev => {
+                    const html = `
+                        <div class="tarjeta">
+                            <div class="info-superior">
+                                <span class="hora">${ev.hora}</span>
+                                <span class="canal">${ev.canal}</span>
+                            </div>
+                            <div class="partido">
+                                <div class="equipo">
+                                    <img src="${RUTA_LOGOS}${ev.logo1}" alt="logo">
+                                    <p>${ev.e1}</p>
+                                </div>
+                                <div class="vs">VS</div>
+                                <div class="equipo">
+                                    <img src="${RUTA_LOGOS}${ev.logo2}" alt="logo">
+                                    <p>${ev.e2}</p>
+                                </div>
+                            </div>
+                            <a href="${ev.link}" class="btn-ver">VER AHORA (ACESTREAM)</a>
+                        </div>
+                    `;
+                    contenedor.innerHTML += html;
+                });
+            } catch (error) {
+                console.error("Error cargando el JSON:", error);
+                document.getElementById('no-eventos').innerText = "Error cargando la cartelera.";
+                document.getElementById('no-eventos').style.display = 'block';
+            }
+        }
+
+        cargarCartelera();
+    </script>
+</body>
+</html>
