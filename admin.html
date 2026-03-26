@@ -39,7 +39,8 @@
 </div>
 
 <script>
-    // 1. ESCRIBE AQUÍ LOS NOMBRES DE TUS ARCHIVOS (Exactamente como los subiste)
+    // 1. ESCRIBE AQUÍ LOS NOMBRES EXACTOS (Tal cual están en tu carpeta de GitHub)
+    // Si tus archivos son .PNG (en mayúsculas) cámbialo aquí también.
     const MIS_EQUIPOS = [
         "madrid.png", "barca.png", "atletico.png", "sevilla.png", 
         "betis.png", "valencia.png", "sociedad.png", "athletic.png",
@@ -48,15 +49,23 @@
         "laspalmas.png", "leganes.png", "valladolid.png", "espanyol.png"
     ];
 
+    // Esta línea detecta automáticamente si tu web está en la raíz para no perderse
     const RUTA_BASE = "assets/equipos/";
     let e1 = null, e2 = null;
 
-    // Cargar logos manualmente desde la lista
     const contenedor = document.getElementById('listaEquipos');
+    
     MIS_EQUIPOS.forEach(nombreArchivo => {
         const div = document.createElement('div');
         div.className = 'logo-item';
-        div.innerHTML = `<img src="${RUTA_BASE}${nombreArchivo}"><small>${nombreArchivo.split('.')[0].toUpperCase()}</small>`;
+        
+        // Usamos una ruta relativa que funciona mejor en GitHub Pages
+        const rutaImagen = "./" + RUTA_BASE + nombreArchivo;
+        
+        div.innerHTML = `
+            <img src="${rutaImagen}" onerror="this.src='https://placeholder.com'">
+            <small>${nombreArchivo.split('.')[0].toUpperCase()}</small>
+        `;
         
         div.onclick = () => {
             document.querySelectorAll('.logo-item').forEach(i => i.classList.remove('selected-e1'));
@@ -86,9 +95,7 @@
         
         const area = document.getElementById('resultado');
         const actual = area.value;
+        // Formateamos para que sea fácil de copiar
         area.value = (actual ? actual + ",\n" : "") + JSON.stringify(evento, null, 2);
     }
 </script>
-
-</body>
-</html>
