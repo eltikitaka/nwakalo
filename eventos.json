@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "hora": "21:00",
+    "e1": "Real Madrid CF",
+    "logo1": "rmadrid.png",
+    "e2": "FC Barcelona",
+    "logo2": "fcb.png",
+    "canal": "DAZN 1",
+    "link": "acestream://1234567890"
+  }
+]
