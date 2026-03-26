@@ -2,65 +2,112 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Generador de Cartelera</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; padding: 5px; }
-        .logo-item:hover { border-color: #007bff; }
-        .logo-item img { width: 50px; height: 50px; object-fit: contain; }
-        .selected { border-color: #28a745 !important; background: #e9f7ef; }
-        .form-group { margin-bottom: 15px; background: white; padding: 15px; border-radius: 8px; }
-        textarea { width: 100%; height: 120px; font-family: monospace; margin-top: 10px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #ececec; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
+        .logo-item { cursor: pointer; text-align: center; border: 2px solid transparent; border-radius: 8px; transition: 0.2s; padding: 10px; }
+        .logo-item:hover { background: #f0f7ff; border-color: #007bff; }
+        .logo-item img { width: 60px; height: 60px; object-fit: contain; display: block; margin: 0 auto 5px; }
+        .selected-e1 { border-color: #007bff !important; background: #e7f3ff; }
+        .selected-e2 { border-color: #dc3545 !important; background: #ffeef0; }
+        .form-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; min-width: 150px; }
+        button { background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; }
+        button:hover { background: #218838; }
+        textarea { width: 100%; height: 150px; margin-top: 20px; font-family: monospace; border-radius: 8px; padding: 10px; border: 1px solid #ccc; }
+        .instrucciones { font-size: 0.9em; color: #666; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>1. Selecciona Local y Visitante</h2>
-    <div id="listaEquipos" class="grid">
-        <!-- Aquí cargaremos tus logos automáticamente luego -->
-        <div class="logo-item" onclick="seleccionar('equipo1', 'Madrid', 'madrid.png', this)">
-            <img src="assets/equipos/madrid.png"> <br><small>Madrid</small>
-        </div>
-        <!-- Añade aquí manualmente un par más para probar, o espera al script automático -->
+<div class="container">
+    <h2>Panel de Control - Cartelera</h2>
+    <p class="instrucciones">1. Haz clic en el <b>Local</b>. 2. Haz clic derecho (o mantén pulsado) en el <b>Visitante</b>.</p>
+    
+    <div id="listaEquipos" class="grid">Cargando escudos...</div>
+
+    <div class="form-row">
+        <input type="time" id="hora" title="Hora del partido">
+        <input type="text" id="canal" placeholder="Nombre del Canal (Ej: DAZN)">
+        <input type="text" id="ace" placeholder="ID Acestream">
     </div>
 
-    <div class="form-group">
-        <h3>2. Datos del Evento</h3>
-        Hora: <input type="time" id="hora"> | 
-        Canal: <input type="text" id="canal" placeholder="Ej: DAZN"> | 
-        ID Acestream: <input type="text" id="ace" placeholder="id_del_canal">
-        <br><br>
-        <button onclick="generarJSON()">Generar Código para Eventos.json</button>
-    </div>
+    <button onclick="generarJSON()">GENERAR EVENTO</button>
 
-    <h3>3. Copia este código en tu archivo eventos.json</h3>
-    <textarea id="resultado" readonly></textarea>
+    <textarea id="resultado" placeholder="Aquí aparecerá el código para copiar..." readonly></textarea>
+</div>
 
-    <script>
-        let datos = { e1: "", l1: "", e2: "", l2: "" };
+<script>
+    // CONFIGURACIÓN: Cambia esto por tus datos
+    const USUARIO = "CesarDiaz1978"; 
+    const REPO = "SinsentidoTodo"; // Cambia al nombre real de tu repositorio si es distinto
+    const RUTA_LOGOS = "assets/equipos";
 
-        function seleccionar(tipo, nombre, logo, el) {
-            // Lógica simple para marcar quién es quién
-            if(tipo === 'equipo1') {
-                datos.e1 = nombre; datos.l1 = logo;
-            } else {
-                datos.e2 = nombre; datos.l2 = logo;
-            }
-            el.classList.add('selected');
+    let e1 = null, e2 = null;
+
+    // 1. Cargar logos automáticamente desde GitHub API
+    async function cargarLogos() {
+        const url = `https://github.com{USUARIO}/${REPO}/contents/${RUTA_LOGOS}`;
+        try {
+            const res = await fetch(url);
+            const archivos = await res.json();
+            const contenedor = document.getElementById('listaEquipos');
+            contenedor.innerHTML = "";
+
+            archivos.forEach(file => {
+                if(file.name.endsWith('.png') || file.name.endsWith('.jpg')) {
+                    const div = document.createElement('div');
+                    div.className = 'logo-item';
+                    div.innerHTML = `<img src="${file.download_url}"><small>${file.name.split('.')[0]}</small>`;
+                    
+                    // Clic izquierdo: Local | Clic derecho: Visitante
+                    div.onclick = () => seleccionar(file, div, 'e1');
+                    div.oncontextmenu = (e) => { e.preventDefault(); seleccionar(file, div, 'e2'); };
+                    
+                    contenedor.appendChild(div);
+                }
+            });
+        } catch (error) {
+            document.getElementById('listaEquipos').innerText = "Error al cargar logos. Revisa el nombre del usuario y repo en el script.";
         }
+    }
 
-        function generarJSON() {
-            const evento = {
-                hora: document.getElementById('hora').value,
-                equipo1: datos.e1, logo1: datos.l1,
-                equipo2: datos.e2, logo2: datos.l2,
-                canal: document.getElementById('canal').value,
-                link: "acestream://" + document.getElementById('ace').value
-            };
-            document.getElementById('resultado').value = JSON.stringify(evento, null, 2) + ",";
+    function seleccionar(archivo, elemento, tipo) {
+        if(tipo === 'e1') {
+            document.querySelectorAll('.logo-item').forEach(el => el.classList.remove('selected-e1'));
+            elemento.classList.add('selected-e1');
+            e1 = { nombre: archivo.name.split('.')[0], logo: archivo.name };
+        } else {
+            document.querySelectorAll('.logo-item').forEach(el => el.classList.remove('selected-e2'));
+            elemento.classList.add('selected-e2');
+            e2 = { nombre: archivo.name.split('.')[0], logo: archivo.name };
         }
-    </script>
+    }
+
+    function generarJSON() {
+        if(!e1 || !e2) return alert("Selecciona ambos equipos");
+        
+        const evento = {
+            hora: document.getElementById('hora').value,
+            equipo1: e1.nombre, 
+            logo1: e1.logo,
+            equipo2: e2.nombre, 
+            logo2: e2.logo,
+            canal: document.getElementById('canal').value,
+            link: "acestream://" + document.getElementById('ace').value
+        };
+
+        // Mostramos el código formateado
+        const actual = document.getElementById('resultado').value;
+        const nuevoEvento = JSON.stringify(evento, null, 2);
+        document.getElementById('resultado').value = actual ? actual + ",\n" + nuevoEvento : nuevoEvento;
+    }
+
+    cargarLogos();
+</script>
+
 </body>
 </html>
