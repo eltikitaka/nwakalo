@@ -1,4 +1,5 @@
-{
+[
+  {
   "hora": "21:00",
   "e1": "FC Barcelona",
   "logo1": "fcb.png",
@@ -11,3 +12,4 @@
     "af468a318ad209b29a042a9080b519c6b40cec79"
   ]
 }
+]
