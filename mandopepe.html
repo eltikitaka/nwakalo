@@ -9,7 +9,7 @@
         .box { max-width: 500px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #333; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; max-height: 250px; overflow-y: auto; background: #252525; padding: 10px; border-radius: 10px; margin-bottom: 20px; }
         .logo-item { cursor: pointer; border: 2px solid transparent; padding: 5px; border-radius: 8px; }
-        .logo-item img { width: 40px; height: 40px; object-fit: contain; }
+        .logo-item img { width: 40px; height: 40px; object-fit: contain; pointer-events: none; }
         .selected-e1 { border-color: #00e676; background: #1b3d2e; }
         .selected-e2 { border-color: #ff5252; background: #3d1b1b; }
         .canal-btn { padding: 12px; margin: 4px; border: 1px solid #444; background: #333; color: white; cursor: pointer; border-radius: 8px; font-weight: bold; width: 45%; }
@@ -26,12 +26,12 @@
     <div id="listaEquipos" class="grid"></div>
     <div id="listaCanales">Cargando...</div>
     <input type="time" id="hora">
-    <button class="btn-send" onclick="enviarAlServer()">PUBLICAR EN LA TELE</button>
+    <button class="btn-send" id="btnMain" onclick="enviarAlServer()">PUBLICAR EN LA TELE</button>
     <div id="log">Listo</div>
 </div>
 
 <script>
-    // --- IMPORTANTE: DIVIDE TU NUEVO TOKEN EN 3 PARTES ---
+    // --- IMPORTANTE: TOKEN DIVIDIDO EN 3 ---
     const p1 = "ghp_0DvMWnM6E"; 
     const p2 = "cheVTSZpYKsX7";
     const p3 = "mRx1oOTc27YGWA";
@@ -43,7 +43,6 @@
     let e1 = null, e2 = null, can = null;
     const EQUIPOS = [{n:"Real Madrid CF",f:"rmadrid.png"},{n:"FC Barcelona",f:"fcb.png"},{n:"Atlético de Madrid",f:"atm.png"},{n:"Athletic Club",f:"ath.png"},{n:"Villarreal CF",f:"vil.png"},{n:"Real Sociedad",f:"rsoc.png"},{n:"Real Betis",f:"bet.png"},{n:"Valencia CF",f:"vcf.png"},{n:"Girona FC",f:"gir.png"},{n:"RC Celta",f:"cel.png"},{n:"Sevilla FC",f:"sev.png"},{n:"RCD Espanyol",f:"esp.png"},{n:"Rayo Vallecano",f:"ray.png"},{n:"CA Osasuna",f:"osa.png"},{n:"Elche CF",f:"elc.png"},{n:"Levante UD",f:"lev.png"},{n:"RCD Mallorca",f:"mal.png"},{n:"Getafe CF",f:"get.png"},{n:"Real Oviedo",f:"ovi.png"},{n:"Alaves",f:"ala.png"}];
 
-    // Cargar equipos
     const contEq = document.getElementById('listaEquipos');
     EQUIPOS.forEach(eq => {
         const div = document.createElement('div');
@@ -54,7 +53,6 @@
         contEq.appendChild(div);
     });
 
-    // Cargar canales
     fetch('canales.json?t='+Date.now()).then(r => r.json()).then(data => {
         const divCan = document.getElementById('listaCanales');
         divCan.innerHTML = "";
@@ -66,54 +64,75 @@
     });
 
     async function enviarAlServer() {
-        if(!e1 || !e2 || !can) return alert("Selecciona datos");
+        if(!e1 || !e2 || !can) return alert("Selecciona equipos y canal");
         const log = document.getElementById('log');
-        log.style.color = "orange";
-        log.innerText = "🛰️ Enviando...";
-
+        const btn = document.getElementById('btnMain');
         const tokenFinal = (p1 + p2 + p3).trim();
 
+        log.style.color = "orange";
+        log.innerText = "🛰️ Conectando...";
+        btn.disabled = true;
+
         try {
-            // 1. Obtener el archivo eventos.json
             const url = `https://github.com{USER}/${REPO}/contents/${FILE}`;
+            
+            // 1. Obtener contenido actual
             const res = await fetch(url, {
-                headers: { "Authorization": `token ${tokenFinal}` }
+                method: 'GET',
+                headers: { 
+                    'Authorization': `Bearer ${tokenFinal}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
             });
 
-            if (!res.ok) throw new Error("Error leyendo el archivo");
+            if (!res.ok) {
+                const errorBody = await res.json();
+                throw new Error(errorBody.message || "Error al conectar");
+            }
+
             const data = await res.json();
+            const sha = data.sha;
             
-            // 2. Preparar el nuevo contenido
-            let listaActual = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            // Decodificar contenido de forma segura para tildes
+            let contenidoDecodificado = decodeURIComponent(escape(atob(data.content)));
+            let listaActual = JSON.parse(contenidoDecodificado);
+
+            // 2. Añadir nuevo partido
             listaActual.push({
                 hora: document.getElementById('hora').value || "00:00",
                 e1: e1.n, logo1: e1.f, e2: e2.n, logo2: e2.f,
                 canal: can.nombre, links: can.opciones
             });
 
-            // 3. Guardar cambios en GitHub
+            // 3. Subir cambios con codificación segura
+            const nuevoContenidoBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2))));
+
             const resPut = await fetch(url, {
                 method: "PUT",
                 headers: { 
-                    "Authorization": `token ${tokenFinal}`,
+                    "Authorization": `Bearer ${tokenFinal}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    message: "Nuevo partido",
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2)))),
-                    sha: data.sha
+                    message: `Añadido ${e1.n} vs ${e2.n}`,
+                    content: nuevoContenidoBase64,
+                    sha: sha
                 })
             });
 
-            if(resPut.ok) {
+            if (resPut.ok) {
                 log.style.color = "#00e676";
                 log.innerText = "✅ PUBLICADO CON ÉXITO";
                 setTimeout(() => location.reload(), 1500);
-            } else { throw new Error("Fallo al guardar"); }
+            } else {
+                const errData = await resPut.json();
+                throw new Error(errData.message);
+            }
 
-        } catch(e) { 
-            log.style.color = "red";
-            log.innerText = "❌ ERROR: " + e.message; 
+        } catch (e) {
+            log.style.color = "#ff5252";
+            log.innerText = "❌ " + e.message;
+            btn.disabled = false;
         }
     }
 </script>
