@@ -131,7 +131,7 @@
 
         } catch (e) {
             log.style.color = "#ff5252";
-            log.innerText = "❌ " + e.message;
+            log.innerText = "❌ ERROR: " + (e.message || "Fallo de Red"); console.log(e);
             btn.disabled = false;
         }
     }
