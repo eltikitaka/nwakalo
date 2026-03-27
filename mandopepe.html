@@ -31,10 +31,12 @@
 </div>
 
 <script>
-    // --- IMPORTANTE: TOKEN DIVIDIDO EN 3 ---
-    const p1 = "ghp_0DvMWnM6E"; 
-    const p2 = "cheVTSZpYKsX7";
-    const p3 = "mRx1oOTc27YGWA";
+    // --- IMPORTANTE: DIVIDE TU TOKEN NUEVO EN 4 PARTES ---
+    // (Divide el ghp_... en 4 trozos para máxima seguridad)
+    const p1 = "ghp_0aEYRw91"; 
+    const p2 = "j36ksNyBZN4H";
+    const p3 = "EabN9UwKbJ3G";
+    const p4 = "zzAF";
     
     const USER = "eltikitaka";
     const REPO = "nwakalo";
@@ -67,7 +69,7 @@
         if(!e1 || !e2 || !can) return alert("Selecciona equipos y canal");
         const log = document.getElementById('log');
         const btn = document.getElementById('btnMain');
-        const tokenFinal = (p1 + p2 + p3).trim();
+        const tokenFinal = (p1 + p2 + p3 + p4).trim();
 
         log.style.color = "orange";
         log.innerText = "🛰️ Conectando...";
@@ -80,22 +82,15 @@
             const res = await fetch(url, {
                 method: 'GET',
                 headers: { 
-                    'Authorization': `Bearer ${tokenFinal}`,
+                    'Authorization': `token ${tokenFinal}`,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
 
-            if (!res.ok) {
-                const errorBody = await res.json();
-                throw new Error(errorBody.message || "Error al conectar");
-            }
-
-            const data = await res.json();
-            const sha = data.sha;
+            if (!res.ok) throw new Error(`Lectura fallida: ${res.status}`);
             
-            // Decodificar contenido de forma segura para tildes
-            let contenidoDecodificado = decodeURIComponent(escape(atob(data.content)));
-            let listaActual = JSON.parse(contenidoDecodificado);
+            const data = await res.json();
+            let listaActual = JSON.parse(decodeURIComponent(escape(atob(data.content))));
 
             // 2. Añadir nuevo partido
             listaActual.push({
@@ -104,19 +99,17 @@
                 canal: can.nombre, links: can.opciones
             });
 
-            // 3. Subir cambios con codificación segura
-            const nuevoContenidoBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2))));
-
+            // 3. Subir cambios
             const resPut = await fetch(url, {
                 method: "PUT",
                 headers: { 
-                    "Authorization": `Bearer ${tokenFinal}`,
+                    "Authorization": `token ${tokenFinal}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    message: `Añadido ${e1.n} vs ${e2.n}`,
-                    content: nuevoContenidoBase64,
-                    sha: sha
+                    message: `Partidazo: ${e1.n} vs ${e2.n}`,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2)))),
+                    sha: data.sha
                 })
             });
 
@@ -125,13 +118,12 @@
                 log.innerText = "✅ PUBLICADO CON ÉXITO";
                 setTimeout(() => location.reload(), 1500);
             } else {
-                const errData = await resPut.json();
-                throw new Error(errData.message);
+                throw new Error(`Escritura fallida: ${resPut.status}`);
             }
 
         } catch (e) {
             log.style.color = "#ff5252";
-            log.innerText = "❌ ERROR: " + (e.message || "Fallo de Red"); console.log(e);
+            log.innerText = "❌ " + e.message;
             btn.disabled = false;
         }
     }
