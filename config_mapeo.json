@@ -1,0 +1,29 @@
+{
+  "equipos": {
+    "Real Madrid CF": "rmadrid.png",
+    "FC Barcelona": "fcb.png",
+    "Atlético de Madrid": "atm.png",
+    "Athletic Club": "ath.png",
+    "Villarreal CF": "vil.png",
+    "Real Sociedad": "rsoc.png",
+    "Real Betis": "bet.png",
+    "Valencia CF": "vcf.png",
+    "Girona FC": "gir.png",
+    "RC Celta": "cel.png",
+    "Sevilla FC": "sev.png",
+    "RCD Espanyol": "esp.png",
+    "Rayo Vallecano": "ray.png",
+    "CA Osasuna": "osa.png",
+    "Elche CF": "elc.png",
+    "Levante UD": "lev.png",
+    "RCD Mallorca": "mal.png",
+    "Getafe CF": "get.png",
+    "Real Oviedo": "ovi.png",
+    "Alaves": "ala.png"
+  },
+  "canales": {
+    "DAZN LaLiga": "ID_AQUÍ",
+    "M+ LaLiga TV": "ID_AQUÍ",
+    "M+ Campeones": "ID_AQUÍ"
+  }
+}
