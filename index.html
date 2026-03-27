@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NWAKALO TV - Privado</title>
-    <style>
+        <style>
         /* --- DISEÑO DAZN --- */
         body { 
             background: #101010; color: #ffffff; font-family: 'Arial Black', sans-serif;
-            margin: 0; padding: 30px; overflow-x: hidden;
+            margin: 0; padding: 20px; overflow-x: hidden;
         }
-        h1 { font-size: 45px; margin: 0 0 40px 10px; font-style: italic; letter-spacing: -2px; }
-        .logo-tv { border: 4px solid #ffffff; padding: 0 10px; margin-left: 10px; }
+        h1 { font-size: 35px; margin: 0 0 30px 10px; font-style: italic; letter-spacing: -1px; }
+        .logo-tv { border: 3px solid #ffffff; padding: 0 8px; margin-left: 10px; }
 
         /* --- PANTALLA DE SEGURIDAD --- */
         #pantalla-bloqueo {
@@ -24,28 +24,54 @@
             border: 2px dashed #ffff00; margin-top: 20px; font-family: monospace; font-size: 24px; 
         }
 
-        /* --- CONTENIDO PRINCIPAL (OCULTO) --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         #app-principal { display: none; }
 
-        .fila-dazn { display: flex; gap: 20px; overflow-x: auto; padding: 40px 10px; scrollbar-width: none; }
+        .fila-dazn { 
+            display: flex; gap: 15px; overflow-x: auto; padding: 20px 10px; 
+            scrollbar-width: none; -ms-overflow-style: none; 
+        }
         .fila-dazn::-webkit-scrollbar { display: none; }
 
         .tarjeta-dazn {
-            min-width: 280px; height: 380px; background: #1a1a1a; 
-            position: relative; transition: all 0.3s ease; cursor: pointer;
-            border: 5px solid transparent; display: flex; flex-direction: column;
+            min-width: 240px; max-width: 240px; height: 320px; background: #1a1a1a; 
+            position: relative; transition: transform 0.2s ease; cursor: pointer;
+            border: 4px solid transparent; display: flex; flex-direction: column;
             text-decoration: none; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        .tarjeta-dazn:focus, .tarjeta-dazn:hover { transform: scale(1.1); border-color: #ffffff; outline: none; z-index: 10; }
+        .tarjeta-dazn:focus, .tarjeta-dazn:hover { 
+            transform: scale(1.05); border-color: #ffffff; outline: none; z-index: 10; 
+        }
 
-        .img-contenedor { height: 60%; background: #222; display: flex; justify-content: center; align-items: center; gap: 15px; position: relative; }
-        .img-contenedor img { width: 70px; height: 70px; object-fit: contain; }
-        .live-tag { position: absolute; top: 15px; left: 15px; background: #e50914; padding: 4px 10px; font-size: 12px; font-weight: bold; }
+        /* AJUSTE DE ICONOS: Aquí es donde se soluciona el tamaño gigante */
+        .img-contenedor { 
+            height: 140px; background: #222; display: flex; 
+            justify-content: center; align-items: center; gap: 10px; position: relative; 
+            padding: 10px;
+        }
+        .img-contenedor img { 
+            max-width: 60px; /* Tamaño máximo del logo */
+            max-height: 60px; 
+            width: auto; height: auto; 
+            object-fit: contain; 
+        }
+        
+        .live-tag { 
+            position: absolute; top: 10px; left: 10px; background: #e50914; 
+            padding: 3px 8px; font-size: 11px; font-weight: bold; z-index: 2;
+        }
 
-        .info-contenedor { padding: 20px; flex-grow: 1; }
-        .partido-nombres { font-size: 18px; text-transform: uppercase; line-height: 1.2; }
-        .opcion-n { color: #ffff00; font-size: 14px; font-weight: bold; margin-top: 10px; }
+        .info-contenedor { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .partido-nombres { font-size: 16px; text-transform: uppercase; line-height: 1.2; font-weight: bold; }
+        .opcion-n { color: #ffff00; font-size: 13px; font-weight: bold; margin-top: 5px; }
+        .detalles { font-size: 11px; color: #888; margin-top: 5px; text-transform: uppercase; }
+
+        /* Ajuste específico para TV/Fire Stick */
+        @media (max-width: 1280px) {
+            .tarjeta-dazn { min-width: 200px; height: 280px; }
+            .img-contenedor img { max-width: 45px; max-height: 45px; }
+        }
     </style>
 </head>
 <body>
