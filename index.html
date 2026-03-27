@@ -94,7 +94,7 @@
             try {
                 // 2. Consultar lista de autorizados en GitHub
                 // Usamos t=Date.now para que no use la versión vieja del archivo
-                const res = await fetch(`https://githubusercontent.com{USER}/${REPO}/main/autorizados.json?t=${Date.now()}`);
+                const res = await fetch('https://githubusercontent.com' + Date.now());
                 const autorizados = await res.json();
 
                 // 3. Comprobar si mi ID está en la lista
