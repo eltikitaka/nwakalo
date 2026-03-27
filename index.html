@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV - 9 GRID</title>
+    <title>NWAKALO TV - 9 GRID NAVEGABLE</title>
     <style>
         /* --- ESTILO BASE --- */
         body { 
             background: #0a0a0a; color: #ffffff; font-family: 'Arial Black', sans-serif;
-            margin: 0; padding: 0; overflow: hidden; /* Evita scroll innecesario */
+            margin: 0; padding: 0; overflow-x: hidden;
             user-select: none;
             height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
-        header { height: 8vh; display: flex; align-items: center; padding-left: 20px; }
+        header { height: 8vh; display: flex; align-items: center; padding-left: 20px; flex-shrink: 0; }
         h1 { font-size: 2.5vh; margin: 0; font-style: italic; letter-spacing: -1px; }
         .logo-tv { border: 2px solid #ffffff; padding: 0 8px; margin-left: 10px; }
 
@@ -32,18 +32,19 @@
         .grid-dazn { 
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(3, 28vh); /* Fuerza 3 filas de alto específico */
+            grid-auto-rows: 28vh; /* Todas las filas miden esto */
             gap: 1.5vh;
             padding: 0 20px 20px 20px;
-            height: 90vh;
+            height: 92vh;
             overflow-y: auto;
             box-sizing: border-box;
+            scroll-behavior: smooth;
         }
 
         /* --- TARJETA OPTIMIZADA --- */
         .tarjeta-dazn {
             background: #151515; 
-            border: 3px solid transparent; 
+            border: 4px solid transparent; 
             display: flex; 
             flex-direction: column;
             text-decoration: none; 
@@ -51,8 +52,10 @@
             transition: all 0.2s;
             outline: none;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
+        /* FOCO EN TARJETAS REALES */
         .tarjeta-dazn:focus { 
             border-color: #ffffff; 
             background: #222;
@@ -60,11 +63,20 @@
             z-index: 10;
         }
 
-        /* TARJETA PENDIENTE */
+        /* TARJETA PENDIENTE (AHORA NAVEGABLE) */
         .tarjeta-pendiente {
             border: 2px dashed #222;
             display: flex; justify-content: center; align-items: center;
-            color: #333; font-size: 1.5vh; text-align: center;
+            color: #444; font-size: 1.6vh; text-align: center;
+            cursor: default;
+        }
+
+        /* FOCO EN TARJETAS VACÍAS */
+        .tarjeta-pendiente:focus {
+            border: 4px solid #444; /* Borde más suave para indicar que está vacío */
+            background: #111;
+            color: #888;
+            transform: scale(1.02);
         }
 
         /* CONTENEDORES INTERNOS */
@@ -115,72 +127,5 @@
             try {
                 const res = await fetch('autorizados.json?t=' + Date.now());
                 const autorizados = await res.json();
-                if (autorizados.includes(idPropio)) {
-                    document.getElementById('app-principal').style.display = 'block';
-                    await cargarCartelera();
-                } else {
-                    document.getElementById('pantalla-bloqueo').style.display = 'flex';
-                    document.getElementById('mi-id-visual').innerText = idPropio;
-                }
-            } catch (e) { console.error(e); }
-        }
-
-        async function cargarCartelera() {
-            try {
-                const res = await fetch('eventos.json?t=' + Date.now());
-                const partidos = await res.json();
-                const grid = document.getElementById('contenedor-grid');
-                grid.innerHTML = "";
-
-                let totalItems = 0;
-
-                if (partidos) {
-                    partidos.forEach((p) => {
-                        p.links.forEach((id_ace, index) => {
-                            totalItems++;
-                            const card = document.createElement('a');
-                            card.className = 'tarjeta-dazn';
-                            card.href = `acestream://${id_ace}`;
-                            card.tabIndex = 0;
-                            card.innerHTML = `
-                                <div class="img-contenedor">
-                                    <div class="live-tag">LIVE</div>
-                                    <img src="${RUTA_LOGOS}${p.logo1}" onerror="this.src='assets/default.png'">
-                                    <img src="${RUTA_LOGOS}${p.logo2}" onerror="this.src='assets/default.png'">
-                                </div>
-                                <div class="info-contenedor">
-                                    <div class="partido-nombres">${p.e1} vs ${p.e2}</div>
-                                    <div class="opcion-n">OPCIÓN ${index + 1}</div>
-                                    <div class="detalles">${p.hora}</div>
-                                </div>
-                            `;
-                            grid.appendChild(card);
-                        });
-                    });
-                }
-
-                // Rellenar hasta 9 siempre
-                while (totalItems < 9) {
-                    const empty = document.createElement('div');
-                    empty.className = 'tarjeta-dazn tarjeta-pendiente';
-                    empty.innerHTML = "PENDIENTE DE PROGRAMAR";
-                    grid.appendChild(empty);
-                    totalItems++;
-                }
-
-                const first = document.querySelector('.tarjeta-dazn[tabindex="0"]');
-                if (first) first.focus();
-
-            } catch (e) { console.error(e); }
-        }
-
-        document.addEventListener('focusin', (e) => {
-            if (e.target.classList.contains('tarjeta-dazn')) {
-                e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-
-        verificarAcceso();
-    </script>
-</body>
-</html>
+                if (autorizados.includes(id
+                                         
