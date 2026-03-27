@@ -3,109 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV - En Directo</title>
+    <title>NWAKALO TV - Privado</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 10px; }
-        header { text-align: center; padding: 15px 0; border-bottom: 1px solid #333; margin-bottom: 20px; }
-        h1 { margin: 0; color: #00e676; font-size: 22px; letter-spacing: 1px; }
-        
-        .lista-eventos { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: auto; }
-        
-        .tarjeta {
-            background: #1e1e1e;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #333;
+        /* --- ESTILOS GENERALES (DAZN STYLE) --- */
+        body { 
+            background: #101010; color: #ffffff; font-family: 'Arial Black', sans-serif;
+            margin: 0; padding: 30px; overflow-x: hidden;
+        }
+        h1 { font-size: 45px; margin: 0 0 40px 10px; font-style: italic; letter-spacing: -2px; }
+        .logo-tv { border: 4px solid #ffffff; padding: 0 10px; margin-left: 10px; }
+
+        /* --- PANTALLA DE BLOQUEO (SEGURIDAD) --- */
+        #pantalla-bloqueo {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0a0a; display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999; text-align: center;
+        }
+        .id-box { 
+            background: #1a1a1a; color: #ffff00; padding: 20px; 
+            border: 2px dashed #ffff00; margin-top: 20px; font-family: monospace; font-size: 24px; 
         }
 
-        .info-superior { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 12px; color: #bbb; }
-        .hora { background: #333; color: #00e676; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .canal-tag { color: #fff; font-weight: bold; text-transform: uppercase; }
+        /* --- CONTENEDOR DE LA APP (OCULTO POR DEFECTO) --- */
+        #app-principal { display: none; }
 
-        .partido { display: flex; align-items: center; justify-content: space-around; margin-bottom: 15px; }
-        .equipo { text-align: center; flex: 1; }
-        .equipo img { width: 55px; height: 55px; object-fit: contain; }
-        .equipo p { font-size: 12px; margin: 5px 0 0; font-weight: bold; }
-        .vs { font-weight: bold; color: #00e676; font-size: 16px; }
-
-        .grid-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-top: 10px; }
-        .btn-link {
-            background: #252525;
-            color: #00e676;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 11px;
-            text-align: center;
-            padding: 10px 5px;
-            border-radius: 6px;
-            border: 1px solid #00e676;
-            transition: 0.3s;
+        .fila-dazn {
+            display: flex; gap: 20px; overflow-x: auto; padding: 40px 10px;
+            scrollbar-width: none;
         }
-        .btn-link:hover { background: #00e676; color: #000; }
-        
-        #no-eventos { text-align: center; color: #666; margin-top: 50px; font-size: 14px; }
+        .fila-dazn::-webkit-scrollbar { display: none; }
+
+        .tarjeta-dazn {
+            min-width: 280px; height: 380px; background: #1a1a1a; 
+            position: relative; transition: all 0.3s ease; cursor: pointer;
+            border: 5px solid transparent; display: flex; flex-direction: column;
+            text-decoration: none; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* EFECTO SELECCIÓN MANDO TV */
+        .tarjeta-dazn:focus, .tarjeta-dazn:hover {
+            transform: scale(1.1); border-color: #ffffff; outline: none; z-index: 10;
+        }
+
+        .img-contenedor {
+            height: 60%; background: #222; display: flex; 
+            justify-content: center; align-items: center; gap: 15px; position: relative;
+        }
+        .img-contenedor img { width: 70px; height: 70px; object-fit: contain; }
+        .live-tag { position: absolute; top: 15px; left: 15px; background: #e50914; padding: 4px 10px; font-size: 12px; font-weight: bold; }
+
+        .info-contenedor { padding: 20px; flex-grow: 1; }
+        .partido-nombres { font-size: 18px; text-transform: uppercase; line-height: 1.2; }
+        .opcion-n { color: #ffff00; font-size: 14px; font-weight: bold; margin-top: 10px; }
+        .canal-info { font-size: 12px; color: #888; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>NWAKALO TV</h1>
-    </header>
+    <!-- 1. PANTALLA DE BLOQUEO -->
+    <div id="pantalla-bloqueo">
+        <h1 style="color:#e50914;">ACCESO RESTRINGIDO</h1>
+        <p style="font-family: sans-serif;">Dispositivo no autorizado para NWAKALO TV.</p>
+        <p style="font-family: sans-serif; color: #aaa;">Envía este código al administrador:</p>
+        <div id="mi-id-visual" class="id-box">GENERANDO ID...</div>
+    </div>
 
-    <div id="contenedor" class="lista-eventos"></div>
-    <div id="no-eventos" style="display:none;">No hay partidos programados actualmente.</div>
+    <!-- 2. CONTENIDO DE LA CARTELERA -->
+    <div id="app-principal">
+        <h1>NWAKALO<span class="logo-tv">TV</span></h1>
+        <div style="margin-left: 15px; color: #ffff00; font-size: 14px;">● EN DIRECTO AHORA</div>
+        <div id="contenedor-fila" class="fila-dazn">
+            <!-- Los partidos se cargan aquí si el ID es correcto -->
+        </div>
+    </div>
 
     <script>
+        const USER = "eltikitaka";
+        const REPO = "nwakalo";
         const RUTA_LOGOS = "assets/equipos/";
 
-        async function cargar() {
+        // --- SISTEMA DE SEGURIDAD ---
+        async function verificarAcceso() {
+            // 1. Obtener o crear ID único para este dispositivo
+            let idPropio = localStorage.getItem('nwa_device_id');
+            if (!idPropio) {
+                idPropio = 'NWA-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+                localStorage.setItem('nwa_device_id', idPropio);
+            }
+
+            try {
+                // 2. Consultar lista de autorizados en GitHub
+                // Usamos t=Date.now para que no use la versión vieja del archivo
+                const res = await fetch(`https://githubusercontent.com{USER}/${REPO}/main/autorizados.json?t=${Date.now()}`);
+                const autorizados = await res.json();
+
+                // 3. Comprobar si mi ID está en la lista
+                if (autorizados.includes(idPropio)) {
+                    document.getElementById('app-principal').style.display = 'block';
+                    cargarCartelera();
+                } else {
+                    document.getElementById('pantalla-bloqueo').style.display = 'flex';
+                    document.getElementById('mi-id-visual').innerText = idPropio;
+                }
+            } catch (error) {
+                console.error("Error de seguridad", error);
+                alert("Error al conectar con el servidor de licencias.");
+            }
+        }
+
+        // --- CARGAR LOS PARTIDOS ---
+        async function cargarCartelera() {
             try {
                 const res = await fetch('eventos.json?t=' + Date.now());
-                const eventos = await res.json();
-                const contenedor = document.getElementById('contenedor');
-                
-                if (!eventos || eventos.length === 0) {
-                    document.getElementById('no-eventos').style.display = 'block';
+                const partidos = await res.json();
+                const fila = document.getElementById('contenedor-fila');
+
+                if (partidos.length === 0) {
+                    fila.innerHTML = "<p style='margin-left:20px; color:#666;'>No hay partidos programados para hoy.</p>";
                     return;
                 }
 
-                eventos.forEach(ev => {
-                    // Creamos los botones de opciones dinámicamente
-                    let linksHTML = "";
-                    if (ev.links && Array.isArray(ev.links)) {
-                        ev.links.forEach((id, index) => {
-                            linksHTML += `<a href="acestream://${id}" class="btn-link">OPCIÓN ${index + 1}</a>`;
-                        });
-                    }
-
-                    const card = `
-                        <div class="tarjeta">
-                            <div class="info-superior">
-                                <span class="hora">${ev.hora}</span>
-                                <span class="canal-tag">${ev.canal}</span>
+                partidos.forEach(p => {
+                    p.links.forEach((id_ace, index) => {
+                        const card = document.createElement('a');
+                        card.className = 'tarjeta-dazn';
+                        card.href = `acestream://${id_ace}`;
+                        card.setAttribute('tabindex', '0'); // Importante para mando TV
+                        
+                        card.innerHTML = `
+                            <div class="img-contenedor">
+                                <div class="live-tag">LIVE</div>
+                                <img src="${RUTA_LOGOS}${p.logo1}">
+                                <img src="${RUTA_LOGOS}${p.logo2}">
                             </div>
-                            <div class="partido">
-                                <div class="equipo">
-                                    <img src="${RUTA_LOGOS}${ev.logo1}">
-                                    <p>${ev.e1}</p>
-                                </div>
-                                <div class="vs">VS</div>
-                                <div class="equipo">
-                                    <img src="${RUTA_LOGOS}${ev.logo2}">
-                                    <p>${ev.e2}</p>
-                                </div>
+                            <div class="info-contenedor">
+                                <div class="partido-nombres">${p.e1}<br>vs ${p.e2}</div>
+                                <div class="opcion-n">OPCIÓN ${index + 1}</div>
+                                <div class="canal-info">${p.canal} | ${p.hora}</div>
                             </div>
-                            <div class="grid-links">${linksHTML}</div>
-                        </div>
-                    `;
-                    contenedor.innerHTML += card;
+                        `;
+                        fila.appendChild(card);
+                    });
                 });
             } catch (e) {
-                document.getElementById('no-eventos').style.display = 'block';
+                console.log("Error cargando eventos.json");
             }
         }
-        cargar();
+
+        // Arrancar el proceso
+        verificarAcceso();
     </script>
 </body>
 </html>
