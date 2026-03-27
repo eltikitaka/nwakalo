@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mando NWAKALO TV</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #121212; color: white; text-align: center; }
+        .box { max-width: 500px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; max-height: 200px; overflow-y: auto; background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
+        .logo-item { cursor: pointer; border: 2px solid transparent; padding: 5px; border-radius: 8px; transition: 0.2s; }
+        .logo-item img { width: 40px; height: 40px; object-fit: contain; }
+        .selected-e1 { border-color: #00e676; background: #1b3d2e; }
+        .selected-e2 { border-color: #ff5252; background: #3d1b1b; }
+        .canal-btn { padding: 12px; margin: 4px; border: 1px solid #444; background: #333; color: white; cursor: pointer; border-radius: 8px; font-weight: bold; width: 45%; }
+        .canal-btn.active { background: #00e676; color: black; border-color: #00e676; }
+        input[type="time"] { padding: 12px; width: 90%; border-radius: 8px; border: 1px solid #444; background: #333; color: white; font-size: 18px; margin: 15px 0; }
+        .btn-send { background: #00e676; color: black; padding: 18px; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 18px; margin-top: 10px; }
+        #log { margin-top: 15px; font-size: 14px; color: #aaa; }
+        .btn-clear { background: none; border: none; color: #666; text-decoration: underline; margin-top: 30px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2 style="color:#00e676;">🚀 ENVIAR A LA TV</h2>
+    
+    <div id="listaEquipos" class="grid"></div>
+    <div id="listaCanales">Cargando canales...</div>
+
+    <input type="time" id="hora">
+    
+    <button class="btn-send" onclick="enviarAlServer()">PUBLICAR PARTIDO AHORA</button>
+    <div id="log">Listo para emitir</div>
+    
+    <button class="btn-clear" onclick="resetearCartelera()">Limpiar toda la cartelera</button>
+</div>
+
+<script>
+    // --- PEGA AQUÍ TU TOKEN ---
+    const MI_TOKEN = "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"; 
+    // --------------------------
+    
+    const USER = "eltikitaka";
+    const REPO = "nwakalo";
+    const FILE = "eventos.json";
+
+    let e1 = null, e2 = null, can = null;
+
+    // 1. Cargar equipos de la lista que ya tenemos
+    const EQUIPOS = [
+        { n: "Real Madrid CF", f: "rmadrid.png" }, { n: "FC Barcelona", f: "fcb.png" },
+        { n: "Atlético de Madrid", f: "atm.png" }, { n: "Athletic Club", f: "ath.png" },
+        { n: "Villarreal CF", f: "vil.png" }, { n: "Real Sociedad", f: "rsoc.png" },
+        { n: "Real Betis", f: "bet.png" }, { n: "Valencia CF", f: "vcf.png" },
+        { n: "Girona FC", f: "gir.png" }, { n: "RC Celta", f: "cel.png" },
+        { n: "Sevilla FC", f: "sev.png" }, { n: "RCD Espanyol", f: "esp.png" },
+        { n: "Rayo Vallecano", f: "ray.png" }, { n: "CA Osasuna", f: "osa.png" },
+        { n: "Elche CF", f: "elc.png" }, { n: "Levante UD", f: "lev.png" },
+        { n: "RCD Mallorca", f: "mal.png" }, { n: "Getafe CF", f: "get.png" },
+        { n: "Real Oviedo", f: "ovi.png" }, { n: "Alaves", f: "ala.png" }
+    ];
+
+    const contEq = document.getElementById('listaEquipos');
+    EQUIPOS.forEach(eq => {
+        const div = document.createElement('div');
+        div.className = 'logo-item';
+        div.innerHTML = `<img src="assets/equipos/${eq.f}"><br><small style="font-size:8px">${eq.n.split(' ')[0]}</small>`;
+        div.onclick = () => { document.querySelectorAll('.logo-item').forEach(i=>i.classList.remove('selected-e1')); div.classList.add('selected-e1'); e1=eq; };
+        div.oncontextmenu = (e) => { e.preventDefault(); document.querySelectorAll('.logo-item').forEach(i=>i.classList.remove('selected-e2')); div.classList.add('selected-e2'); e2=eq; };
+        contEq.appendChild(div);
+    });
+
+    // 2. Cargar canales desde tu canales.json
+    fetch('canales.json?t='+Date.now()).then(r => r.json()).then(data => {
+        const divCan = document.getElementById('listaCanales');
+        divCan.innerHTML = "";
+        Object.keys(data).forEach(k => {
+            const b = document.createElement('button'); b.className='canal-btn'; b.innerText=data[k].nombre;
+            b.onclick = () => { document.querySelectorAll('.canal-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); can=data[k]; };
+            divCan.appendChild(b);
+        });
+    });
+
+    // 3. FUNCIÓN MÁGICA PARA ESCRIBIR EN GITHUB
+    async function enviarAlServer() {
+        if(!e1 || !e2 || !can) return alert("Selecciona Equipos y Canal");
+        const log = document.getElementById('log');
+        log.innerText = "🛰️ Enviando señal...";
+
+        try {
+            // Obtener el JSON actual
+            const res = await fetch(`https://github.com{USER}/${REPO}/contents/${FILE}`, {
+                headers: { "Authorization": `token ${MI_TOKEN}` }
+            });
+            const file = await res.json();
+            let listaActual = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+
+            // Crear el nuevo partido
+            const nuevo = {
+                hora: document.getElementById('hora').value || "00:00",
+                e1: e1.n, logo1: e1.f, e2: e2.n, logo2: e2.f,
+                canal: can.nombre, links: can.opciones
+            };
+            listaActual.push(nuevo);
+
+            // Subir la actualización
+            const resPut = await fetch(`https://github.com{USER}/${REPO}/contents/${FILE}`, {
+                method: "PUT",
+                headers: { "Authorization": `token ${MI_TOKEN}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: "Añadido: " + e1.n + " vs " + e2.n,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2)))),
+                    sha: file.sha
+                })
+            });
+
+            if(resPut.ok) {
+                log.innerText = "✅ ¡PUBLICADO! Revisa tu App.";
+                setTimeout(() => location.reload(), 1500);
+            }
+        } catch(e) { log.innerText = "❌ Error de conexión."; }
+    }
+
+    async function resetearCartelera() {
+        if(!confirm("¿Borrar todos los partidos?")) return;
+        const res = await fetch(`https://github.com{USER}/${REPO}/contents/${FILE}`, {
+            headers: { "Authorization": `token ${MI_TOKEN}` }
+        });
+        const file = await res.json();
+        await fetch(`https://github.com{USER}/${REPO}/contents/${FILE}`, {
+            method: "PUT",
+            headers: { "Authorization": `token ${MI_TOKEN}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "Limpiar cartelera", content: btoa("[]"), sha: file.sha })
+        });
+        location.reload();
+    }
+</script>
+</body>
+</html>
