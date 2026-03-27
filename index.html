@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV - Privado</title>
+    <title>NWAKALO TV - 9 GRID</title>
     <style>
-        /* --- ESTILO BASE TIPO TV / CUADRÍCULA --- */
+        /* --- ESTILO BASE --- */
         body { 
             background: #0a0a0a; color: #ffffff; font-family: 'Arial Black', sans-serif;
-            margin: 0; padding: 20px; overflow-x: hidden;
+            margin: 0; padding: 0; overflow: hidden; /* Evita scroll innecesario */
             user-select: none;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        h1 { font-size: 35px; margin: 10px 0 20px 20px; font-style: italic; letter-spacing: -1px; }
-        .logo-tv { border: 3px solid #ffffff; padding: 0 8px; margin-left: 10px; }
+        header { height: 8vh; display: flex; align-items: center; padding-left: 20px; }
+        h1 { font-size: 2.5vh; margin: 0; font-style: italic; letter-spacing: -1px; }
+        .logo-tv { border: 2px solid #ffffff; padding: 0 8px; margin-left: 10px; }
 
         /* --- PANTALLA DE SEGURIDAD --- */
         #pantalla-bloqueo {
@@ -21,104 +25,83 @@
             background: #0a0a0a; display: none; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999; text-align: center;
         }
-        .id-box { 
-            background: #1a1a1a; color: #ffff00; padding: 20px; 
-            border: 2px dashed #ffff00; margin-top: 20px; font-family: monospace; font-size: 24px; 
-        }
 
-        /* --- CONTENIDO PRINCIPAL EN CUADRÍCULA (3x3) --- */
-        #app-principal { display: none; }
+        /* --- CONTENIDO PRINCIPAL (FORZAR 3X3) --- */
+        #app-principal { display: none; height: 100vh; }
 
         .grid-dazn { 
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columnas */
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            /* Solo desplazamiento vertical */
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(3, 28vh); /* Fuerza 3 filas de alto específico */
+            gap: 1.5vh;
+            padding: 0 20px 20px 20px;
+            height: 90vh;
             overflow-y: auto;
-            overflow-x: hidden;
+            box-sizing: border-box;
         }
 
         /* --- TARJETA OPTIMIZADA --- */
         .tarjeta-dazn {
-            width: 100%;
-            height: 320px; 
-            background: #1a1a1a; 
-            position: relative; 
-            transition: all 0.2s ease-in-out; 
-            cursor: pointer;
-            border: 4px solid transparent; 
+            background: #151515; 
+            border: 3px solid transparent; 
             display: flex; 
             flex-direction: column;
             text-decoration: none; 
             color: white; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: all 0.2s;
             outline: none;
-            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        /* ESTADO ENFOCADO */
         .tarjeta-dazn:focus { 
-            transform: scale(1.05); 
             border-color: #ffffff; 
-            box-shadow: 0 0 30px rgba(255,255,255,0.4); 
+            background: #222;
+            transform: scale(1.02);
             z-index: 10;
-            background: #252525;
         }
 
-        /* TARJETA VACÍA / PENDIENTE */
+        /* TARJETA PENDIENTE */
         .tarjeta-pendiente {
-            opacity: 0.5;
-            border: 2px dashed #333;
-            background: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: #444;
-            font-size: 14px;
-            pointer-events: none; /* No se puede seleccionar */
+            border: 2px dashed #222;
+            display: flex; justify-content: center; align-items: center;
+            color: #333; font-size: 1.5vh; text-align: center;
         }
 
-        /* --- CONTENEDORES INTERNOS --- */
+        /* CONTENEDORES INTERNOS */
         .img-contenedor { 
-            height: 140px; background: #222; display: flex; 
-            justify-content: center; align-items: center; gap: 15px; position: relative; 
-            padding: 10px;
+            height: 55%; background: #1a1a1a; display: flex; 
+            justify-content: center; align-items: center; gap: 10px; position: relative; 
         }
-        .img-contenedor img { 
-            max-width: 65px; max-height: 65px; 
-            width: auto; height: auto; object-fit: contain; 
-        }
+        .img-contenedor img { max-width: 25%; max-height: 70%; object-fit: contain; }
         
         .live-tag { 
-            position: absolute; top: 10px; left: 10px; background: #e50914; 
-            padding: 4px 10px; font-size: 11px; font-weight: bold; z-index: 2;
+            position: absolute; top: 5px; left: 5px; background: #e50914; 
+            padding: 2px 6px; font-size: 1.2vh; font-weight: bold;
         }
 
-        .info-contenedor { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .partido-nombres { font-size: 17px; text-transform: uppercase; line-height: 1.2; font-weight: bold; }
-        .opcion-n { color: #ffff00; font-size: 14px; font-weight: bold; margin-top: 8px; }
-        .detalles { font-size: 12px; color: #888; margin-top: 5px; }
+        .info-contenedor { 
+            padding: 10px; flex-grow: 1; display: flex; 
+            flex-direction: column; justify-content: center; text-align: center;
+        }
+        .partido-nombres { font-size: 1.8vh; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .opcion-n { color: #ffff00; font-size: 1.4vh; font-weight: bold; }
+        .detalles { font-size: 1.4vh; color: #aaa; margin-top: 3px; }
 
-        /* Ajustes Responsivos */
-        @media (max-width: 900px) { .grid-dazn { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .grid-dazn { grid-template-columns: 1fr; } }
+        /* Ocultar scrollbar */
+        .grid-dazn::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
     <div id="pantalla-bloqueo">
         <h1 style="color:#e50914;">ACCESO RESTRINGIDO</h1>
-        <p>Dispositivo no autorizado para NWAKALO TV.</p>
-        <p style="color: #aaa;">Envía este código al administrador:</p>
-        <div id="mi-id-visual" class="id-box">GENERANDO ID...</div>
+        <div id="mi-id-visual" style="color:yellow; margin-top:20px; font-size:20px;"></div>
     </div>
 
     <div id="app-principal">
-        <h1>NWAKALO<span class="logo-tv">TV</span></h1>
+        <header>
+            <h1>NWAKALO<span class="logo-tv">TV</span></h1>
+        </header>
         <div id="contenedor-grid" class="grid-dazn"></div>
     </div>
 
@@ -126,30 +109,20 @@
         const RUTA_LOGOS = "assets/equipos/";
 
         async function verificarAcceso() {
-            let idPropio = localStorage.getItem('nwa_device_id');
-            if (!idPropio) {
-                idPropio = 'NWA-' + Math.random().toString(36).substring(2, 9).toUpperCase();
-                localStorage.setItem('nwa_device_id', idPropio);
-            }
+            let idPropio = localStorage.getItem('nwa_device_id') || 'NWA-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+            localStorage.setItem('nwa_device_id', idPropio);
 
             try {
                 const res = await fetch('autorizados.json?t=' + Date.now());
                 const autorizados = await res.json();
-
                 if (autorizados.includes(idPropio)) {
                     document.getElementById('app-principal').style.display = 'block';
                     await cargarCartelera();
                 } else {
-                    mostrarBloqueo(idPropio);
+                    document.getElementById('pantalla-bloqueo').style.display = 'flex';
+                    document.getElementById('mi-id-visual').innerText = idPropio;
                 }
-            } catch (error) {
-                mostrarBloqueo(idPropio);
-            }
-        }
-
-        function mostrarBloqueo(id) {
-            document.getElementById('pantalla-bloqueo').style.display = 'flex';
-            document.getElementById('mi-id-visual').innerText = id;
+            } catch (e) { console.error(e); }
         }
 
         async function cargarCartelera() {
@@ -157,20 +130,18 @@
                 const res = await fetch('eventos.json?t=' + Date.now());
                 const partidos = await res.json();
                 const grid = document.getElementById('contenedor-grid');
-                grid.innerHTML = ""; // Limpiar
+                grid.innerHTML = "";
 
-                let totalTarjetasGeneradas = 0;
+                let totalItems = 0;
 
-                // 1. Generar tarjetas reales
-                if (partidos && partidos.length > 0) {
+                if (partidos) {
                     partidos.forEach((p) => {
-                        p.links.forEach((id_ace, lIndex) => {
-                            totalTarjetasGeneradas++;
+                        p.links.forEach((id_ace, index) => {
+                            totalItems++;
                             const card = document.createElement('a');
                             card.className = 'tarjeta-dazn';
                             card.href = `acestream://${id_ace}`;
-                            card.setAttribute('tabindex', '0');
-                            
+                            card.tabIndex = 0;
                             card.innerHTML = `
                                 <div class="img-contenedor">
                                     <div class="live-tag">LIVE</div>
@@ -178,9 +149,9 @@
                                     <img src="${RUTA_LOGOS}${p.logo2}" onerror="this.src='assets/default.png'">
                                 </div>
                                 <div class="info-contenedor">
-                                    <div class="partido-nombres">${p.e1}<br>vs ${p.e2}</div>
-                                    <div class="opcion-n">OPCIÓN ${lIndex + 1}</div>
-                                    <div class="detalles">${p.canal} | ${p.hora}</div>
+                                    <div class="partido-nombres">${p.e1} vs ${p.e2}</div>
+                                    <div class="opcion-n">OPCIÓN ${index + 1}</div>
+                                    <div class="detalles">${p.hora}</div>
                                 </div>
                             `;
                             grid.appendChild(card);
@@ -188,27 +159,21 @@
                     });
                 }
 
-                // 2. Rellenar hasta llegar al menos a 9 para mantener el diseño 3x3
-                const tarjetasFaltantes = 9 - totalTarjetasGeneradas;
-                if (tarjetasFaltantes > 0) {
-                    for (let i = 0; i < tarjetasFaltantes; i++) {
-                        const emptyCard = document.createElement('div');
-                        emptyCard.className = 'tarjeta-dazn tarjeta-pendiente';
-                        emptyCard.innerHTML = `<div>PENDIENTE DE<br>PROGRAMAR</div>`;
-                        grid.appendChild(emptyCard);
-                    }
+                // Rellenar hasta 9 siempre
+                while (totalItems < 9) {
+                    const empty = document.createElement('div');
+                    empty.className = 'tarjeta-dazn tarjeta-pendiente';
+                    empty.innerHTML = "PENDIENTE DE PROGRAMAR";
+                    grid.appendChild(empty);
+                    totalItems++;
                 }
 
-                // Auto-enfoque
-                const primeraTarjeta = document.querySelector('.tarjeta-dazn[tabindex="0"]');
-                if (primeraTarjeta) primeraTarjeta.focus();
+                const first = document.querySelector('.tarjeta-dazn[tabindex="0"]');
+                if (first) first.focus();
 
-            } catch (e) {
-                console.error("Error cargando eventos", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Auto-Scroll Vertical para mando
         document.addEventListener('focusin', (e) => {
             if (e.target.classList.contains('tarjeta-dazn')) {
                 e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
