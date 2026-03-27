@@ -16,7 +16,8 @@
         .canal-btn.active { background: #00e676; color: black; }
         input[type="time"] { padding: 15px; width: 90%; border-radius: 10px; border: 1px solid #444; background: #333; color: white; font-size: 18px; margin: 15px 0; text-align: center; }
         .btn-send { background: #00e676; color: black; padding: 20px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 18px; }
-        #log { margin-top: 15px; font-weight: bold; font-size: 14px; }
+        textarea { width: 100%; height: 100px; margin-top: 15px; background: #000; color: #00e676; border: 1px solid #333; padding: 10px; box-sizing: border-box; font-family: monospace; display: none; }
+        .btn-github { background: #ffffff; color: black; padding: 15px; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; display: none; text-decoration: none; display: none; }
     </style>
 </head>
 <body>
@@ -26,18 +27,17 @@
     <div id="listaEquipos" class="grid"></div>
     <div id="listaCanales">Cargando...</div>
     <input type="time" id="hora">
-    <button class="btn-send" id="btnMain" onclick="enviarAlServer()">PUBLICAR EN LA TELE</button>
-    <div id="log">Listo</div>
+    <button class="btn-send" id="btnMain" onclick="preparar()">PREPARAR PUBLICACIÓN</button>
+    
+    <textarea id="resultado" readonly></textarea>
+    <a id="linkGithub" class="btn-github" target="_blank">PASO 2: PEGAR EN GITHUB</a>
+    
+    <p id="instrucciones" style="font-size: 12px; color: #aaa; margin-top: 15px; display: none;">
+        Copia el código de arriba, pulsa el botón blanco y pégalo sustituyendo todo el contenido.
+    </p>
 </div>
 
 <script>
-    // --- IMPORTANTE: DIVIDE TU TOKEN NUEVO EN 4 PARTES ---
-    // (Divide el ghp_... en 4 trozos para máxima seguridad)
-    const p1 = "ghp_0aEYRw91"; 
-    const p2 = "j36ksNyBZN4H";
-    const p3 = "EabN9UwKbJ3G";
-    const p4 = "zzAF";
-    
     const USER = "eltikitaka";
     const REPO = "nwakalo";
     const FILE = "eventos.json";
@@ -65,67 +65,32 @@
         });
     });
 
-    async function enviarAlServer() {
+    function preparar() {
         if(!e1 || !e2 || !can) return alert("Selecciona equipos y canal");
-        const log = document.getElementById('log');
-        const btn = document.getElementById('btnMain');
-        const tokenFinal = (p1 + p2 + p3 + p4).trim();
+        
+        const nuevo = {
+            hora: document.getElementById('hora').value || "00:00",
+            e1: e1.n, logo1: e1.f, e2: e2.n, logo2: e2.f,
+            canal: can.nombre, links: can.opciones
+        };
 
-        log.style.color = "orange";
-        log.innerText = "🛰️ Conectando...";
-        btn.disabled = true;
+        const final = [nuevo]; // Si quieres añadir varios, pega aquí el contenido actual
+        
+        const txt = document.getElementById('resultado');
+        const btnGit = document.getElementById('linkGithub');
+        const inst = document.getElementById('instrucciones');
 
-        try {
-            const url = `https://github.com{USER}/${REPO}/contents/${FILE}`;
-            
-            // 1. Obtener contenido actual
-            const res = await fetch(url, {
-                method: 'GET',
-                headers: { 
-                    'Authorization': `token ${tokenFinal}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-
-            if (!res.ok) throw new Error(`Lectura fallida: ${res.status}`);
-            
-            const data = await res.json();
-            let listaActual = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-
-            // 2. Añadir nuevo partido
-            listaActual.push({
-                hora: document.getElementById('hora').value || "00:00",
-                e1: e1.n, logo1: e1.f, e2: e2.n, logo2: e2.f,
-                canal: can.nombre, links: can.opciones
-            });
-
-            // 3. Subir cambios
-            const resPut = await fetch(url, {
-                method: "PUT",
-                headers: { 
-                    "Authorization": `token ${tokenFinal}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: `Partidazo: ${e1.n} vs ${e2.n}`,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2)))),
-                    sha: data.sha
-                })
-            });
-
-            if (resPut.ok) {
-                log.style.color = "#00e676";
-                log.innerText = "✅ PUBLICADO CON ÉXITO";
-                setTimeout(() => location.reload(), 1500);
-            } else {
-                throw new Error(`Escritura fallida: ${resPut.status}`);
-            }
-
-        } catch (e) {
-            log.style.color = "#ff5252";
-            log.innerText = "❌ " + e.message;
-            btn.disabled = false;
-        }
+        txt.value = JSON.stringify(final, null, 2);
+        txt.style.display = "block";
+        
+        btnGit.href = `https://github.com{USER}/${REPO}/edit/main/${FILE}`;
+        btnGit.style.display = "block";
+        inst.style.display = "block";
+        
+        // Copiar automáticamente al portapapeles
+        txt.select();
+        document.execCommand('copy');
+        alert("¡Código copiado al portapapeles! Ahora pulsa el botón blanco.");
     }
 </script>
 </body>
