@@ -22,8 +22,13 @@
     "Alaves": "ala.png"
   },
   "canales": {
-    "DAZN LaLiga": "ID_AQUÍ",
-    "M+ LaLiga TV": "ID_AQUÍ",
-    "M+ Campeones": "ID_AQUÍ"
+    "DAZN LaLiga": {
+        "nombre": "Dazn la Liga",
+        "ids": ["dda5d2cace9bc4cb0918e62bc50d657d4a10496a", "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05", "71cb5e2567a8b39f5bdc4fa791992781b052f0bc"]
+    },
+    "M+ LaLiga TV": {
+        "nombre": "Movistar la Liga",
+        "ids": ["31c19ffb3472c289c5bbbbc174449c8ed0d19e38", "b3bdd6ef7f795c4f321a3ce5cf4907338f462929", "af468a318ad209b29a042a9080b519c6b40cec79"]
+    }
   }
 }
