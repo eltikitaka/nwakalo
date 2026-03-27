@@ -26,13 +26,12 @@
     <div id="listaEquipos" class="grid"></div>
     <div id="listaCanales">Cargando...</div>
     <input type="time" id="hora">
-    <button class="btn-send" id="btnMain" onclick="enviarAlServer()">PUBLICAR EN LA TELE</button>
-    <div id="log">Sistema listo</div>
+    <button class="btn-send" onclick="enviarAlServer()">PUBLICAR EN LA TELE</button>
+    <div id="log">Listo</div>
 </div>
 
 <script>
-    // --- CONFIGURACIÓN ---
-    // Divide tu NUEVO token ghp_... en 3 partes
+    // --- IMPORTANTE: DIVIDE TU NUEVO TOKEN EN 3 PARTES ---
     const p1 = "ghp_0DvMWnM6E"; 
     const p2 = "cheVTSZpYKsX7";
     const p3 = "mRx1oOTc27YGWA";
@@ -40,11 +39,11 @@
     const USER = "eltikitaka";
     const REPO = "nwakalo";
     const FILE = "eventos.json";
-    // --------------------
 
     let e1 = null, e2 = null, can = null;
     const EQUIPOS = [{n:"Real Madrid CF",f:"rmadrid.png"},{n:"FC Barcelona",f:"fcb.png"},{n:"Atlético de Madrid",f:"atm.png"},{n:"Athletic Club",f:"ath.png"},{n:"Villarreal CF",f:"vil.png"},{n:"Real Sociedad",f:"rsoc.png"},{n:"Real Betis",f:"bet.png"},{n:"Valencia CF",f:"vcf.png"},{n:"Girona FC",f:"gir.png"},{n:"RC Celta",f:"cel.png"},{n:"Sevilla FC",f:"sev.png"},{n:"RCD Espanyol",f:"esp.png"},{n:"Rayo Vallecano",f:"ray.png"},{n:"CA Osasuna",f:"osa.png"},{n:"Elche CF",f:"elc.png"},{n:"Levante UD",f:"lev.png"},{n:"RCD Mallorca",f:"mal.png"},{n:"Getafe CF",f:"get.png"},{n:"Real Oviedo",f:"ovi.png"},{n:"Alaves",f:"ala.png"}];
 
+    // Cargar equipos
     const contEq = document.getElementById('listaEquipos');
     EQUIPOS.forEach(eq => {
         const div = document.createElement('div');
@@ -55,6 +54,7 @@
         contEq.appendChild(div);
     });
 
+    // Cargar canales
     fetch('canales.json?t='+Date.now()).then(r => r.json()).then(data => {
         const divCan = document.getElementById('listaCanales');
         divCan.innerHTML = "";
@@ -66,27 +66,22 @@
     });
 
     async function enviarAlServer() {
-        if(!e1 || !e2 || !can) return alert("Selecciona equipos y canal");
+        if(!e1 || !e2 || !can) return alert("Selecciona datos");
         const log = document.getElementById('log');
-        const btn = document.getElementById('btnMain');
-        const tokenFinal = (p1 + p2 + p3).trim();
-
         log.style.color = "orange";
         log.innerText = "🛰️ Enviando...";
-        btn.disabled = true;
+
+        const tokenFinal = (p1 + p2 + p3).trim();
 
         try {
-            // 1. Obtener SHA del archivo
+            // 1. Obtener el archivo eventos.json
             const url = `https://github.com{USER}/${REPO}/contents/${FILE}`;
             const res = await fetch(url, {
-                headers: { "Authorization": `Bearer ${tokenFinal}` }
+                headers: { "Authorization": `token ${tokenFinal}` }
             });
 
-            if (res.status === 401) throw new Error("TOKEN NO VÁLIDO (401)");
-            if (res.status === 404) throw new Error("ARCHIVO NO ENCONTRADO (404)");
-
+            if (!res.ok) throw new Error("Error leyendo el archivo");
             const data = await res.json();
-            const sha = data.sha;
             
             // 2. Preparar el nuevo contenido
             let listaActual = JSON.parse(decodeURIComponent(escape(atob(data.content))));
@@ -96,33 +91,29 @@
                 canal: can.nombre, links: can.opciones
             });
 
-            // 3. Subir cambios
+            // 3. Guardar cambios en GitHub
             const resPut = await fetch(url, {
                 method: "PUT",
                 headers: { 
-                    "Authorization": `Bearer ${tokenFinal}`,
+                    "Authorization": `token ${tokenFinal}`,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    message: `Añadido: ${e1.n} vs ${e2.n}`,
+                    message: "Nuevo partido",
                     content: btoa(unescape(encodeURIComponent(JSON.stringify(listaActual, null, 2)))),
-                    sha: sha
+                    sha: data.sha
                 })
             });
 
-            if (resPut.ok) {
+            if(resPut.ok) {
                 log.style.color = "#00e676";
                 log.innerText = "✅ PUBLICADO CON ÉXITO";
                 setTimeout(() => location.reload(), 1500);
-            } else {
-                const errData = await resPut.json();
-                throw new Error(errData.message);
-            }
+            } else { throw new Error("Fallo al guardar"); }
 
-        } catch (e) {
-            log.style.color = "#ff5252";
-            log.innerText = "❌ ERROR: " + e.message;
-            btn.disabled = false;
+        } catch(e) { 
+            log.style.color = "red";
+            log.innerText = "❌ ERROR: " + e.message; 
         }
     }
 </script>
