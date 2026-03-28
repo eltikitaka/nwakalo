@@ -2,51 +2,51 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mando NWAKALO - Generador Masivo</title>
+    <title>Generador Masivo NWAKALO</title>
     <style>
-        body { background: #121212; color: #fff; font-family: sans-serif; padding: 20px; max-width: 1000px; margin: auto; }
+        body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1200px; margin: auto; }
         .seccion { background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 250px; overflow-y: auto; padding: 10px; background: #111; border-radius: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 400px; overflow-y: auto; padding: 10px; background: #111; border-radius: 8px; }
         
-        button { background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 11px; }
-        .btn-liga { padding: 15px; font-weight: bold; border-color: #00ff88; flex: 1; }
+        button { background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 11px; transition: 0.2s; }
+        .btn-liga { padding: 15px; font-weight: bold; border-color: #00ff88; flex: 1; font-size: 14px; }
         
-        /* Colores solicitados */
-        button.local { background: #007bff !important; border-color: #fff; } /* AZUL */
-        button.visita { background: #dc3545 !important; border-color: #fff; } /* ROJO */
-        button.canal-sel { background: #00ff88 !important; color: #000; font-weight: bold; }
+        /* Colores de Selección */
+        button.local { background: #007bff !important; border-color: #fff; box-shadow: 0 0 10px #007bff; transform: scale(1.05); } /* AZUL */
+        button.visita { background: #dc3545 !important; border-color: #fff; box-shadow: 0 0 10px #dc3545; transform: scale(1.05); } /* ROJO */
+        button.canal-sel { background: #00ff88 !important; color: #000; font-weight: bold; border-color: #fff; }
 
-        .lista-partidos { background: #000; border-left: 4px solid #00ff88; padding: 10px; margin-top: 10px; font-size: 13px; }
-        .partido-item { border-bottom: 1px solid #333; padding: 5px; display: flex; justify-content: space-between; }
+        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; white-space: pre-wrap; border: 1px solid #444; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        input { background: #000; color: #fff; border: 1px solid #444; padding: 8px; border-radius: 4px; width: 100px; text-align: center; font-size: 16px; color: #00ff88; }
+        img { height: 35px; display: block; margin: 0 auto 5px; object-fit: contain; }
+        h3 { color: #00ff88; margin: 0 0 10px 0; font-size: 1rem; text-transform: uppercase; }
         
-        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; border: 1px solid #444; font-size: 11px; max-height: 300px; overflow-y: auto; }
-        input { background: #000; color: #fff; border: 1px solid #444; padding: 8px; border-radius: 4px; width: 80px; }
-        img { height: 25px; display: block; margin: 0 auto 5px; }
-        h3 { color: #00ff88; margin: 0 0 10px 0; font-size: 1rem; }
+        .cola-item { background: #252525; padding: 10px; margin-bottom: 8px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00ff88; }
+        .btn-borrar { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; font-size: 10px; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:#00ff88;">GENERADOR DE EVENTOS.JSON</h2>
+    <h2 style="text-align:center; color:#00ff88; letter-spacing: 2px;">CONSTRUCTOR DE EVENTOS.JSON</h2>
 
-    <div class="row" style="display: flex; gap: 15px;">
-        <!-- LADO IZQUIERDO: SELECTORES -->
+    <div style="display: flex; gap: 20px;">
+        <!-- PANEL IZQUIERDO: SELECCIÓN -->
         <div style="flex: 2;">
             <div class="seccion">
-                <h3>1. Deporte</h3>
+                <h3>1. Elegir Deporte / Liga</h3>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn-liga" onclick="cargarLiga('laligaespana')">LIGA ESPAÑOLA</button>
                     <button class="btn-liga" onclick="cargarLiga('premierleague')">PREMIER LEAGUE</button>
                 </div>
-                <div id="listaEquipos" class="grid" style="margin-top:10px;"></div>
+                <div id="listaEquipos" class="grid" style="margin-top:15px;"></div>
             </div>
 
-            <div class="seccion" style="display: flex; gap: 20px;">
+            <div class="seccion" style="display: flex; gap: 20px; align-items: center;">
                 <div style="flex: 1;">
-                    <h3>2. Canal</h3>
-                    <div id="listaCanales" style="display: flex; gap: 5px;">
-                        <button onclick="setCanal('Movistar la Liga', 'm-laliga', this)">M. LaLiga</button>
-                        <button onclick="setCanal('Dazn la Liga', 'd-laliga', this)">Dazn LaLiga</button>
+                    <h3>2. Canal Acestream</h3>
+                    <div id="listaCanales" style="display: flex; gap: 10px;">
+                        <button onclick="setCanal('Movistar la Liga', 'm-laliga', this)">Movistar la Liga</button>
+                        <button onclick="setCanal('Dazn la Liga', 'd-laliga', this)">Dazn la Liga</button>
                     </div>
                 </div>
                 <div>
@@ -55,117 +55,131 @@
                 </div>
             </div>
 
-            <button onclick="añadirPartido()" style="width:100%; background:#007bff; color:#fff; font-weight:bold; padding:15px; border:none; border-radius:10px;">+ AÑADIR PARTIDO A LA LISTA</button>
+            <button onclick="añadirPartidoALista()" style="width:100%; background:#00ff88; color:#000; font-weight:bold; padding:20px; border:none; border-radius:10px; cursor:pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,255,136,0.3);">+ AÑADIR PARTIDO AL LISTADO</button>
         </div>
 
-        <!-- LADO DERECHO: LISTA Y CÓDIGO -->
+        <!-- PANEL DERECHO: VISTA PREVIA Y JSON -->
         <div style="flex: 1.5;">
             <div class="seccion">
-                <h3>Partidos en Cola</h3>
-                <div id="colaPartidos" class="lista-partidos">No hay partidos añadidos</div>
-                <button onclick="limpiarTodo()" style="background:#444; width:100%; margin-top:5px; font-size:10px;">Borrar Lista</button>
+                <h3>Partidos en esta sesión</h3>
+                <div id="colaPartidos" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px;">
+                    <p style="color:#666; font-style:italic;">No hay partidos añadidos aún...</p>
+                </div>
+                <button onclick="limpiarLista()" style="background:#444; width:100%; font-size:10px; color:#ccc; border:none; padding:5px;">Limpiar Todo</button>
             </div>
 
             <div class="seccion">
-                <h3>Código Final (eventos.json)</h3>
-                <div id="codigoFinal" class="preview">[]</div>
-                <button onclick="copiar()" style="width:100%; margin-top:10px; background:#00ff88; color:#000; font-weight:bold; padding:10px;">COPIAR TODO EL JSON</button>
+                <h3>Código Final para eventos.json</h3>
+                <div id="codigoPreview" class="preview">[]</div>
+                <button onclick="copiarAlPortapapeles()" style="width:100%; margin-top:15px; background:#fff; color:#000; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer; font-size: 1rem;">COPIAR TODO EL JSON</button>
             </div>
         </div>
     </div>
 
 <script>
-    const canalesData = {
+    // Canales con sus hashes oficiales de Acestream
+    const canalesHashes = {
         'm-laliga': ["31c19ffb3472c289c5bbbbc174449c8ed0d19e38", "b3bdd6ef7f795c4f321a3ce5cf4907338f462929", "af468a318ad209b29a042a9080b519c6b40cec79"],
         'd-laliga': ["dda5d2cace9bc4cb0918e62bc50d657d4a10496a", "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05", "71cb5e2567a8b39f5bdc4fa791992781b052f0bc"]
     };
 
-    const equipos = {
+    // Equipos sincronizados con tus carpetas y nombres de archivo
+    const equiposDB = {
         laligaespana: [
-            {n:"Alavés", a:"ala.png"}, {n:"Athletic", a:"ath.png"}, {n:"Atlético", a:"atm.png"}, {n:"Barcelona", a:"bar.png"}, {n:"Betis", a:"bet.png"}, {n:"Celta", a:"cel.png"}, {n:"Espanyol", a:"esp.png"}, {n:"Getafe", a:"get.png"}, {n:"Girona", a:"gir.png"}, {n:"Las Palmas", a:"lpa.png"}, {n:"Leganés", a:"leg.png"}, {n:"Mallorca", a:"mal.png"}, {n:"Osasuna", a:"osa.png"}, {n:"Rayo", a:"ray.png"}, {n:"Real Madrid", a:"rma.png"}, {n:"Real Sociedad", a:"rso.png"}, {n:"Sevilla", a:"sev.png"}, {n:"Valencia", a:"val.png"}, {n:"Valladolid", a:"vld.png"}, {n:"Villarreal", a:"vil.png"}
+            {n:"Alavés", a:"ala.png"}, {n:"Athletic Club", a:"ath.png"}, {n:"Atlético Madrid", a:"atm.png"}, {n:"FC Barcelona", a:"fcb.png"}, {n:"Real Betis", a:"bet.png"}, {n:"Celta de Vigo", a:"cel.png"}, {n:"Elche CF", a:"elc.png"}, {n:"RCD Espanyol", a:"esp.png"}, {n:"Getafe CF", a:"get.png"}, {n:"Girona FC", a:"gir.png"}, {n:"Levante UD", a:"lev.png"}, {n:"RCD Mallorca", a:"mal.png"}, {n:"CA Osasuna", a:"osa.png"}, {n:"Rayo Vallecano", a:"ray.png"}, {n:"Real Madrid", a:"rmadrid.png"}, {n:"Real Sociedad", a:"rsoc.png"}, {n:"Sevilla FC", a:"sev.png"}, {n:"Valencia CF", a:"val.png"}, {n:"Real Valladolid", a:"vld.png"}, {n:"Villarreal CF", a:"vil.png"}
         ],
         premierleague: [
-            {n:"Bournemouth", a:"bou.png"}, {n:"Arsenal", a:"ars.png"}, {n:"Aston Villa", a:"av.png"}, {n:"Brentford", a:"bre.png"}, {n:"Brighton", a:"bri.png"}, {n:"Burnley", a:"bur.png"}, {n:"Chelsea", a:"che.png"}, {n:"Crystal Palace", a:"cri.png"}, {n:"Everton", a:"eve.png"}, {n:"Fulham", a:"ful.png"}, {n:"Leeds", a:"lee.png"}, {n:"Liverpool", a:"liv.png"}, {n:"Man City", a:"manc.png"}, {n:"Man Utd", a:"manu.png"}, {n:"Newcastle", a:"new.png"}, {n:"Nottingham", a:"not.png"}, {n:"Sunderland", a:"sun.png"}, {n:"Tottenham", a:"tot.png"}, {n:"West Ham", a:"whu.png"}, {n:"Wolves", a:"wol.png"}
+            {n:"Arsenal FC", a:"ars.png"}, {n:"Aston Villa", a:"av.png"}, {n:"Bournemouth", a:"bou.png"}, {n:"Brentford FC", a:"bre.png"}, {n:"Brighton", a:"bri.png"}, {n:"Burnley FC", a:"bur.png"}, {n:"Chelsea FC", a:"che.png"}, {n:"Crystal Palace", a:"cri.png"}, {n:"Everton FC", a:"eve.png"}, {n:"Fulham FC", a:"ful.png"}, {n:"Leeds United", a:"lee.png"}, {n:"Liverpool FC", a:"liv.png"}, {n:"Man City", a:"manc.png"}, {n:"Man Utd", a:"manu.png"}, {n:"Newcastle Utd", a:"new.png"}, {n:"Nottingham", a:"not.png"}, {n:"Sunderland", a:"sun.png"}, {n:"Tottenham", a:"tot.png"}, {n:"West Ham", a:"whu.png"}, {n:"Wolverhampton", a:"wol.png"}
         ]
     };
 
     let pTemp = { e1: "", l1: "", e2: "", l2: "", c: "", links: [] };
-    let listaFinal = [];
+    let listaEventos = [];
 
     function cargarLiga(liga) {
         const lista = document.getElementById('listaEquipos');
         lista.innerHTML = '';
-        equipos[liga].forEach(e => {
+        equiposDB[liga].forEach(equipo => {
             const btn = document.createElement('button');
-            btn.innerHTML = `<img src="assets/equipos/${liga}/${e.a}">${e.n}`;
-            btn.onclick = () => selEquipo(e.n, e.a, btn);
+            btn.innerHTML = `<img src="assets/equipos/${liga}/${equipo.a}">${equipo.n}`;
+            btn.onclick = () => seleccionar(equipo.n, equipo.a, btn);
             lista.appendChild(btn);
         });
     }
 
-    function selEquipo(n, a, el) {
+    function seleccionar(nombre, archivo, elemento) {
         if (!pTemp.e1 || (pTemp.e1 && pTemp.e2)) {
-            pTemp.e1 = n; pTemp.l1 = a; pTemp.e2 = ""; 
-            document.querySelectorAll('#listaEquipos button').forEach(b => b.classList.remove('local', 'visita'));
-            el.className = 'local';
+            // Primer click: Local (Azul)
+            pTemp.e1 = nombre; pTemp.l1 = archivo; pTemp.e2 = ""; 
+            document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
+            elemento.className = 'local';
         } else {
-            pTemp.e2 = n; pTemp.l2 = a;
-            el.className = 'visita';
+            // Segundo click: Visitante (Rojo)
+            pTemp.e2 = nombre; pTemp.l2 = archivo;
+            elemento.className = 'visita';
         }
     }
 
-    function setCanal(nom, key, el) {
-        pTemp.c = nom; pTemp.links = canalesData[key];
+    function setCanal(nombre, key, elemento) {
+        pTemp.c = nombre; pTemp.links = canalesHashes[key];
         document.querySelectorAll('#listaCanales button').forEach(b => b.classList.remove('canal-sel'));
-        el.className = 'canal-sel';
+        elemento.className = 'canal-sel';
     }
 
-    function añadirPartido() {
+    function añadirPartidoALista() {
+        if (!pTemp.e1 || !pTemp.e2 || !pTemp.c) return alert("Error: Selecciona Local, Visitante y Canal.");
         const h = document.getElementById('hora').value;
-        if (!pTemp.e1 || !pTemp.e2 || !pTemp.c) return alert("Faltan datos");
-
-        const nuevoPartido = {
-            hora: h, e1: pTemp.e1, logo1: pTemp.l1,
+        
+        listaEventos.push({
+            hora: h,
+            e1: pTemp.e1, logo1: pTemp.l1,
             e2: pTemp.e2, logo2: pTemp.l2,
             canal: pTemp.c, links: pTemp.links
-        };
+        });
 
-        listaFinal.push(nuevoPartido);
-        actualizarVista();
-        
-        // Reset temporal para el siguiente partido
-        pTemp = { e1: "", l1: "", e2: "", l2: "", c: pTemp.c, links: pTemp.links };
-        document.querySelectorAll('#listaEquipos button').forEach(b => b.classList.remove('local', 'visita'));
+        // Limpiar selección de equipos para el siguiente partido
+        pTemp.e1 = ""; pTemp.e2 = "";
+        document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
+        actualizarInterfaz();
     }
 
-    function actualizarVista() {
+    function actualizarInterfaz() {
         const cola = document.getElementById('colaPartidos');
-        const preview = document.getElementById('codigoFinal');
+        const preview = document.getElementById('codigoPreview');
         
-        cola.innerHTML = listaFinal.map((p, i) => `
-            <div class="partido-item">
-                <span><b>${p.hora}</b> ${p.e1} vs ${p.e2}</span>
-                <button onclick="borrarUno(${i})" style="padding:2px 5px; background:red; border:none;">X</button>
+        if (listaEventos.length === 0) {
+            cola.innerHTML = '<p style="color:#666; font-style:italic;">No hay partidos añadidos aún...</p>';
+            preview.innerText = "[]";
+            return;
+        }
+
+        cola.innerHTML = listaEventos.map((partido, index) => `
+            <div class="cola-item">
+                <span><b>${partido.hora}</b> | ${partido.e1} vs ${partido.e2}</span>
+                <button class="btn-borrar" onclick="eliminarUno(${index})">BORRAR</button>
             </div>
         `).join('');
 
-        preview.innerText = JSON.stringify(listaFinal, null, 2);
+        preview.innerText = JSON.stringify(listaEventos, null, 2);
     }
 
-    function borrarUno(index) {
-        listaFinal.splice(index, 1);
-        actualizarVista();
+    function eliminarUno(index) {
+        listaEventos.splice(index, 1);
+        actualizarInterfaz();
     }
 
-    function limpiarTodo() {
-        listaFinal = [];
-        actualizarVista();
-        document.getElementById('codigoFinal').innerText = "[]";
+    function limpiarLista() {
+        if(confirm("¿Borrar todos los partidos?")) {
+            listaEventos = [];
+            actualizarInterfaz();
+        }
     }
 
-    function copiar() {
-        navigator.clipboard.writeText(document.getElementById('codigoFinal').innerText);
-        alert("¡Todo el JSON copiado!");
+    function copiarAlPortapapeles() {
+        const cod = document.getElementById('codigoPreview').innerText;
+        navigator.clipboard.writeText(cod).then(() => {
+            alert("¡JSON Completo copiado! Pégalo en tu archivo eventos.json");
+        });
     }
 </script>
 </body>
