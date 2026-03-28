@@ -1,19 +1,15 @@
 [
-  {
-    "fecha": "2026-03-28",
-    "hora": "21:15",
-    "e1": "Carrera Sprint",
-    "logo1": "motogp.png",
-    "e2": "Evento",
-    "logo2": "motogp.png",
-    "canal": "DAZN 2",
-    "links": [
-      "b0eabe0fdd02fdd165896236765a9b753a2ff516",
-      "c93a0d4914713db942fbb210bac467b0224c63a6",
-      "01ce89b571b6c89bc19ccaafc913d483ac65c61d",
-      "fb2dd566824658eeab27aae19a01c09430f1a97d",
-      "8b081c8afbd9beafc8c5fbf0115eb36eadb07a35"
-    ],
-    "liga": "MotoGP"
-  }
+{
+"fecha": "2026-03-28",
+"hora": "21:00",
+"e1": "GP EEUU",
+"logo1": "deporte/MotoGP.png",
+"e2": "Carrera Sprint",
+"logo2": "deporte/MotoGP.png",
+"canal": "DAZN 1",
+"canalLogo": "dazn_1.png",
+"links": [
+"acestream://c53bdb3be55d12c5188d25085f1bb16911c15cea"
+]
+}
 ]
