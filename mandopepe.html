@@ -2,93 +2,68 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mando Pepe - Directo</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
+    <title>Mando NWAKALO</title>
     <style>
-        body { background-color: #121212; color: white; padding: 20px; }
-        .btn-liga { 
-            background: #1e1e1e; border: 2px solid #333; color: white; 
-            padding: 15px; border-radius: 10px; width: 100%; transition: 0.2s;
-        }
-        .btn-liga:hover { border-color: #00ff88; background: #252525; }
-        .btn-equipo { 
-            background: #2a2a2a; border: none; color: white; padding: 10px; 
-            border-radius: 8px; width: 100%; font-size: 0.85rem; transition: 0.2s;
-        }
-        .btn-equipo:hover { background: #00ff88; color: black; font-weight: bold; }
-        .img-icon { height: 40px; margin-bottom: 8px; object-fit: contain; }
-        .grid-equipos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 20px; }
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        button { background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #00ff88; color: #000; }
+        .btn-equipo { background: #111; padding: 10px; font-size: 13px; border-radius: 5px; }
+        .equipos-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+        img { height: 35px; vertical-align: middle; margin-right: 5px; }
         .hidden { display: none; }
+        #btnVolver { background: #ff4444; width: 100%; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container text-center">
-    <h3 class="mb-4 text-success">MANDO NWAKALO</h3>
+    <h2 id="titulo">MANDO PEPE</h2>
 
-    <!-- SELECTOR DE COMPETICIÓN (Iconos en assets/deporte/) -->
-    <div id="menuLigas" class="row g-3">
-        <div class="col-6">
-            <button class="btn-liga" onclick="cargar('laligaespana')">
-                <img src="assets/deporte/1.png" class="img-icon" alt="Liga"><br>LA LIGA
-            </button>
-        </div>
-        <div class="col-6">
-            <button class="btn-liga" onclick="cargar('premierleague')">
-                <img src="assets/deporte/2.png" class="img-icon" alt="Premier"><br>PREMIER
-            </button>
-        </div>
+    <!-- Selector de Ligas -->
+    <div id="selectorLigas" class="grid">
+        <button onclick="cargar('laligaespana')">
+            <img src="assets/deporte/1.png" onerror="this.style.display='none'"><br>ESPAÑA
+        </button>
+        <button onclick="cargar('premierleague')">
+            <img src="assets/deporte/2.png" onerror="this.style.display='none'"><br>PREMIER
+        </button>
     </div>
 
-    <!-- LISTADO DE EQUIPOS (Se llena al hacer clic arriba) -->
-    <div id="seccionEquipos" class="hidden">
-        <hr>
-        <button class="btn btn-sm btn-outline-danger mb-3" onclick="regresar()">← Cambiar Liga</button>
-        <div id="listaEquipos" class="grid-equipos"></div>
+    <!-- Panel de Equipos -->
+    <div id="panelEquipos" class="hidden">
+        <button id="btnVolver" onclick="volver()">← VOLVER</button>
+        <div id="listaEquipos" class="equipos-container"></div>
     </div>
-</div>
 
 <script>
-    const equipos = {
+    const db = {
         laligaespana: [
-            {n: "Alavés", a: "ala.png"}, {n: "Athletic", a: "ath.png"}, {n: "Atlético", a: "atm.png"},
-            {n: "Barcelona", a: "bar.png"}, {n: "Betis", a: "bet.png"}, {n: "Celta", a: "cel.png"},
-            {n: "Espanyol", a: "esp.png"}, {n: "Getafe", a: "get.png"}, {n: "Girona", a: "gir.png"},
-            {n: "Las Palmas", a: "lpa.png"}, {n: "Leganés", a: "leg.png"}, {n: "Mallorca", a: "mal.png"},
-            {n: "Osasuna", a: "osa.png"}, {n: "Rayo", a: "ray.png"}, {n: "Real Madrid", a: "rma.png"},
-            {n: "Real Sociedad", a: "rso.png"}, {n: "Sevilla", a: "sev.png"}, {n: "Valencia", a: "val.png"},
-            {n: "Valladolid", a: "vld.png"}, {n: "Villarreal", a: "vil.png"}
+            {n:"Alavés", a:"ala.png"}, {n:"Athletic", a:"ath.png"}, {n:"Atlético", a:"atm.png"}, {n:"Barcelona", a:"bar.png"}, {n:"Betis", a:"bet.png"}, {n:"Celta", a:"cel.png"}, {n:"Espanyol", a:"esp.png"}, {n:"Getafe", a:"get.png"}, {n:"Girona", a:"gir.png"}, {n:"Las Palmas", a:"lpa.png"}, {n:"Leganés", a:"leg.png"}, {n:"Mallorca", a:"mal.png"}, {n:"Osasuna", a:"osa.png"}, {n:"Rayo", a:"ray.png"}, {n:"Real Madrid", a:"rma.png"}, {n:"Real Sociedad", a:"rso.png"}, {n:"Sevilla", a:"sev.png"}, {n:"Valencia", a:"val.png"}, {n:"Valladolid", a:"vld.png"}, {n:"Villarreal", a:"vil.png"}
         ],
         premierleague: [
-            {n: "Bournemouth", a: "bou.png"}, {n: "Arsenal", a: "ars.png"}, {n: "Aston Villa", a: "av.png"},
-            {n: "Brentford", a: "bre.png"}, {n: "Brighton", a: "bri.png"}, {n: "Burnley", a: "bur.png"},
-            {n: "Chelsea", a: "che.png"}, {n: "Crystal Palace", a: "cri.png"}, {n: "Everton", a: "eve.png"},
-            {n: "Fulham", a: "ful.png"}, {n: "Leeds", a: "lee.png"}, {n: "Liverpool", a: "liv.png"},
-            {n: "Man. City", a: "manc.png"}, {n: "Man. Utd", a: "manu.png"}, {n: "Newcastle", a: "new.png"},
-            {n: "Nottingham", a: "not.png"}, {n: "Sunderland", a: "sun.png"}, {n: "Tottenham", a: "tot.png"},
-            {n: "West Ham", a: "whu.png"}, {n: "Wolves", a: "wol.png"}
+            {n:"Bournemouth", a:"bou.png"}, {n:"Arsenal", a:"ars.png"}, {n:"Aston Villa", a:"av.png"}, {n:"Brentford", a:"bre.png"}, {n:"Brighton", a:"bri.png"}, {n:"Burnley", a:"bur.png"}, {n:"Chelsea", a:"che.png"}, {n:"Crystal Palace", a:"cri.png"}, {n:"Everton", a:"eve.png"}, {n:"Fulham", a:"ful.png"}, {n:"Leeds", a:"lee.png"}, {n:"Liverpool", a:"liv.png"}, {n:"Man City", a:"manc.png"}, {n:"Man Utd", a:"manu.png"}, {n:"Newcastle", a:"new.png"}, {n:"Nottingham", a:"not.png"}, {n:"Sunderland", a:"sun.png"}, {n:"Tottenham", a:"tot.png"}, {n:"West Ham", a:"whu.png"}, {n:"Wolves", a:"wol.png"}
         ]
     };
 
     function cargar(liga) {
-        document.getElementById('menuLigas').classList.add('hidden');
-        document.getElementById('seccionEquipos').classList.remove('hidden');
+        document.getElementById('selectorLigas').classList.add('hidden');
+        document.getElementById('panelEquipos').classList.remove('hidden');
         const lista = document.getElementById('listaEquipos');
         lista.innerHTML = '';
-
-        equipos[liga].forEach(e => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-equipo';
+        
+        db[liga].forEach(e => {
+            const b = document.createElement('button');
+            b.className = 'btn-equipo';
             const ruta = `assets/equipos/${liga}/${e.a}`;
-            btn.onclick = () => alert("Seleccionado: " + e.n);
-            btn.innerHTML = `<img src="${ruta}" style="height:25px; margin-right:8px;"> ${e.n}`;
-            lista.appendChild(btn);
+            b.onclick = () => alert("Seleccionado: " + e.n);
+            b.innerHTML = `<img src="${ruta}" onerror="this.src='assets/equipos/placeholder.png'"> ${e.n}`;
+            lista.appendChild(b);
         });
     }
 
-    function regresar() {
-        document.getElementById('menuLigas').classList.remove('hidden');
-        document.getElementById('seccionEquipos').classList.add('hidden');
+    function volver() {
+        document.getElementById('selectorLigas').classList.remove('hidden');
+        document.getElementById('panelEquipos').classList.add('hidden');
     }
 </script>
 </body>
