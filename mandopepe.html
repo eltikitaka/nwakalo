@@ -2,139 +2,174 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador Masivo NWAKALO</title>
+    <title>GENERADOR MAESTRO NWAKALO</title>
     <style>
         body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1200px; margin: auto; }
         .seccion { background: #1e1e1e; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 400px; overflow-y: auto; padding: 10px; background: #111; border-radius: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 350px; overflow-y: auto; padding: 10px; background: #111; border-radius: 8px; }
+        
         button { background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; cursor: pointer; font-size: 11px; transition: 0.2s; }
-        .btn-liga { padding: 15px; font-weight: bold; border-color: #00ff88; flex: 1; font-size: 14px; }
-        button.local { background: #007bff !important; border-color: #fff; box-shadow: 0 0 10px #007bff; transform: scale(1.05); } /* AZUL */
-        button.visita { background: #dc3545 !important; border-color: #fff; box-shadow: 0 0 10px #dc3545; transform: scale(1.05); } /* ROJO */
-        button.canal-sel { background: #00ff88 !important; color: #000; font-weight: bold; border-color: #fff; }
-        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; white-space: pre-wrap; border: 1px solid #444; font-size: 12px; max-height: 400px; overflow-y: auto; }
-        input { background: #000; color: #fff; border: 1px solid #444; padding: 8px; border-radius: 4px; width: 100px; text-align: center; font-size: 16px; color: #00ff88; }
-        img { height: 35px; display: block; margin: 0 auto 5px; object-fit: contain; }
-        h3 { color: #00ff88; margin: 0 0 10px 0; font-size: 1rem; text-transform: uppercase; }
+        .btn-liga { padding: 10px; font-weight: bold; border-color: #00ff88; flex: 1; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 120px; }
+        .btn-liga img { height: 30px; }
+        
+        button.local { background: #007bff !important; border-color: #fff; box-shadow: 0 0 10px #007bff; }
+        button.visita { background: #dc3545 !important; border-color: #fff; box-shadow: 0 0 10px #dc3545; }
+        button.canal-sel, .btn-liga.active { background: #00ff88 !important; color: #000; font-weight: bold; border-color: #fff; }
+        
+        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; white-space: pre-wrap; font-size: 11px; max-height: 300px; overflow-y: auto; border: 1px solid #444; }
+        
+        /* Estilo para los inputs de Fecha y Hora */
+        .controles-tiempo { display: flex; gap: 15px; background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 10px; }
+        input { background: #1e1e1e; color: #00ff88; border: 1px solid #444; padding: 10px; border-radius: 5px; font-size: 14px; font-weight: bold; }
+        
+        #listaEquipos img { height: 35px; margin-bottom: 5px; }
         .cola-item { background: #252525; padding: 10px; margin-bottom: 8px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00ff88; font-size: 13px; }
+        .fecha-badge { background: #00ff88; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; margin-right: 10px; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:#00ff88;">CONSTRUCTOR DE EVENTOS.JSON</h2>
+    <h2 style="text-align:center; color:#00ff88;">CONSTRUCTOR NWAKALO - FECHA Y HORA</h2>
 
     <div style="display: flex; gap: 20px;">
-        <div style="flex: 2;">
+        <div style="flex: 2.2;">
             <div class="seccion">
-                <h3>1. Elegir Deporte / Liga</h3>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-liga" onclick="cargarLiga('laligaespana')">LIGA ESPAÑOLA</button>
-                    <button class="btn-liga" onclick="cargarLiga('premierleague')">PREMIER LEAGUE</button>
-                </div>
+                <h3>1. Competición y Equipos</h3>
+                <div id="listaLigas" style="display: flex; gap: 10px; flex-wrap: wrap;">Cargando base de datos...</div>
                 <div id="listaEquipos" class="grid" style="margin-top:15px;"></div>
             </div>
 
-            <div class="seccion" style="display: flex; gap: 20px; align-items: center;">
-                <div style="flex: 1;">
-                    <h3>2. Canal Acestream</h3>
-                    <div id="listaCanales" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <!-- Botones generados por JS -->
+            <div class="seccion">
+                <h3>2. Canal y Programación</h3>
+                <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+                    <div style="flex: 1;">
+                        <p style="font-size: 11px; color: #888; margin-bottom: 5px;">Selecciona Canal:</p>
+                        <div id="listaCanales" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
                     </div>
-                </div>
-                <div>
-                    <h3>3. Hora</h3>
-                    <input type="text" id="hora" value="21:00">
+                    <div class="controles-tiempo">
+                        <div>
+                            <label style="display:block; font-size:10px; color:#888;">FECHA:</label>
+                            <input type="date" id="fecha">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:10px; color:#888;">HORA:</label>
+                            <input type="time" id="hora" value="21:00">
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <button onclick="añadirPartidoALista()" style="width:100%; background:#00ff88; color:#000; font-weight:bold; padding:20px; border:none; border-radius:10px; cursor:pointer; font-size: 1.2rem;">+ AÑADIR PARTIDO AL LISTADO</button>
+            <button onclick="añadirEvento()" style="width:100%; background:#00ff88; color:#000; font-weight:bold; padding:20px; border:none; border-radius:10px; cursor:pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,255,136,0.2);">+ AÑADIR A LA LISTA FINAL</button>
         </div>
 
         <div style="flex: 1.5;">
             <div class="seccion">
-                <h3>Partidos en esta sesión</h3>
+                <h3>Eventos del JSON (Ordenados por tiempo)</h3>
                 <div id="colaPartidos" style="max-height: 250px; overflow-y: auto;"></div>
-                <button onclick="limpiarLista()" style="background:#444; width:100%; font-size:10px; color:#ccc; border:none; padding:5px; margin-top:5px;">Limpiar Todo</button>
+                <button onclick="limpiarLista()" style="background:#444; width:100%; font-size:10px; border:none; padding:5px; margin-top:5px; color:#ccc;">Limpiar Todo</button>
             </div>
             <div class="seccion">
-                <h3>Código Final para eventos.json</h3>
+                <h3>Código para eventos.json</h3>
                 <div id="codigoPreview" class="preview">[]</div>
-                <button onclick="copiarAlPortapapeles()" style="width:100%; margin-top:15px; background:#fff; color:#000; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">COPIAR TODO EL JSON</button>
+                <button onclick="copiar()" style="width:100%; margin-top:10px; background:#fff; color:#000; font-weight:bold; padding:12px; border:none; border-radius:8px; cursor:pointer;">COPIAR TODO EL JSON</button>
             </div>
         </div>
     </div>
 
 <script>
-    const canalesDB = {
-        "MOVISTAR_LA_LIGA": { nombre: "Movistar la Liga", opciones: ["31c19ffb3472c289c5bbbbc174449c8ed0d19e38", "b3bdd6ef7f795c4f321a3ce5cf4907338f462929", "d4ff041287a43e3114d411d671c4b4e92e21f33", "af458073c3096293a4dea9f369d4f308e7125bd6"] },
-        "DAZN_LA_LIGA": { nombre: "Dazn la Liga", opciones: ["dda5d2cace9bc4cb0918e62bc50d657d4a10496a", "8a25653a2f774f4ae1062d38a30dcd714d304a3a", "9c75f1d190c518cfe0f236415b8dccc1f676ef3b", "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05", "71cb5e2567a8b39f5bdc4fa791992781b052f0bc", "d1596a3988b84a4d2711fd380eb8a53256ad74ae", "19f28f60c908f987b1a03da078e63320d7bf29e8"] },
-        "DAZN_LA_LIGA_2": { nombre: "Dazn la Liga 2", opciones: ["635b61c1f240449163260cd914d10d886a54fee3"] },
-        "DAZN_1": { nombre: "DAZN 1", opciones: ["d5b2c6b940cf3df5e8f9dc6f000f0ea23a10b151", "0560234787945a17522e284c4c22bb4df29f33b0", "7ba1f321f4d0791b7ebd42f41a07c1cd1479e784", "9afc89481b721ce6c326c85e47148676077b8e62", "dddff67edfa7061f643ec5ae0be110169850363d", "a116ce3ff95c41c60e987e2b1aa247007f707884", "691739972eb3468cf16b25e84dafdeaa40dead6d"] },
-        "DAZN_2": { nombre: "DAZN 2", opciones: ["b0eabe0fdd02fdd165896236765a9b753a2ff516", "c93a0d4914713db942fbb210bac467b0224c63a6", "01ce89b571b6c89bc19ccaafc913d483ac65c61d", "fb2dd566824658eeab27aae19a01c09430f1a97d", "8b081c8afbd9beafc8c5fbf0115eb36eadb07a35"] },
-        "DAZN_3": { nombre: "DAZN 3", opciones: ["d1d9ec2361a6ac8edc0b2841866383768cc28df9", "98fba924421aa1e4bd28e74d74a2726d0459b594", "8a86cd6152154a25ad4b76523160552a40313b28", "d641cd0fca0f467b3130754a091e2f4d22e68eb1"] },
-        "DAZN_4": { nombre: "DAZN 4", opciones: ["7e90956539f4e1318a63f3960e4f75c7c7c5a3b8", "c21a2524a8de3e1e5b126f2677a3e993d9aa07c4", "c015d37d1ead8155b1e7b97e743a1fe9850f0af5", "7e27e46c25d4308d16098d9dc67fcd8736e8c1f0"] }
-    };
+    let BD = {};
+    let pTemp = { e1: "", l1: "", e2: "", l2: "", c: "", links: [], ligaId: "" };
+    let listaFinal = [];
 
-    const equiposDB = {
-        laligaespana: [
-            {n:"Alavés", a:"ala.png"}, {n:"Athletic Club", a:"ath.png"}, {n:"Atlético Madrid", a:"atm.png"}, {n:"FC Barcelona", a:"fcb.png"}, {n:"Real Betis", a:"bet.png"}, {n:"Celta de Vigo", a:"cel.png"}, {n:"Elche CF", a:"elc.png"}, {n:"RCD Espanyol", a:"esp.png"}, {n:"Getafe CF", a:"get.png"}, {n:"Girona FC", a:"gir.png"}, {n:"Levante UD", a:"lev.png"}, {n:"RCD Mallorca", a:"mal.png"}, {n:"CA Osasuna", a:"osa.png"}, {n:"Real Oviedo", a:"ovi.png"}, {n:"Rayo Vallecano", a:"ray.png"}, {n:"Real Madrid", a:"rmadrid.png"}, {n:"Real Sociedad", a:"rsoc.png"}, {n:"Sevilla FC", a:"sev.png"}, {n:"Valencia CF", a:"vcf.png"}, {n:"Villarreal CF", a:"vil.png"}
-        ],
-        premierleague: [
-            {n:"Arsenal FC", a:"ars.png"}, {n:"Aston Villa", a:"av.png"}, {n:"Bournemouth", a:"bou.png"}, {n:"Brentford FC", a:"bre.png"}, {n:"Brighton", a:"bri.png"}, {n:"Burnley FC", a:"bur.png"}, {n:"Chelsea FC", a:"che.png"}, {n:"Crystal Palace", a:"cri.png"}, {n:"Everton FC", a:"eve.png"}, {n:"Fulham FC", a:"ful.png"}, {n:"Leeds United", a:"lee.png"}, {n:"Liverpool FC", a:"liv.png"}, {n:"Man City", a:"manc.png"}, {n:"Man Utd", a:"manu.png"}, {n:"Newcastle Utd", a:"new.png"}, {n:"Nottingham", a:"not.png"}, {n:"Sunderland", a:"sun.png"}, {n:"Tottenham", a:"tot.png"}, {n:"West Ham", a:"whu.png"}, {n:"Wolverhampton", a:"wol.png"}
-        ]
-    };
+    // Establecer fecha de hoy por defecto
+    document.getElementById('fecha').valueAsDate = new Date();
 
-    let pTemp = { e1: "", l1: "", e2: "", l2: "", c: "", links: [] };
-    let listaEventos = [];
+    // CARGAR DATOS
+    fetch('base_datos.json')
+        .then(res => res.json())
+        .then(data => {
+            BD = data;
+            init();
+        })
+        .catch(err => {
+            document.getElementById('listaLigas').innerHTML = "<span style='color:red;'>Error al cargar base_datos.json. Súbelo a GitHub primero.</span>";
+        });
 
-    // Generar botones de canales al iniciar
-    function renderizarCanales() {
-        const contenedor = document.getElementById('listaCanales');
-        contenedor.innerHTML = '';
-        Object.keys(canalesDB).forEach(id => {
+    function init() {
+        renderLigas();
+        renderCanales();
+    }
+
+    function renderLigas() {
+        const div = document.getElementById('listaLigas');
+        div.innerHTML = '';
+        Object.keys(BD.ligas).forEach(nombre => {
             const btn = document.createElement('button');
-            btn.innerText = canalesDB[id].nombre;
-            btn.onclick = () => setCanal(canalesDB[id].nombre, canalesDB[id].opciones, btn);
-            contenedor.appendChild(btn);
+            btn.className = 'btn-liga';
+            btn.innerHTML = `<img src="assets/deporte/${BD.ligas[nombre].logo}"><span>${nombre}</span>`;
+            btn.onclick = () => {
+                document.querySelectorAll('.btn-liga').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                cargarEquipos(nombre);
+            };
+            div.appendChild(btn);
         });
     }
 
-    function cargarLiga(liga) {
-        const lista = document.getElementById('listaEquipos');
-        lista.innerHTML = '';
-        equiposDB[liga].forEach(equipo => {
+    function cargarEquipos(nombre) {
+        pTemp.ligaId = BD.ligas[nombre].id;
+        const grid = document.getElementById('listaEquipos');
+        grid.innerHTML = '';
+        BD.ligas[nombre].equipos.forEach(eq => {
             const btn = document.createElement('button');
-            btn.innerHTML = `<img src="assets/equipos/${liga}/${equipo.a}">${equipo.n}`;
-            btn.onclick = () => seleccionar(equipo.n, equipo.a, btn);
-            lista.appendChild(btn);
+            btn.innerHTML = `<img src="assets/equipos/${pTemp.ligaId}/${eq.a}"><br>${eq.n}`;
+            btn.onclick = () => {
+                if (!pTemp.e1 || (pTemp.e1 && pTemp.e2)) {
+                    pTemp.e1 = eq.n; pTemp.l1 = eq.a; pTemp.e2 = "";
+                    document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
+                    btn.className = 'local';
+                } else {
+                    pTemp.e2 = eq.n; pTemp.l2 = eq.a;
+                    btn.className = 'visita';
+                }
+            };
+            grid.appendChild(btn);
         });
     }
 
-    function seleccionar(nombre, archivo, elemento) {
-        if (!pTemp.e1 || (pTemp.e1 && pTemp.e2)) {
-            pTemp.e1 = nombre; pTemp.l1 = archivo; pTemp.e2 = ""; 
-            document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
-            elemento.className = 'local';
-        } else {
-            pTemp.e2 = nombre; pTemp.l2 = archivo;
-            elemento.className = 'visita';
-        }
+    function renderCanales() {
+        const div = document.getElementById('listaCanales');
+        Object.keys(BD.canales).forEach(id => {
+            const btn = document.createElement('button');
+            btn.innerText = BD.canales[id].nombre;
+            btn.onclick = () => {
+                pTemp.c = BD.canales[id].nombre;
+                pTemp.links = BD.canales[id].opciones;
+                document.querySelectorAll('#listaCanales button').forEach(b => b.classList.remove('canal-sel'));
+                btn.className = 'canal-sel';
+            };
+            div.appendChild(btn);
+        });
     }
 
-    function setCanal(nombre, links, elemento) {
-        pTemp.c = nombre; pTemp.links = links;
-        document.querySelectorAll('#listaCanales button').forEach(b => b.classList.remove('canal-sel'));
-        elemento.className = 'canal-sel';
-    }
+    function añadirEvento() {
+        const fechaVal = document.getElementById('fecha').value;
+        const horaVal = document.getElementById('hora').value;
+        
+        if(!pTemp.e1 || !pTemp.c || !fechaVal) return alert("Faltan datos (Equipos, Canal o Fecha)");
 
-    function añadirPartidoALista() {
-        if (!pTemp.e1 || !pTemp.e2 || !pTemp.c) return alert("Falta equipo o canal.");
-        listaEventos.push({
-            hora: document.getElementById('hora').value,
+        listaFinal.push({
+            fecha: fechaVal,
+            hora: horaVal,
             e1: pTemp.e1, logo1: pTemp.l1,
-            e2: pTemp.e2, logo2: pTemp.l2,
-            canal: pTemp.c, links: pTemp.links
+            e2: pTemp.e2 || "Evento", logo2: pTemp.l2 || pTemp.l1,
+            canal: pTemp.c, links: pTemp.links, liga: pTemp.ligaId
         });
+
+        // Ordenación cronológica total
+        listaFinal.sort((a,b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+        
+        // Reset selección equipos
         pTemp.e1 = ""; pTemp.e2 = "";
         document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
         actualizar();
@@ -143,32 +178,23 @@
     function actualizar() {
         const cola = document.getElementById('colaPartidos');
         cola.innerHTML = '';
-        listaEventos.forEach((ev, index) => {
+        listaFinal.forEach((ev, i) => {
+            const f = ev.fecha.split('-').reverse().join('/'); // Formato DD/MM/AAAA
             cola.innerHTML += `<div class="cola-item">
-                <span><b>${ev.hora}</b> | ${ev.e1} vs ${ev.e2} (${ev.canal})</span>
-                <button onclick="eliminar(${index})" style="background:none; border:none; color:#ff4444; cursor:pointer;">✖</button>
+                <div><span class="fecha-badge">${f}</span> <b>${ev.hora}</b> | ${ev.e1} vs ${ev.e2}</div>
+                <button onclick="eliminar(${i})" style="color:#ff4444; background:none; border:none; font-weight:bold; font-size:16px;">✖</button>
             </div>`;
         });
-        document.getElementById('codigoPreview').innerText = JSON.stringify(listaEventos, null, 2);
+        document.getElementById('codigoPreview').innerText = JSON.stringify(listaFinal, null, 2);
     }
 
-    function eliminar(index) {
-        listaEventos.splice(index, 1);
-        actualizar();
+    function eliminar(i) { listaFinal.splice(i,1); actualizar(); }
+    function limpiarLista() { if(confirm("¿Seguro que quieres borrar todo el listado actual?")) { listaFinal = []; actualizar(); } }
+    
+    function copiar() {
+        const txt = document.getElementById('codigoPreview').innerText;
+        navigator.clipboard.writeText(txt).then(() => alert("✅ JSON Copiado. Pégalo ahora en tu archivo eventos.json"));
     }
-
-    function limpiarLista() {
-        listaEventos = [];
-        actualizar();
-    }
-
-    function copiarAlPortapapeles() {
-        const codigo = document.getElementById('codigoPreview').innerText;
-        navigator.clipboard.writeText(codigo).then(() => alert("¡JSON Copiado!"));
-    }
-
-    // Inicio
-    renderizarCanales();
 </script>
 </body>
 </html>
