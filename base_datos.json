@@ -2,68 +2,27 @@
   "canales": {
     "MOVISTAR_LA_LIGA": {
       "nombre": "Movistar la Liga",
-      "opciones": [
-        "31c19ffb3472c289c5bbbbc174449c8ed0d19e38",
-        "b3bdd6ef7f795c4f321a3ce5cf4907338f462929",
-        "d4ff041287a43e3114d411d671c4b4e92e21f33",
-        "af458073c3096293a4dea9f369d4f308e7125bd6"
-      ]
+      "opciones": ["31c19ffb3472c289c5bbbbc174449c8ed0d19e38", "b3bdd6ef7f795c4f321a3ce5cf4907338f462929", "d4ff041287a43e3114d411d671c4b4e92e21f33", "af458073c3096293a4dea9f369d4f308e7125bd6"]
     },
     "DAZN_LA_LIGA": {
       "nombre": "Dazn la Liga",
-      "opciones": [
-        "dda5d2cace9bc4cb0918e62bc50d657d4a10496a",
-        "8a25653a2f774f4ae1062d38a30dcd714d304a3a",
-        "9c75f1d190c518cfe0f236415b8dccc1f676ef3b",
-        "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05",
-        "71cb5e2567a8b39f5bdc4fa791992781b052f0bc",
-        "d1596a3988b84a4d2711fd380eb8a53256ad74ae",
-        "19f28f60c908f987b1a03da078e63320d7bf29e8"
-      ]
-    },
-    "DAZN_LA_LIGA_2": {
-      "nombre": "Dazn la Liga 2",
-      "opciones": ["635b61c1f240449163260cd914d10d886a54fee3"]
+      "opciones": ["dda5d2cace9bc4cb0918e62bc50d657d4a10496a", "8a25653a2f774f4ae1062d38a30dcd714d304a3a", "9c75f1d190c518cfe0f236415b8dccc1f676ef3b", "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05", "71cb5e2567a8b39f5bdc4fa791992781b052f0bc", "d1596a3988b84a4d2711fd380eb8a53256ad74ae", "19f28f60c908f987b1a03da078e63320d7bf29e8"]
     },
     "DAZN_1": {
       "nombre": "DAZN 1",
-      "opciones": [
-        "d5b2c6b940cf3df5e8f9dc6f000f0ea23a10b151",
-        "0560234787945a17522e284c4c22bb4df29f33b0",
-        "7ba1f321f4d0791b7ebd42f41a07c1cd1479e784",
-        "9afc89481b721ce6c326c85e47148676077b8e62",
-        "dddff67edfa7061f643ec5ae0be110169850363d",
-        "a116ce3ff95c41c60e987e2b1aa247007f707884",
-        "691739972eb3468cf16b25e84dafdeaa40dead6d"
-      ]
+      "opciones": ["d5b2c6b940cf3df5e8f9dc6f000f0ea23a10b151", "0560234787945a17522e284c4c22bb4df29f33b0", "7ba1f321f4d0791b7ebd42f41a07c1cd1479e784", "9afc89481b721ce6c326c85e47148676077b8e62", "dddff67edfa7061f643ec5ae0be110169850363d", "a116ce3ff95c41c60e987e2b1aa247007f707884", "691739972eb3468cf16b25e84dafdeaa40dead6d"]
     },
     "DAZN_2": {
       "nombre": "DAZN 2",
-      "opciones": [
-        "b0eabe0fdd02fdd165896236765a9b753a2ff516",
-        "c93a0d4914713db942fbb210bac467b0224c63a6",
-        "01ce89b571b6c89bc19ccaafc913d483ac65c61d",
-        "fb2dd566824658eeab27aae19a01c09430f1a97d",
-        "8b081c8afbd9beafc8c5fbf0115eb36eadb07a35"
-      ]
+      "opciones": ["b0eabe0fdd02fdd165896236765a9b753a2ff516", "c93a0d4914713db942fbb210bac467b0224c63a6", "01ce89b571b6c89bc19ccaafc913d483ac65c61d", "fb2dd566824658eeab27aae19a01c09430f1a97d", "8b081c8afbd9beafc8c5fbf0115eb36eadb07a35"]
     },
     "DAZN_3": {
       "nombre": "DAZN 3",
-      "opciones": [
-        "d1d9ec2361a6ac8edc0b2841866383768cc28df9",
-        "98fba924421aa1e4bd28e74d74a2726d0459b594",
-        "8a86cd6152154a25ad4b76523160552a40313b28",
-        "d641cd0fca0f467b3130754a091e2f4d22e68eb1"
-      ]
+      "opciones": ["d1d9ec2361a6ac8edc0b2841866383768cc28df9", "98fba924421aa1e4bd28e74d74a2726d0459b594", "8a86cd6152154a25ad4b76523160552a40313b28", "d641cd0fca0f467b3130754a091e2f4d22e68eb1"]
     },
     "DAZN_4": {
       "nombre": "DAZN 4",
-      "opciones": [
-        "7e90956539f4e1318a63f3960e4f75c7c7c5a3b8",
-        "c21a2524a8de3e1e5b126f2677a3e993d9aa07c4",
-        "c015d37d1ead8155b1e7b97e743a1fe9850f0af5",
-        "7e27e46c25d4308d16098d9dc67fcd8736e8c1f0"
-      ]
+      "opciones": ["7e90956539f4e1318a63f3960e4f75c7c7c5a3b8", "c21a2524a8de3e1e5b126f2677a3e993d9aa07c4", "c015d37d1ead8155b1e7b97e743a1fe9850f0af5", "7e27e46c25d4308d16098d9dc67fcd8736e8c1f0"]
     }
   },
   "ligas": {
@@ -71,61 +30,34 @@
       "id": "laligaespana",
       "logo": "laliga.png",
       "equipos": [
-        { "n": "Alavés", "a": "ala.png" },
-        { "n": "Athletic Club", "a": "ath.png" },
-        { "n": "Atlético Madrid", "a": "atm.png" },
-        { "n": "FC Barcelona", "a": "fcb.png" },
-        { "n": "Real Betis", "a": "bet.png" },
-        { "n": "Celta de Vigo", "a": "cel.png" },
-        { "n": "Getafe CF", "a": "get.png" },
-        { "n": "Girona FC", "a": "gir.png" },
-        { "n": "RCD Mallorca", "a": "mal.png" },
-        { "n": "CA Osasuna", "a": "osa.png" },
-        { "n": "Rayo Vallecano", "a": "ray.png" },
-        { "n": "Real Madrid", "a": "rmadrid.png" },
-        { "n": "Real Sociedad", "a": "rsoc.png" },
-        { "n": "Sevilla FC", "a": "sev.png" },
-        { "n": "Valencia CF", "a": "vcf.png" },
-        { "n": "Villarreal CF", "a": "vil.png" }
+        { "n": "Alavés", "a": "ala.png" }, { "n": "Athletic Club", "a": "ath.png" }, { "n": "Atlético Madrid", "a": "atm.png" }, { "n": "FC Barcelona", "a": "fcb.png" }, { "n": "Real Betis", "a": "bet.png" }, { "n": "Celta de Vigo", "a": "cel.png" }, { "n": "Elche CF", "a": "elc.png" }, { "n": "RCD Espanyol", "a": "esp.png" }, { "n": "Getafe CF", "a": "get.png" }, { "n": "Girona FC", "a": "gir.png" }, { "n": "RCD Mallorca", "a": "mal.png" }, { "n": "CA Osasuna", "a": "osa.png" }, { "n": "Rayo Vallecano", "a": "ray.png" }, { "n": "Real Madrid", "a": "rmadrid.png" }, { "n": "Real Sociedad", "a": "rsoc.png" }, { "n": "Sevilla FC", "a": "sev.png" }, { "n": "Valencia CF", "a": "vcf.png" }, { "n": "Villarreal CF", "a": "vil.png" }
       ]
     },
     "PREMIER LEAGUE": {
       "id": "premierleague",
       "logo": "premier.png",
       "equipos": [
-        { "n": "Arsenal FC", "a": "ars.png" },
-        { "n": "Aston Villa", "a": "av.png" },
-        { "n": "Bournemouth", "a": "bou.png" },
-        { "n": "Brentford FC", "a": "bre.png" },
-        { "n": "Brighton", "a": "bri.png" },
-        { "n": "Chelsea FC", "a": "che.png" },
-        { "n": "Crystal Palace", "a": "cri.png" },
-        { "n": "Everton FC", "a": "eve.png" },
-        { "n": "Fulham FC", "a": "ful.png" },
-        { "n": "Liverpool FC", "a": "liv.png" },
-        { "n": "Man City", "a": "manc.png" },
-        { "n": "Man Utd", "a": "manu.png" },
-        { "n": "Newcastle Utd", "a": "new.png" },
-        { "n": "Nottingham", "a": "not.png" },
-        { "n": "Tottenham", "a": "tot.png" },
-        { "n": "West Ham", "a": "whu.png" },
-        { "n": "Wolverhampton", "a": "wol.png" }
+        { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Ipswich Town", "a": "ips.png" }, { "n": "Leicester City", "a": "lei.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Southampton FC", "a": "sou.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
       ]
     },
     "MOTOGP": {
       "id": "motogp",
       "logo": "motogp.png",
       "equipos": [
-        { "n": "Carrera MotoGP", "a": "moto.png" },
-        { "n": "Clasificación", "a": "moto.png" }
+        { "n": "Entrenamientos", "a": "motogp.png" },
+        { "n": "Clasificación", "a": "motogp.png" },
+        { "n": "Carrera Sprint", "a": "motogp.png" },
+        { "n": "Carrera Domingo", "a": "motogp.png" }
       ]
     },
     "FORMULA 1": {
       "id": "f1",
       "logo": "f1.png",
       "equipos": [
-        { "n": "Carrera F1", "a": "f1.png" },
-        { "n": "Qualy F1", "a": "f1.png" }
+        { "n": "Entrenamientos", "a": "f1.png" },
+        { "n": "Clasificación", "a": "f1.png" },
+        { "n": "Sprint F1", "a": "f1.png" },
+        { "n": "Carrera Domingo", "a": "f1.png" }
       ]
     }
   }
