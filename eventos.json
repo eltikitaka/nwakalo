@@ -1,67 +1,21 @@
 [
   {
+    "fecha": "2026-03-28",
     "hora": "21:00",
     "e1": "Rayo Vallecano",
     "logo1": "ray.png",
     "e2": "Elche CF",
     "logo2": "elc.png",
-    "canal": "Movistar la Liga",
-    "links": [
-      "31c19ffb3472c289c5bbbbc174449c8ed0d19e38",
-      "b3bdd6ef7f795c4f321a3ce5cf4907338f462929",
-      "af468a318ad209b29a042a9080b519c6b40cec79"
-    ]
-  },
-  {
-    "hora": "14:00",
-    "e1": "Real Sociedad",
-    "logo1": "rsoc.png",
-    "e2": "Levante UD",
-    "logo2": "lev.png",
     "canal": "Dazn la Liga",
     "links": [
       "dda5d2cace9bc4cb0918e62bc50d657d4a10496a",
+      "8a25653a2f774f4ae1062d38a30dcd714d304a3a",
+      "9c75f1d190c518cfe0f236415b8dccc1f676ef3b",
       "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05",
-      "71cb5e2567a8b39f5bdc4fa791992781b052f0bc"
-    ]
-  },
-  {
-    "hora": "16:15",
-    "e1": "RCD Mallorca",
-    "logo1": "mal.png",
-    "e2": "Real Madrid CF",
-    "logo2": "rmadrid.png",
-    "canal": "Movistar la Liga",
-    "links": [
-      "31c19ffb3472c289c5bbbbc174449c8ed0d19e38",
-      "b3bdd6ef7f795c4f321a3ce5cf4907338f462929",
-      "af468a318ad209b29a042a9080b519c6b40cec79"
-    ]
-  },
-  {
-    "hora": "18:30",
-    "e1": "Real Betis",
-    "logo1": "bet.png",
-    "e2": "RCD Espanyol",
-    "logo2": "esp.png",
-    "canal": "Movistar la Liga",
-    "links": [
-      "31c19ffb3472c289c5bbbbc174449c8ed0d19e38",
-      "b3bdd6ef7f795c4f321a3ce5cf4907338f462929",
-      "af468a318ad209b29a042a9080b519c6b40cec79"
-    ]
-  },
-  {
-    "hora": "21:00",
-    "e1": "Atlético de Madrid",
-    "logo1": "atm.png",
-    "e2": "FC Barcelona",
-    "logo2": "fcb.png",
-    "canal": "Dazn la Liga",
-    "links": [
-      "dda5d2cace9bc4cb0918e62bc50d657d4a10496a",
-      "e2b8a4aba2f4ea3dd68992fcdb65c9e62d910b05",
-      "71cb5e2567a8b39f5bdc4fa791992781b052f0bc"
-    ]
+      "71cb5e2567a8b39f5bdc4fa791992781b052f0bc",
+      "d1596a3988b84a4d2711fd380eb8a53256ad74ae",
+      "19f28f60c908f987b1a03da078e63320d7bf29e8"
+    ],
+    "liga": "laligaespana"
   }
 ]
