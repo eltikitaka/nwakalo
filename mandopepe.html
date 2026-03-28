@@ -2,53 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Eventos NWAKALO</title>
+    <title>Mando Nwakalo - Generador de Eventos</title>
     <style>
-        body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
-        .seccion { background: #222; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #444; }
-        .grid-logos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .grid-equipos { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; }
+        body { background: #111; color: #eee; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+        .seccion { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h3 { color: #00ff88; margin-top: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
         
-        button { background: #333; color: #fff; border: 1px solid #555; padding: 10px; cursor: pointer; border-radius: 5px; font-size: 12px; }
-        button:hover { background: #00ff88; color: #000; }
-        button.selected { background: #00ff88; color: #000; border-color: #fff; }
+        /* Grillas */
+        .grid-logos { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; padding: 10px; background: #111; border-radius: 8px; }
+        
+        button { background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 12px; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.85rem; }
+        button:hover { border-color: #00ff88; background: #333; }
+        button.selected { background: #00ff88; color: #000; border-color: #fff; font-weight: bold; }
 
-        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 5px; font-family: monospace; word-break: break-all; border: 1px dashed #00ff88; }
-        input { background: #000; color: #fff; border: 1px solid #00ff88; padding: 10px; width: 90%; border-radius: 5px; }
-        img { height: 25px; vertical-align: middle; margin-right: 5px; }
+        /* Imágenes */
+        img { height: 30px; vertical-align: middle; margin-bottom: 5px; object-fit: contain; }
+        .img-canal { height: 25px; margin-right: 10px; }
+
+        /* Resultado */
+        .preview { background: #000; color: #00ff88; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; word-break: break-all; border: 1px solid #00ff88; margin-top: 10px; min-height: 40px; }
         .hidden { display: none; }
-        h3 { color: #00ff88; margin-top: 0; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:#00ff88;">MANDO PROGRAMACIÓN</h2>
+    <h2 style="text-align:center; color:#00ff88;">MANDO DE EVENTOS</h2>
 
-    <!-- 1. SELECCIONAR LIGA -->
+    <!-- 1. COMPETICIÓN -->
     <div class="seccion">
-        <h3>1. Selecciona Competición</h3>
+        <h3>1. Competición</h3>
         <div class="grid-logos">
-            <button onclick="cargarLiga('laligaespana')"><img src="assets/deporte/1.png"> LA LIGA</button>
-            <button onclick="cargarLiga('premierleague')"><img src="assets/deporte/2.png"> PREMIER</button>
+            <button onclick="cargarLiga('laligaespana')"><img src="assets/deporte/1.png"><br>LA LIGA</button>
+            <button onclick="cargarLiga('premierleague')"><img src="assets/deporte/2.png"><br>PREMIER</button>
         </div>
     </div>
 
-    <!-- 2. SELECCIONAR EQUIPOS -->
+    <!-- 2. EQUIPOS -->
     <div id="zonaEquipos" class="seccion hidden">
         <h3 id="tituloLiga">Equipos</h3>
-        <p style="font-size: 12px; color: #aaa;">Selecciona Local y luego Visitante:</p>
-        <div id="listaEquipos" class="grid-equipos"></div>
+        <div id="listaEquipos" class="grid-items"></div>
     </div>
 
-    <!-- 3. CANAL Y GENERACIÓN -->
+    <!-- 3. CANALES (Basado en tu estructura) -->
     <div class="seccion">
-        <h3>2. Detalles y Resultado</h3>
-        <input type="text" id="canal" placeholder="Nombre del Canal (Ej: DAZN LALIGA)" oninput="generar()">
-        <div style="margin-top:15px;">
-            <strong>Resultado para pegar en Evento:</strong>
-            <div id="codigoFinal" class="preview">Esperando datos...</div>
+        <h3>2. Seleccionar Canal</h3>
+        <div class="grid-items">
+            <!-- Ejemplo de canales basados en tu carpeta assets/canales/ -->
+            <button onclick="setCanal('DAZN LALIGA', 'assets/canales/daznlaliga.png', this)">
+                <img src="assets/canales/daznlaliga.png" class="img-canal" onerror="this.style.display='none'"> DAZN LP
+            </button>
+            <button onclick="setCanal('M+ LALIGA', 'assets/canales/movistarlaliga.png', this)">
+                <img src="assets/canales/movistarlaliga.png" class="img-canal" onerror="this.style.display='none'"> M+ LIGA
+            </button>
+            <button onclick="setCanal('DAZN 1', 'assets/canales/dazn1.png', this)">
+                <img src="assets/canales/dazn1.png" class="img-canal" onerror="this.style.display='none'"> DAZN 1
+            </button>
+            <button onclick="setCanal('M+ CHAMPIONS', 'assets/canales/movistarchampions.png', this)">
+                <img src="assets/canales/movistarchampions.png" class="img-canal" onerror="this.style.display='none'"> M+ CH
+            </button>
         </div>
-        <button onclick="copiarCodigo()" style="width:100%; margin-top:10px; background:#00ff88; color:#000;">COPIAR CÓDIGO</button>
+    </div>
+
+    <!-- 4. GENERADOR -->
+    <div class="seccion">
+        <h3>3. Código para Evento</h3>
+        <div id="codigoFinal" class="preview">Selecciona equipos y canal...</div>
+        <button onclick="copiarCodigo()" style="width:100%; margin-top:15px; background:#00ff88; color:#000; font-weight:bold; font-size:1rem;">COPIAR CÓDIGO</button>
     </div>
 
 <script>
@@ -61,12 +81,11 @@
         ]
     };
 
-    let partido = { local: "", visita: "", imgL: "", imgV: "", ligaActual: "" };
+    let partido = { local: "", visita: "", imgL: "", imgV: "", canal: "", imgC: "" };
 
     function cargarLiga(liga) {
-        partido.ligaActual = liga;
         document.getElementById('zonaEquipos').classList.remove('hidden');
-        document.getElementById('tituloLiga').innerText = liga.toUpperCase();
+        document.getElementById('tituloLiga').innerText = liga.replace('espana', ' ESPAÑA').toUpperCase();
         const lista = document.getElementById('listaEquipos');
         lista.innerHTML = '';
         
@@ -74,15 +93,15 @@
             const btn = document.createElement('button');
             const ruta = `assets/equipos/${liga}/${e.a}`;
             btn.innerHTML = `<img src="${ruta}" onerror="this.src='assets/equipos/placeholder.png'"><br>${e.n}`;
-            btn.onclick = () => seleccionar(e.n, ruta, btn);
+            btn.onclick = () => seleccionarEquipo(e.n, ruta, btn);
             lista.appendChild(btn);
         });
     }
 
-    function seleccionar(nombre, img, el) {
+    function seleccionarEquipo(nombre, img, el) {
         if (!partido.local || (partido.local && partido.visita)) {
             partido.local = nombre; partido.imgL = img; partido.visita = "";
-            document.querySelectorAll('.grid-equipos button').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('#listaEquipos button').forEach(b => b.classList.remove('selected'));
         } else {
             partido.visita = nombre; partido.imgV = img;
         }
@@ -90,16 +109,31 @@
         generar();
     }
 
+    function setCanal(nombre, img, el) {
+        partido.canal = nombre;
+        partido.imgC = img;
+        document.querySelectorAll('.grid-items button').forEach(b => {
+            if(!b.closest('#listaEquipos')) b.classList.remove('selected');
+        });
+        el.classList.add('selected');
+        generar();
+    }
+
     function generar() {
-        const canal = document.getElementById('canal').value || "CANAL NO DEFINIDO";
-        const code = `{"evento": "${partido.local} vs ${partido.visita}", "canal": "${canal}", "logoL": "${partido.imgL}", "logoV": "${partido.imgV}"}`;
-        document.getElementById('codigoFinal').innerText = (partido.local && partido.visita) ? code : "Selecciona ambos equipos...";
+        if (partido.local && partido.visita && partido.canal) {
+            const code = `{"evento": "${partido.local} vs ${partido.visita}", "canal": "${partido.canal}", "logoL": "${partido.imgL}", "logoV": "${partido.imgV}", "logoC": "${partido.imgC}"}`;
+            document.getElementById('codigoFinal').innerText = code;
+        } else {
+            document.getElementById('codigoFinal').innerText = "Faltan datos (Local, Visitante o Canal)...";
+        }
     }
 
     function copiarCodigo() {
         const text = document.getElementById('codigoFinal').innerText;
-        navigator.clipboard.writeText(text);
-        alert("¡Código copiado!");
+        if(text.includes('{')) {
+            navigator.clipboard.writeText(text);
+            alert("¡Código copiado para el evento!");
+        }
     }
 </script>
 </body>
