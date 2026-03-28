@@ -41,7 +41,7 @@
       ]
     },
     "MOTOGP": {
-      "id": "MotoGp",
+      "id": "MotoGP",
       "logo": "motogp.png",
       "equipos": [
         { "n": "Entrenamientos", "a": "motogp.png" }, { "n": "Clasificación", "a": "motogp.png" }, { "n": "Carrera Sprint", "a": "motogp.png" }, { "n": "Carrera Domingo", "a": "motogp.png" }
