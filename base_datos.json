@@ -37,7 +37,7 @@
       "id": "premierleague",
       "logo": "premier.png",
       "equipos": [
-        { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Burnley FC", "a": "bur.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Sunderlan FC", "a": "sun.png" }, { "n": "Leeds United", "a": "lee.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Southampton FC", "a": "sou.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
+        { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Burnley FC", "a": "bur.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Sunderlan FC", "a": "sun.png" }, { "n": "Leeds United", "a": "lee.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
       ]
     },
     "MOTOGP": {
