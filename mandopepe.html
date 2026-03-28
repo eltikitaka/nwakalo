@@ -3,142 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mando Pepe - Control de Escudos</title>
-    <!-- Bootstrap 5 para el diseño -->
+    <title>Mando Pepe - Selector de Deportes</title>
     <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; padding-top: 20px; }
-        .card-equipo { 
-            cursor: pointer; 
-            transition: transform 0.2s; 
-            text-align: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
+        body { background-color: #1a1a1a; color: white; padding-top: 20px; font-family: sans-serif; }
+        .titulo { color: #00ff88; text-transform: uppercase; font-weight: bold; letter-spacing: 2px; }
+        
+        /* Contenedor de Ligas (Iconos 1.png, 2.png...) */
+        .grid-ligas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
         }
-        .card-equipo:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .logo-img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
+
+        .card-liga {
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 15px;
+            border: 2px solid transparent;
+        }
+        .card-liga:hover { border-color: #00ff88; transform: translateY(-5px); }
+        .img-liga { width: 100px; height: 100px; object-fit: contain; }
+
+        /* Contenedor de Equipos */
         .grid-equipos {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
+        .card-equipo {
+            cursor: pointer;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .card-equipo:hover { background: #444; color: #00ff88; }
+        .img-equipo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+
+        .hidden { display: none !important; }
+        .btn-volver { margin-bottom: 20px; background-color: #555; color: white; border: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 class="text-center mb-4">Mando de Control - NWAKALO</h2>
-    
-    <!-- Selector de Liga -->
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-6">
-            <label for="selectorLiga" class="form-label fw-bold">Seleccionar Competición:</label>
-            <select id="selectorLiga" class="form-select form-select-lg" onchange="cargarEquipos()">
-                <option value="laligaespana">La Liga España</option>
-                <option value="premierleague">Premier League</option>
-            </select>
+    <h2 class="text-center titulo">Mando de Programación</h2>
+    <hr border-color="#444">
+
+    <!-- SECCIÓN 1: SELECTOR DE DEPORTES/LIGAS -->
+    <div id="seccionLigas" class="grid-ligas">
+        <div class="card-liga" onclick="mostrarEquipos('laligaespana')">
+            <img src="assets/1.png" class="img-liga" alt="La Liga">
+            <div class="mt-2 fw-bold">LIGA ESPAÑOLA</div>
         </div>
+        <div class="card-liga" onclick="mostrarEquipos('premierleague')">
+            <img src="assets/2.png" class="img-liga" alt="Premier League">
+            <div class="mt-2 fw-bold">PREMIER LEAGUE</div>
+        </div>
+        <!-- Puedes añadir aquí los otros 5 deportes con 3.png, 4.png, etc. -->
     </div>
 
-    <!-- Contenedor donde se cargarán los equipos -->
-    <div id="contenedorEquipos" class="grid-equipos">
-        <!-- Los equipos aparecerán aquí dinámicamente -->
+    <!-- SECCIÓN 2: LISTADO DE EQUIPOS (Oculto al inicio) -->
+    <div id="seccionEquipos" class="hidden">
+        <button class="btn btn-volver" onclick="volverALigas()">← Volver a Deportes</button>
+        <h3 id="tituloLiga" class="mb-4 text-info"></h3>
+        <div id="contenedorEquipos" class="grid-equipos"></div>
     </div>
 </div>
 
 <script>
-    // Datos de los equipos con sus nuevas rutas
     const datosEquipos = {
         laligaespana: [
-            { nombre: "Alavés", archivo: "ala.png" },
-            { nombre: "Athletic", archivo: "ath.png" },
-            { nombre: "Atlético", archivo: "atm.png" },
-            { nombre: "Barcelona", archivo: "bar.png" },
-            { nombre: "Betis", archivo: "bet.png" },
-            { nombre: "Celta", archivo: "cel.png" },
-            { nombre: "Espanyol", archivo: "esp.png" },
-            { nombre: "Getafe", archivo: "get.png" },
-            { nombre: "Girona", archivo: "gir.png" },
-            { nombre: "Las Palmas", archivo: "lpa.png" },
-            { nombre: "Leganés", archivo: "leg.png" },
-            { nombre: "Mallorca", archivo: "mal.png" },
-            { nombre: "Osasuna", archivo: "osa.png" },
-            { nombre: "Rayo Vallecano", archivo: "ray.png" },
-            { nombre: "Real Madrid", archivo: "rma.png" },
-            { nombre: "Real Sociedad", archivo: "rso.png" },
-            { nombre: "Sevilla", archivo: "sev.png" },
-            { nombre: "Valencia", archivo: "val.png" },
-            { nombre: "Valladolid", archivo: "vld.png" },
-            { nombre: "Villarreal", archivo: "vil.png" }
+            { nombre: "Alavés", archivo: "ala.png" }, { nombre: "Athletic", archivo: "ath.png" },
+            { nombre: "Atlético", archivo: "atm.png" }, { nombre: "Barcelona", archivo: "bar.png" },
+            { nombre: "Betis", archivo: "bet.png" }, { nombre: "Celta", archivo: "cel.png" },
+            { nombre: "Espanyol", archivo: "esp.png" }, { nombre: "Getafe", archivo: "get.png" },
+            { nombre: "Girona", archivo: "gir.png" }, { nombre: "Las Palmas", archivo: "lpa.png" },
+            { nombre: "Leganés", archivo: "leg.png" }, { nombre: "Mallorca", archivo: "mal.png" },
+            { nombre: "Osasuna", archivo: "osa.png" }, { nombre: "Rayo Vallecano", archivo: "ray.png" },
+            { nombre: "Real Madrid", archivo: "rma.png" }, { nombre: "Real Sociedad", archivo: "rso.png" },
+            { nombre: "Sevilla", archivo: "sev.png" }, { nombre: "Valencia", archivo: "val.png" },
+            { nombre: "Valladolid", archivo: "vld.png" }, { nombre: "Villarreal", archivo: "vil.png" }
         ],
         premierleague: [
-            { nombre: "AFC Bournemouth", archivo: "bou.png" },
-            { nombre: "Arsenal FC", archivo: "ars.png" },
-            { nombre: "Aston Villa", archivo: "av.png" },
-            { nombre: "Brentford FC", archivo: "bre.png" },
-            { nombre: "Brighton", archivo: "bri.png" },
-            { nombre: "Burnley FC", archivo: "bur.png" },
-            { nombre: "Chelsea FC", archivo: "che.png" },
-            { nombre: "Crystal Palace", archivo: "cri.png" },
-            { nombre: "Everton FC", archivo: "eve.png" },
-            { nombre: "Fulham FC", archivo: "ful.png" },
-            { nombre: "Leeds United", archivo: "lee.png" },
-            { nombre: "Liverpool FC", archivo: "liv.png" },
-            { nombre: "Manchester City", archivo: "manc.png" },
-            { nombre: "Manchester United", archivo: "manu.png" },
-            { nombre: "Newcastle Utd", archivo: "new.png" },
-            { nombre: "Nottingham Forest", archivo: "not.png" },
-            { nombre: "Sunderland AFC", archivo: "sun.png" },
-            { nombre: "Tottenham", archivo: "tot.png" },
-            { nombre: "West Ham", archivo: "whu.png" },
-            { nombre: "Wolves", archivo: "wol.png" }
+            { nombre: "AFC Bournemouth", archivo: "bou.png" }, { nombre: "Arsenal FC", archivo: "ars.png" },
+            { nombre: "Aston Villa", archivo: "av.png" }, { nombre: "Brentford FC", archivo: "bre.png" },
+            { nombre: "Brighton", archivo: "bri.png" }, { nombre: "Burnley FC", archivo: "bur.png" },
+            { nombre: "Chelsea FC", archivo: "che.png" }, { nombre: "Crystal Palace", archivo: "cri.png" },
+            { nombre: "Everton FC", archivo: "eve.png" }, { nombre: "Fulham FC", archivo: "ful.png" },
+            { nombre: "Leeds United", archivo: "lee.png" }, { nombre: "Liverpool FC", archivo: "liv.png" },
+            { nombre: "Manchester City", archivo: "manc.png" }, { nombre: "Manchester United", archivo: "manu.png" },
+            { nombre: "Newcastle Utd", archivo: "new.png" }, { nombre: "Nottingham Forest", archivo: "not.png" },
+            { nombre: "Sunderland AFC", archivo: "sun.png" }, { nombre: "Tottenham", archivo: "tot.png" },
+            { nombre: "West Ham", archivo: "whu.png" }, { nombre: "Wolves", archivo: "wol.png" }
         ]
     };
 
-    function cargarEquipos() {
-        const ligaSeleccionada = document.getElementById('selectorLiga').value;
-        const contenedor = document.getElementById('contenedorEquipos');
-        const equipos = datosEquipos[ligaSeleccionada];
+    function mostrarEquipos(liga) {
+        // Ocultar ligas, mostrar equipos
+        document.getElementById('seccionLigas').classList.add('hidden');
+        document.getElementById('seccionEquipos').classList.remove('hidden');
         
-        // Limpiar contenedor
+        const contenedor = document.getElementById('contenedorEquipos');
+        const titulo = document.getElementById('tituloLiga');
+        
+        titulo.innerText = liga.toUpperCase().replace('ESPANA', ' ESPAÑA');
         contenedor.innerHTML = '';
 
-        // Crear tarjetas para cada equipo
-        equipos.forEach(equipo => {
-            const rutaImagen = `assets/equipos/${ligaSeleccionada}/${equipo.archivo}`;
-            
+        datosEquipos[liga].forEach(equipo => {
+            const ruta = `assets/equipos/${liga}/${equipo.archivo}`;
             const div = document.createElement('div');
             div.className = 'card-equipo';
-            div.onclick = () => enviarAccion(equipo.nombre, rutaImagen);
-            
+            div.onclick = () => programarPartido(equipo.nombre, ruta);
             div.innerHTML = `
-                <img src="${rutaImagen}" alt="${equipo.nombre}" class="logo-img" onerror="this.src='assets/equipos/placeholder.png'">
-                <div class="small fw-bold">${equipo.nombre}</div>
+                <img src="${ruta}" class="img-equipo" onerror="this.src='assets/equipos/placeholder.png'">
+                <div>${equipo.nombre}</div>
             `;
-            
             contenedor.appendChild(div);
         });
     }
 
-    // Función para manejar el clic (aquí puedes poner tu lógica de Fetch o Socket)
-    function enviarAccion(nombre, ruta) {
-        console.log("Seleccionado:", nombre, "Ruta:", ruta);
-        alert("Has seleccionado: " + nombre + "\nEnviando ruta: " + ruta);
-        
-        /* 
-        // Ejemplo de envío a tu sistema:
-        fetch('TU_URL_DE_API', {
-            method: 'POST',
-            body: JSON.stringify({ equipo: nombre, logo: ruta })
-        });
-        */
+    function volverALigas() {
+        document.getElementById('seccionLigas').classList.remove('hidden');
+        document.getElementById('seccionEquipos').classList.add('hidden');
     }
 
-    // Carga inicial
-    document.addEventListener('DOMContentLoaded', cargarEquipos);
+    function programarPartido(nombre, ruta) {
+        console.log("Programando equipo:", nombre);
+        alert("Equipo seleccionado para programación: " + nombre + "\nIcono: " + ruta);
+        // Aquí iría tu código para guardar en la base de datos o localstorage la programación
+    }
 </script>
 
 </body>
