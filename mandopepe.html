@@ -2,90 +2,198 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANDO PEPE 2.0 - NWAKALO TV</title>
+    <title>MANDO PEPE - NWAKALO TV</title>
     <style>
         :root { --main: #00ff88; --bg: #121212; --panel: #1e1e1e; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1300px; margin: auto; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1400px; margin: auto; }
         .seccion { background: var(--panel); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 15px; background: #111; border-radius: 10px; }
         
-        /* GRID DE EQUIPOS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 15px; background: #111; border-radius: 10px; border: 1px solid #222; }
-        
-        /* BOTONES */
         button { background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 11px; }
-        button:hover { border-color: var(--main); }
-        
-        .btn-liga { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 100px; padding: 10px; border-color: #333; text-transform: uppercase; font-weight: bold; }
-        .btn-liga img { height: 45px; width: 45px; background: #fff; padding: 5px; border-radius: 50%; object-fit: contain; border: 2px solid #333; }
-        .btn-liga.active { background: var(--main) !important; color: #000; border-color: #fff; }
+        .btn-liga { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 110px; font-weight: bold; }
+        .btn-liga img { height: 40px; width: 40px; background: #fff; padding: 5px; border-radius: 50%; object-fit: contain; }
+        .btn-liga.active { background: var(--main) !important; color: #000; }
 
-        /* ESTADOS SELECCIÓN */
-        button.local { background: #007bff !important; border-color: #fff; box-shadow: 0 0 10px rgba(0,123,255,0.5); }
-        button.visita { background: #dc3545 !important; border-color: #fff; box-shadow: 0 0 10px rgba(220,53,69,0.5); }
+        button.local { background: #007bff !important; border-color: #fff; }
+        button.visita { background: #dc3545 !important; border-color: #fff; }
         button.solo-evento { background: #ff9800 !important; color: #000; font-weight: bold; }
         button.canal-sel { background: var(--main) !important; color: #000; font-weight: bold; }
 
-        /* INPUTS */
         .controles-extra { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 15px; margin-top: 15px; background: #111; padding: 15px; border-radius: 10px; }
-        input { background: #1e1e1e; color: var(--main); border: 1px solid #444; padding: 10px; border-radius: 6px; font-weight: bold; width: 100%; box-sizing: border-box; }
-        input#id_privada { border: 1px dashed var(--main); color: #fff; }
-
-        /* PREVIEW */
-        .preview { background: #000; color: var(--main); padding: 15px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 12px; max-height: 250px; overflow-y: auto; border: 1px solid #333; }
+        input { background: #1e1e1e; color: var(--main); border: 1px solid #444; padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        
+        .preview { background: #000; color: var(--main); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; border: 1px solid #333; }
         .cola-item { background: #252525; padding: 10px; margin-bottom: 8px; border-radius: 8px; border-left: 5px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
         
-        h3 { color: var(--main); margin: 0 0 12px 0; font-size: 0.85rem; letter-spacing: 1px; }
-        #listaEquipos img { height: 40px; margin-bottom: 5px; }
+        #listaEquipos img { height: 35px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:var(--main); letter-spacing: 3px; margin-bottom: 30px;">🛰️ MANDO PEPE - PRIVADO & MULTIDEPORTE</h2>
+    <h2 style="text-align:center; color:var(--main); letter-spacing: 2px;">🛰️ GENERADOR NWAKALO TV</h2>
 
-    <div style="display: flex; gap: 20px; align-items: flex-start;">
-        
-        <div style="flex: 2.5;">
+    <div style="display: flex; gap: 20px;">
+        <div style="flex: 2;">
             <div class="seccion">
-                <h3>1. LIGA / COMPETICIÓN</h3>
+                <h3>1. SELECCIONAR COMPETICIÓN</h3>
                 <div id="listaLigas" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
                 
-                <h3 style="margin-top:20px;">2. EQUIPOS O EVENTO</h3>
-                <div id="inputMotor" style="display:none; margin-bottom: 10px;">
-                    <input type="text" id="nombre_evento" placeholder="Escribe el nombre de la sesión (Ej: Carrera, Clasificación, Entrenos...)">
+                <h3 style="margin-top:20px;">2. SELECCIONAR EQUIPOS / EVENTO</h3>
+                <div id="boxMotor" style="display:none; margin-bottom:15px;">
+                    <input type="text" id="gp_nombre" placeholder="Nombre del GP (Ej: GP de Mónaco)">
                 </div>
-                <div id="listaEquipos" class="grid">Selecciona una liga...</div>
+                <div id="listaEquipos" class="grid">Elige una liga para empezar...</div>
             </div>
 
             <div class="seccion">
-                <h3>3. CANAL Y DATOS PRIVADOS</h3>
+                <h3>3. CANAL Y HORA</h3>
                 <div id="listaCanales" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;"></div>
                 
                 <div class="controles-extra">
-                    <div>
-                        <label style="font-size:10px; color:#888;">FECHA:</label>
-                        <input type="date" id="fecha">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; color:#888;">HORA:</label>
-                        <input type="time" id="hora" value="21:00">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; color:var(--main);">🔑 ID ACESTREAM (NO SE GUARDA):</label>
-                        <input type="text" id="id_privada" placeholder="Pega el hash aquí...">
-                    </div>
+                    <div><label>FECHA:</label><input type="date" id="fecha"></div>
+                    <div><label>HORA:</label><input type="time" id="hora" value="21:00"></div>
+                    <div><label>🔑 ID ACESREAM (Manual):</label><input type="text" id="id_privada" placeholder="Pega el hash aquí..."></div>
                 </div>
             </div>
 
-            <button onclick="añadirEvento()" style="width:100%; background:var(--main); color:#000; font-weight:bold; padding:20px; border:none; border-radius:12px; cursor:pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,255,136,0.3);">+ SUBIR A LA PARRILLA</button>
+            <button onclick="añadirEvento()" style="width:100%; background:var(--main); color:#000; font-weight:bold; padding:18px; border:none; border-radius:10px; cursor:pointer; font-size: 1.1rem;">+ AÑADIR A LA LISTA</button>
         </div>
 
-        <div style="flex: 1.5;">
-            <div class="seccion" style="border-color: #444;">
-                <h3>LISTADO DE HOY</h3>
-                <div id="colaPartidos"></div>
-                <button onclick="limpiarLista()" style="background:none; border:none; color:#ff5252; font-size:11px; width:100%; margin-top:10px;">🗑️ Borrar todo</button>
-            </div>
-
+        <div style="flex: 1.2;">
             <div class="seccion">
-                
+                <h3>VISTA PREVIA</h3>
+                <div id="colaPartidos"></div>
+                <button onclick="limpiarLista()" style="background:none; border:none; color:red; width:100%; cursor:pointer;">Borrar todo</button>
+            </div>
+            <div class="seccion">
+                <h3>CÓDIGO JSON (eventos.json)</h3>
+                <div id="codigoPreview" class="preview">[]</div>
+                <button onclick="copiar()" style="width:100%; margin-top:10px; background:#fff; color:#000; font-weight:bold; padding:12px; border:none; border-radius:8px; cursor:pointer;">COPIAR CÓDIGO</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let BD = {};
+    let pTemp = { e1: "", l1: "", e2: "", l2: "", c: "", ligaId: "", tipo: "" };
+    let listaFinal = [];
+
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    fetch('base_datos.json?t=' + Date.now())
+        .then(res => res.json())
+        .then(data => {
+            BD = data;
+            renderLigas();
+            renderCanales();
+        });
+
+    function renderLigas() {
+        const div = document.getElementById('listaLigas');
+        Object.keys(BD.ligas).forEach(n => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-liga';
+            btn.innerHTML = `<img src="assets/deporte/${BD.ligas[n].logo}"><span>${n}</span>`;
+            btn.onclick = () => {
+                document.querySelectorAll('.btn-liga').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                cargarEquipos(n);
+            };
+            div.appendChild(btn);
+        });
+    }
+
+    function cargarEquipos(nombreLiga) {
+        const liga = BD.ligas[nombreLiga];
+        pTemp.ligaId = liga.id;
+        // Detectar si es motor (F1 o MotoGP)
+        pTemp.tipo = (liga.id === "f1" || liga.id === "MotoGP") ? "motor" : "futbol";
+        
+        document.getElementById('boxMotor').style.display = (pTemp.tipo === "motor") ? "block" : "none";
+        
+        const grid = document.getElementById('listaEquipos');
+        grid.innerHTML = '';
+        pTemp.e1 = ""; pTemp.e2 = "";
+
+        liga.equipos.forEach(eq => {
+            const btn = document.createElement('button');
+            btn.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
+            btn.onclick = () => {
+                if(pTemp.tipo === "motor") {
+                    pTemp.e1 = eq.n; pTemp.l1 = eq.a; // Tipo de sesión
+                    document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
+                    btn.className = 'solo-evento';
+                } else {
+                    if (!pTemp.e1 || (pTemp.e1 && pTemp.e2)) {
+                        pTemp.e1 = eq.n; pTemp.l1 = eq.a; pTemp.e2 = "";
+                        document.querySelectorAll('#listaEquipos button').forEach(b => b.className = '');
+                        btn.className = 'local';
+                    } else {
+                        pTemp.e2 = eq.n; pTemp.l2 = eq.a;
+                        btn.className = 'visita';
+                    }
+                }
+            };
+            grid.appendChild(btn);
+        });
+    }
+
+    function renderCanales() {
+        const div = document.getElementById('listaCanales');
+        Object.keys(BD.canales).forEach(id => {
+            const btn = document.createElement('button');
+            btn.innerText = BD.canales[id].nombre;
+            btn.onclick = () => {
+                pTemp.c = BD.canales[id].nombre;
+                // Intentamos buscar un logo basado en el nombre (puedes añadir "logo" a tu JSON de canales luego)
+                pTemp.canalLogo = id.toLowerCase() + ".png"; 
+                document.querySelectorAll('#listaCanales button').forEach(b => b.classList.remove('canal-sel'));
+                btn.className = 'canal-sel';
+            };
+            div.appendChild(btn);
+        });
+    }
+
+    function añadirEvento() {
+        const idManual = document.getElementById('id_privada').value.trim();
+        const gpExtra = document.getElementById('gp_nombre').value;
+
+        if(!pTemp.e1 || !idManual) return alert("Selecciona equipo/evento y pega el ID.");
+
+        const nuevo = {
+            fecha: document.getElementById('fecha').value,
+            hora: document.getElementById('hora').value,
+            e1: (pTemp.tipo === "motor") ? gpExtra : pTemp.e1,
+            logo1: (pTemp.tipo === "motor") ? `deporte/${pTemp.ligaId}.png` : `${pTemp.ligaId}/${pTemp.l1}`,
+            e2: (pTemp.tipo === "motor") ? pTemp.e1 : pTemp.e2,
+            logo2: (pTemp.tipo === "motor") ? `deporte/${pTemp.ligaId}.png` : `${pTemp.ligaId}/${pTemp.l2}`,
+            canal: pTemp.c,
+            canalLogo: pTemp.canalLogo,
+            links: [idManual]
+        };
+
+        listaFinal.push(nuevo);
+        document.getElementById('id_privada').value = "";
+        actualizar();
+    }
+
+    function actualizar() {
+        const cola = document.getElementById('colaPartidos');
+        cola.innerHTML = '';
+        listaFinal.forEach((ev, i) => {
+            cola.innerHTML += `<div class="cola-item">
+                <span><b>${ev.hora}</b> - ${ev.e1} vs ${ev.e2}</span>
+                <button onclick="eliminar(${i})" style="color:red; background:none; border:none;">✖</button>
+            </div>`;
+        });
+        document.getElementById('codigoPreview').innerText = JSON.stringify(listaFinal, null, 2);
+    }
+
+    function eliminar(i) { listaFinal.splice(i,1); actualizar(); }
+    function limpiarLista() { listaFinal = []; actualizar(); }
+    function copiar() {
+        navigator.clipboard.writeText(document.getElementById('codigoPreview').innerText).then(() => alert("Copiado!"));
+    }
+</script>
+</body>
+</html>
