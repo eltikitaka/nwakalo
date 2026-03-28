@@ -30,7 +30,7 @@
       "id": "laligaespana",
       "logo": "laliga.png",
       "equipos": [
-        { "n": "Alavés", "a": "ala.png" }, { "n": "Athletic Club", "a": "ath.png" }, { "n": "Atlético Madrid", "a": "atm.png" }, { "n": "FC Barcelona", "a": "fcb.png" }, { "n": "Real Betis", "a": "bet.png" }, { "n": "Celta de Vigo", "a": "cel.png" }, { "n": "Elche CF", "a": "elc.png" }, { "n": "RCD Espanyol", "a": "esp.png" }, { "n": "Getafe CF", "a": "get.png" }, { "n": "Girona FC", "a": "gir.png" }, { "n": "RCD Mallorca", "a": "mal.png" }, { "n": "CA Osasuna", "a": "osa.png" }, { "n": "Rayo Vallecano", "a": "ray.png" }, { "n": "Real Madrid", "a": "rmadrid.png" }, { "n": "Real Sociedad", "a": "rsoc.png" }, { "n": "Sevilla FC", "a": "sev.png" }, { "n": "Valencia CF", "a": "vcf.png" }, { "n": "Villarreal CF", "a": "vil.png" }
+        { "n": "Alavés", "a": "ala.png" }, { "n": "Athletic Club", "a": "ath.png" }, { "n": "Atlético Madrid", "a": "atm.png" }, { "n": "FC Barcelona", "a": "fcb.png" }, { "n": "Real Betis", "a": "bet.png" }, { "n": "Celta de Vigo", "a": "cel.png" }, { "n": "Elche CF", "a": "elc.png" }, { "n": "RCD Espanyol", "a": "esp.png" }, { "n": "Getafe CF", "a": "get.png" }, { "n": "Girona FC", "a": "gir.png" }, { "n": "RCD Mallorca", "a": "mal.png" }, { "n": "CA Osasuna", "a": "osa.png" }, { "n": "Oviedo", "a": "ovi.png" } { "n": "Levante", "a": "lev.png" } { "n": "Rayo Vallecano", "a": "ray.png" }, { "n": "Real Madrid", "a": "rmadrid.png" }, { "n": "Real Sociedad", "a": "rsoc.png" }, { "n": "Sevilla FC", "a": "sev.png" }, { "n": "Valencia CF", "a": "vcf.png" }, { "n": "Villarreal CF", "a": "vil.png" }
       ]
     },
     "PREMIER LEAGUE": {
