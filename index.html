@@ -5,30 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NWAKALO TV</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #121212; --grey: #444; }
+        :root { --main: #00ff88; --bg: #050505; --card: #121212; --grey: #222; }
         
         body { 
             background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
-            margin: 0; padding: 40px; text-align: center;
+            margin: 0; padding: 40px; text-align: center; overflow-x: hidden;
         }
 
-        /* BOTÓN REFRESCAR */
         .btn-refresh {
             position: fixed; top: 25px; right: 25px;
             background: rgba(0, 255, 136, 0.1); border: 1px solid var(--main);
             color: var(--main); padding: 12px 25px; border-radius: 50px;
             cursor: pointer; font-size: 14px; z-index: 100; font-weight: bold;
+            transition: 0.3s; backdrop-filter: blur(5px);
         }
+        .btn-refresh:hover { background: var(--main); color: #000; box-shadow: 0 0 20px var(--main); }
 
         h1 { 
             color: var(--main); letter-spacing: 12px; text-transform: uppercase; 
             margin-bottom: 50px; font-size: 45px; font-weight: 900;
+            text-shadow: 0 0 20px rgba(0,255,136,0.2);
         }
 
         /* DISEÑO FIJO 3X3 */
         #agenda { 
             display: grid; 
-            grid-template-columns: repeat(3, 1fr); /* 3 COLUMNAS SIEMPRE */
+            grid-template-columns: repeat(3, 1fr); 
             gap: 25px; 
             max-width: 1400px; 
             margin: auto; 
@@ -38,7 +40,13 @@
             background: var(--card); border-radius: 25px; padding: 25px; 
             border: 1px solid #222; position: relative; transition: 0.3s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-height: 320px;
         }
+        .card:hover { border-color: var(--main); transform: translateY(-5px); }
+
+        /* ESTILO PARA CUADROS DE RELLENO */
+        .card.placeholder { opacity: 0.4; border: 1px dashed #333; background: rgba(255,255,255,0.02); }
+        .card.placeholder:hover { transform: none; border-color: #333; }
 
         .hora-badge { 
             position: absolute; top: 15px; left: 15px; 
@@ -46,43 +54,35 @@
             border-radius: 10px; font-weight: 900; font-size: 14px;
         }
 
-        /* LOGOS BLANCOS CIRCULARES */
         .vs-container { 
             display: flex; align-items: center; justify-content: center; 
-            gap: 15px; margin: 35px 0 15px 0;
+            gap: 15px; margin: 35px 0 15px 0; width: 100%;
         }
 
         .img-box { 
-            background: #fff; width: 85px; height: 85px; 
+            background: #ffffff; width: 85px; height: 85px; 
             border-radius: 50%; display: flex; align-items: center; 
             justify-content: center; overflow: hidden;
             border: 4px solid #333;
         }
 
         .img-box img { width: 75%; height: 75%; object-fit: contain; }
-        .vs-text { font-weight: 900; color: var(--main); font-size: 18px; }
+        .vs-text { font-weight: 900; color: var(--main); font-size: 18px; font-style: italic; }
 
-        .nombres h3 { margin: 10px 0; font-size: 20px; color: #fff; }
-        .canal-txt { color: #666; text-transform: uppercase; font-size: 12px; font-weight: bold; }
+        .nombres h3 { margin: 10px 0; font-size: 20px; color: #fff; letter-spacing: 0.5px; }
+        .canal-txt { color: #555; text-transform: uppercase; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
         
-        /* BOTONES DE ACCESO Y BLOQUEO */
         .btn-link {
             display: block; width: 100%; max-width: 200px;
             background: #1a1a1a; color: var(--main); text-decoration: none; text-align: center; 
             padding: 14px; border-radius: 15px; font-weight: 900; margin-top: 15px;
-            border: 1px solid #333; transition: 0.2s;
+            border: 1px solid #333; transition: 0.2s; text-transform: uppercase;
         }
 
-        .btn-link.locked {
-            background: #111; color: #444; border-color: #222; cursor: not-allowed;
-        }
-
+        .btn-link.locked { background: #111; color: #333; border-color: #222; cursor: not-allowed; }
         .wait-msg { font-size: 10px; color: #ff9f43; margin-top: 8px; font-weight: bold; }
 
-        /* MODO LOGO ÚNICO */
-        .single-mode .img-box { width: 120px; height: 120px; border-color: var(--main); }
-
-        #status { margin-top: 40px; color: #333; font-size: 12px; }
+        #status { margin-top: 50px; color: #333; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -92,30 +92,8 @@
     <h1>NWAKALO TV</h1>
 
     <div id="agenda"></div>
-    <div id="status">Cargando cartelera...</div>
+    <div id="status">Sincronizando con NWAKALO Server...</div>
 
 <script>
-    const URL_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/refs/heads/main/eventos.json';
-
-    async function cargarAgenda() {
-        const container = document.getElementById('agenda');
-        const status = document.getElementById('status');
+    const URL_RAW = '
         
-        try {
-            const resp = await fetch(URL_RAW + '?v=' + Date.now());
-            const base64Data = await resp.text();
-            
-            // DESCIFRADO
-            const jsonStr = decodeURIComponent(escape(window.atob(base64Data.trim())));
-            const eventos = JSON.parse(jsonStr);
-            
-            container.innerHTML = '';
-            
-            const ahora = new Date();
-
-            eventos.forEach(ev => {
-                // --- LÓGICA DE TIEMPO ---
-                const [horas, minutos] = ev.hora.split(':');
-                const fechaEvento = new Date();
-                fechaEvento.setHours(parseInt(horas), parseInt
-                                     
