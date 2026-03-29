@@ -2,77 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE 7.0 - THE MASTER</title>
+    <title>MANDO PEPE 8.0 - CATEGORÍAS</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --panel: #121212; --fútbol: #00ff88; --motor: #ff4757; --especial: #ffa502; }
+        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
         #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .pin-card { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #333; text-align: center; }
-        #mando-root { display: none; max-width: 1200px; margin: auto; }
-        
-        /* TABS */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #222; color: #666; transition: 0.3s; }
-        .tab-btn.active[data-tipo="futbol"] { background: var(--fútbol); color: #000; }
-        .tab-btn.active[data-tipo="motor"] { background: var(--motor); color: #fff; }
-        .tab-btn.active[data-tipo="especial"] { background: var(--especial); color: #000; }
-
-        .layout { display: grid; grid-template-columns: 1.8fr 1fr; gap: 25px; }
+        #mando-root { display: none; max-width: 1100px; margin: auto; }
+        .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
         
-        /* GRID EQUIPOS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; }
-        .btn-eq { background: #161616; border: 1px solid #333; color: #eee; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
-        .btn-eq img { width: 30px; height: 30px; margin-bottom: 5px; }
-        .btn-eq.sel { border-color: var(--main); background: #00331a; }
+        /* BOTONES CATEGORÍAS */
+        .btn-cat { background: #222; color: #fff; padding: 12px; border-radius: 8px; cursor: pointer; border: 1px solid #444; margin-right: 5px; margin-bottom: 10px; font-weight: bold; }
+        .btn-cat.active { background: var(--main); color: #000; border-color: #fff; }
 
-        input, select { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
-        .btn-main { width: 100%; background: var(--main); color: #000; padding: 18px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 15px; text-transform: uppercase; }
+        /* GRID EQUIPOS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; border: 1px solid #333; }
+        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 10px; text-align: center; }
+        .btn-eq img { width: 30px; height: 30px; margin-bottom: 5px; }
+        .btn-eq.sel { border-color: var(--main); background: #004422; }
+
+        input { background: #000; color: var(--main); border: 1px solid #333; padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
+        .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #444; position: relative; }
-        .tag-links { background: #1a1a1a; border: 1px solid var(--main); color: var(--main); padding: 4px 8px; border-radius: 12px; font-size: 10px; margin-right: 5px; margin-top: 5px; display: inline-block; }
-        textarea { height: 100px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; word-break: break-all; border-radius: 8px; }
+        .item-cola { background: #000; padding: 10px; border-radius: 5px; margin-bottom: 5px; font-size: 11px; border-left: 3px solid var(--main); position: relative; }
+        .del-btn { position: absolute; right: 10px; top: 10px; color: red; cursor: pointer; font-weight: bold; }
+        textarea { height: 80px; font-size: 9px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; word-break: break-all; }
     </style>
 </head>
 <body>
 
 <div id="bloqueo">
     <div class="pin-card">
-        <h1>MANDO PEPE 7.0</h1>
-        <input type="password" id="pin_input" placeholder="Introduce el PIN..." style="text-align:center;">
+        <h2>NWAKALO BÚNKER 8.0</h2>
+        <input type="password" id="pin_input" placeholder="PIN..." style="text-align:center;">
         <button onclick="acceso()" class="btn-main">ENTRAR</button>
     </div>
 </div>
 
 <div id="mando-root">
-    <div class="tabs">
-        <button class="tab-btn active" data-tipo="futbol" onclick="setTab('futbol')">⚽ LIGAS (Fútbol)</button>
-        <button class="tab-btn" data-tipo="motor" onclick="setTab('motor')">🏁 MOTOR (F1 / Moto)</button>
-        <button class="tab-btn" data-tipo="especial" onclick="setTab('especial')">✨ ESPECIALES (Tenis/Libre)</button>
-    </div>
-
     <div class="layout">
         <div>
-            <div class="seccion" id="panel-seleccion">
+            <div class="seccion">
+                <h3>1. Elige Categoría</h3>
+                <div id="categorias"></div>
+                
+                <div id="zona-equipos" style="margin-top:15px;">
+                    <div id="equipos" class="grid">Selecciona una categoría...</div>
                 </div>
 
+                <div id="zona-manual" style="display:none; margin-top:15px; border: 1px dashed #444; padding: 15px; border-radius: 10px;">
+                    <label style="font-size: 11px; color:#888;">NOMBRE DEL EVENTO / DUELO</label>
+                    <input type="text" id="m_nombre" placeholder="Ej: Alcaraz vs Sinner">
+                </div>
+            </div>
+
             <div class="seccion">
-                <h3>Datos y Enlaces</h3>
+                <h3>2. Datos y Links</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
                     <input type="date" id="f_in">
                     <input type="time" id="h_in" value="21:00">
                     <input type="text" id="c_in" placeholder="Canal">
                 </div>
-                <input type="text" id="l_in" placeholder="Pega el ID AceStream y ENTER..." onkeydown="if(event.key==='Enter') addLink()">
-                <div id="v_links"></div>
+                <input type="text" id="l_in" placeholder="Pegar ID y pulsar ENTER..." onkeydown="if(event.key==='Enter') addLink()">
+                <div id="v_links" style="font-size:11px; color:var(--main); margin-top:10px;">Links: 0</div>
             </div>
             
-            <button onclick="guardarEvento()" class="btn-main">AÑADIR A LA AGENDA</button>
+            <button onclick="guardar()" class="btn-main">GUARDAR EN AGENDA</button>
         </div>
 
         <div>
             <div class="seccion"><h3>Agenda</h3><div id="cola_eventos"></div></div>
-            <div class="seccion"><h3>Búnker GitHub</h3><textarea id="output" readonly></textarea><button onclick="copyCode()" class="btn-main" style="background:#fff; color:#000;">COPIAR CIFRADO</button></div>
+            <div class="seccion"><h3>Cifrado GitHub</h3><textarea id="output" readonly></textarea><button onclick="copy()" class="btn-main" style="background:#fff;">COPIAR</button></div>
         </div>
     </div>
 </div>
@@ -80,102 +81,119 @@
 <script>
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('pepe_agenda') || "[]");
-    let current = { e1:"", l1:"", e2:"", l2:"", tipo:"futbol" };
+    let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"" }; 
     let links = [];
 
     function acceso() {
         if(window.btoa(document.getElementById('pin_input').value) === "THVzaWxlY3RyYV8wMUA=") {
             document.getElementById('bloqueo').style.display='none';
             document.getElementById('mando-root').style.display='block';
-            setTab('futbol');
+            update();
         }
     }
 
-    fetch('base_datos.json').then(r => r.json()).then(data => { BD = data; });
-
-    function setTab(t) {
-        current.tipo = t;
-        current.e1 = ""; current.e2 = ""; 
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tipo === t));
-        const p = document.getElementById('panel-seleccion');
-        
-        if(t === 'futbol') {
-            p.innerHTML = `<h3>Selecciona Equipos</h3><div id="l_list"></div><div id="e_grid" class="grid"></div>`;
-            Object.keys(BD.ligas).forEach(l => {
-                document.getElementById('l_list').innerHTML += `<button class="btn-liga" onclick="verEq('${l}')">${l}</button>`;
-            });
-        } else if (t === 'motor') {
-            p.innerHTML = `<h3>Evento de Motor</h3>
-                <select id="m_cat" onchange="current.e1=this.value; current.l1='../deporte/'+this.value.toLowerCase()+'.png'"><option value="">Selecciona Categoría...</option><option value="F1">Fórmula 1</option><option value="MotoGP">MotoGP</option></select>
-                <input type="text" id="m_desc" placeholder="Nombre del GP (Ej: GP de Mónaco)">`;
-        } else {
-            p.innerHTML = `<h3>Evento Especial Libre</h3>
-                <input type="text" id="s_tipo" placeholder="Tipo (Ej: Tenis, UFC, Ciclismo...)">
-                <input type="text" id="s_logo" placeholder="Nombre logo (Ej: tenis.png)">
-                <input type="text" id="s_desc" placeholder="Evento (Ej: Alcaraz vs Sinner)">`;
-        }
-    }
-
-    function verEq(l) {
-        const grid = document.getElementById('e_grid'); grid.innerHTML = "";
-        const liga = BD.ligas[l];
-        liga.equipos.forEach(eq => {
-            const b = document.createElement('button');
-            b.className = 'btn-eq';
-            b.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
-            b.onclick = () => {
-                if(!current.e1 || (current.e1 && current.e2)) {
-                    current.e1 = eq.n; current.l1 = `${liga.id}/${eq.a}`; current.e2=""; 
-                    document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
-                } else {
-                    current.e2 = eq.n; current.l2 = `${liga.id}/${eq.a}`; b.classList.add('sel');
-                }
-            };
-            grid.appendChild(b);
+    // Cargar Categorías desde tu JSON
+    fetch('base_datos.json').then(r => r.json()).then(data => {
+        BD = data;
+        const div = document.getElementById('categorias');
+        Object.keys(BD.ligas).forEach(l => {
+            div.innerHTML += `<button class="btn-cat" onclick="setCat('${l}', this)">${l}</button>`;
         });
+    });
+
+    function setCat(name, btn) {
+        document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const liga = BD.ligas[name];
+        cur.cat = name;
+        cur.modo = liga.modo; // "duelo" (fútbol/tenis) o "unico" (F1/MotoGP)
+        cur.e1 = ""; cur.e2 = "";
+
+        const grid = document.getElementById('equipos');
+        const zManual = document.getElementById('zona-manual');
+        
+        if(name === "Eventos Especiales") {
+            grid.parentElement.style.display = "none";
+            zManual.style.display = "block";
+        } else {
+            grid.parentElement.style.display = "block";
+            zManual.style.display = "none";
+            grid.innerHTML = "";
+            liga.equipos.forEach(eq => {
+                const b = document.createElement('button');
+                b.className = 'btn-eq';
+                b.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
+                b.onclick = () => selectEq(eq.n, `${liga.id}/${eq.a}`, b);
+                grid.appendChild(b);
+            });
+        }
+    }
+
+    function selectEq(n, img, btn) {
+        if(cur.modo === "unico") {
+            cur.e1 = n; cur.l1 = img; cur.e2 = ""; cur.l2 = "";
+            document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel'));
+            btn.classList.add('sel');
+        } else {
+            if(!cur.e1 || (cur.e1 && cur.e2)) {
+                cur.e1 = n; cur.l1 = img; cur.e2 = "";
+                document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel'));
+                btn.classList.add('sel');
+            } else {
+                cur.e2 = n; cur.l2 = img;
+                btn.classList.add('sel');
+            }
+        }
     }
 
     function addLink() {
-        const val = document.getElementById('l_in').value.trim();
-        if(val) { links.push(val); document.getElementById('l_in').value=""; renderLinks(); }
+        const v = document.getElementById('l_in').value.trim();
+        if(v) { links.push(v); document.getElementById('l_in').value=""; renderLinks(); }
     }
+    function renderLinks() { document.getElementById('v_links').innerText = "Links: " + links.length; }
 
-    function renderLinks() {
-        document.getElementById('v_links').innerHTML = links.map((l, i) => `<span class="tag-links">Link ${i+1} <b onclick="links.splice(${i},1);renderLinks()" style="color:red;cursor:pointer">×</b></span>`).join('');
-    }
-
-    function guardarEvento() {
-        let ev = { fecha: document.getElementById('f_in').value, hora: document.getElementById('h_in').value, canal: document.getElementById('c_in').value || "TV", links: [...links] };
-        
-        if(current.tipo === 'futbol') {
-            if(!current.e2) return alert("Faltan equipos");
-            ev.e1 = current.e1; ev.logo1 = current.l1; ev.e2 = current.e2; ev.logo2 = current.l2;
-        } else if(current.tipo === 'motor') {
-            const desc = document.getElementById('m_desc').value;
-            if(!current.e1 || !desc) return alert("Falta categoría o nombre del GP");
-            ev.e1 = `${current.e1}: ${desc}`; ev.logo1 = current.l1; ev.e2 = ""; ev.logo2 = "";
+    function guardar() {
+        // Validación inteligente
+        if(cur.cat === "Eventos Especiales") {
+            cur.e1 = document.getElementById('m_nombre').value;
+            cur.l1 = "../deporte/generico.png"; // O el que quieras por defecto
+            if(!cur.e1) return alert("Escribe el nombre del evento");
         } else {
-            const tipo = document.getElementById('s_tipo').value;
-            const desc = document.getElementById('s_desc').value;
-            const logo = document.getElementById('s_logo').value;
-            if(!tipo || !desc) return alert("Rellena los datos");
-            ev.e1 = `${tipo}: ${desc}`; ev.logo1 = `../deporte/${logo}`; ev.e2 = ""; ev.logo2 = "";
+            if(!cur.e1) return alert("Selecciona al menos un equipo/piloto");
+            if(cur.modo === "duelo" && !cur.e2) return alert("Esta categoría requiere 2 equipos (Duelo)");
         }
-
         if(links.length === 0) return alert("Faltan links");
+
+        const ev = {
+            fecha: document.getElementById('f_in').value,
+            hora: document.getElementById('h_in').value,
+            e1: cur.e1, logo1: cur.l1,
+            e2: cur.e2, logo2: cur.l2,
+            canal: document.getElementById('c_in').value || cur.cat,
+            links: [...links]
+        };
+
         agenda.push(ev);
         update();
-        links = []; document.getElementById('v_links').innerHTML = "";
+        links = []; cur.e1=""; cur.e2=""; document.getElementById('m_nombre').value="";
+        document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel'));
+        renderLinks();
         alert("Añadido.");
     }
 
     function update() {
         localStorage.setItem('pepe_agenda', JSON.stringify(agenda));
         document.getElementById('output').value = window.btoa(unescape(encodeURIComponent(JSON.stringify(agenda))));
-        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `<div class="item-cola"><b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}<span class="del-btn" onclick="agenda.splice(${i},1);update()">×</span></div>`).join('');
+        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
+            <div class="item-cola">
+                <b>${e.hora}</b> | ${e.e1} ${e.e2 ? 'vs '+e.e2 : ''}
+                <span class="del-btn" onclick="agenda.splice(${i},1);update()">×</span>
+            </div>
+        `).join('');
     }
 
-    function copyCode() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado"); }
+    function copy() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado"); }
     document.getElementById('f_in').valueAsDate = new Date();
 </script>
 </body>
