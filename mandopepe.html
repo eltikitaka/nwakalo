@@ -2,237 +2,264 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE 2.0 - NWAKALO TV</title>
+    <title>MANDO PEPE 3.0 - SISTEMA ENCRIPTADO</title>
     <style>
-        :root { --main: #00ff88; --bg: #0f0f0f; --panel: #1a1a1a; --accent: #007bff; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1400px; margin: auto; }
+        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --accent: #007bff; --error: #ff4757; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; overflow-x: hidden; }
         
-        .layout { display: flex; gap: 20px; align-items: flex-start; }
-        .seccion { background: var(--panel); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        
-        /* GRID EQUIPOS CON LOGOS CIRCULARES */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 450px; overflow-y: auto; padding: 15px; background: #0a0a0a; border-radius: 10px; border: 1px solid #222; }
-        
-        .btn-equipo { background: #222; border: 1px solid #444; color: #ccc; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-equipo img { 
-            height: 50px; width: 50px; 
-            background: #fff; /* FONDO BLANCO */
-            padding: 5px; 
-            border-radius: 50%; /* CÍRCULO */
-            object-fit: contain; 
-            margin-bottom: 8px;
-            border: 2px solid #444;
+        /* PANTALLA DE BLOQUEO */
+        #bloqueo {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
         }
+        .pin-card { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #333; text-align: center; width: 350px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
+        .pin-card h2 { color: var(--main); font-size: 1.1rem; margin-bottom: 5px; letter-spacing: 3px; text-transform: uppercase; }
+        .pin-display { font-size: 18px; background: #000; border: 1px solid #444; color: var(--main); width: 100%; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-family: monospace; }
+        
+        /* CONTENIDO PRINCIPAL */
+        #mando-root { display: none; max-width: 1400px; margin: auto; }
+        .layout { display: flex; gap: 20px; }
+        .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        /* BOTONES LIGAS */
-        .btn-liga { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 110px; padding: 10px; border: 1px solid #333; background: #222; color: #ccc; cursor: pointer; border-radius: 8px; font-weight: bold; }
-        .btn-liga img { height: 40px; width: 40px; background: #fff; padding: 5px; border-radius: 50%; object-fit: contain; }
-        .btn-liga.active { background: var(--main) !important; color: #000; border-color: #fff; }
-
+        /* GRID CON LOGOS CIRCULARES */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 450px; overflow-y: auto; padding: 15px; background: #000; border-radius: 10px; border: 1px solid #222; }
+        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 12px 5px; border-radius: 12px; cursor: pointer; font-size: 10.5px; transition: 0.2s; font-weight: 500; }
+        .btn-eq img { width: 50px; height: 50px; background: #fff; border-radius: 50%; padding: 5px; object-fit: contain; margin-bottom: 8px; border: 2px solid #444; }
+        
         /* ESTADOS SELECCIÓN */
-        .btn-equipo.local { background: var(--accent) !important; color: #fff; border-color: #fff; }
-        .btn-equipo.visita { background: #dc3545 !important; color: #fff; border-color: #fff; }
-        .btn-equipo.solo-evento { background: #ff9800 !important; color: #000; font-weight: bold; }
+        .btn-eq.local { background: var(--accent) !important; border-color: #fff; box-shadow: 0 0 10px rgba(0,123,255,0.5); }
+        .btn-eq.visita { background: var(--error) !important; border-color: #fff; box-shadow: 0 0 10px rgba(255,71,87,0.5); }
+        .btn-eq.motor-sel { background: #ffa502 !important; color: #000; font-weight: bold; border-color: #fff; }
 
-        /* INPUTS */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 15px; margin-top: 15px; background: #111; padding: 15px; border-radius: 10px; }
-        input { background: #1e1e1e; color: var(--main); border: 1px solid #444; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; box-sizing: border-box; }
-        
-        /* GESTOR DE IDs */
-        .visor-ids { font-size: 11px; color: #aaa; background: #000; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid #333; min-height: 40px; }
-        .id-tag { display: flex; justify-content: space-between; background: #222; padding: 4px 8px; border-radius: 4px; margin-bottom: 4px; border-left: 3px solid var(--main); }
+        .btn-liga { background: #222; color: #fff; border: 1px solid #444; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; font-weight: bold; font-size: 10px; transition: 0.3s; min-width: 105px; }
+        .btn-liga img { width: 40px; height: 40px; border-radius: 50%; background: #fff; padding: 4px; object-fit: contain; }
+        .btn-liga.active { background: var(--main); color: #000; border-color: #fff; transform: translateY(-3px); }
 
-        /* PREVIEW */
-        .preview { background: #000; color: var(--main); padding: 15px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 12px; max-height: 250px; overflow-y: auto; border: 1px solid #333; }
-        .cola-item { background: #252525; padding: 12px; margin-bottom: 8px; border-radius: 8px; border-left: 5px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
+        /* FORMULARIO */
+        .row { display: grid; grid-template-columns: 1fr 1fr 1.5fr 2.5fr; gap: 15px; margin-top: 15px; background: #000; padding: 18px; border-radius: 12px; border: 1px solid #222; }
+        input { background: #1a1a1a; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-weight: bold; outline: none; }
+        input:focus { border-color: var(--main); }
         
-        h3 { color: var(--main); margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        /* LISTA DE IDs */
+        .visor-ids { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 8px; margin-top: 12px; font-size: 11px; min-height: 45px; }
+        .id-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid #222; color: #aaa; align-items: center; }
+        
+        /* PREVIEW JSON */
+        .preview { background: #000; color: var(--main); padding: 15px; border-radius: 10px; font-family: 'Consolas', monospace; font-size: 11px; max-height: 250px; overflow-y: auto; border: 1px solid #222; margin-top: 10px; }
+        
+        .btn-main { width:100%; background:var(--main); color:#000; padding:20px; border:none; border-radius:15px; font-weight:bold; font-size:1.1rem; cursor:pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-main:hover { filter: brightness(1.1); transform: scale(1.01); }
+
+        h3 { margin: 0 0 15px 0; font-size: 0.85rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color:var(--main); letter-spacing: 4px; margin-bottom: 30px;">🛰️ MANDO PEPE PRO</h2>
-
-    <div class="layout">
-        
-        <div style="flex: 2.5;">
-            <div class="seccion">
-                <h3>1. Elegir Competición</h3>
-                <div id="listaLigas" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-                
-                <h3 style="margin-top:25px;">2. Definir Equipos o Sesión</h3>
-                <div id="boxMotor" style="display:none; margin-bottom: 15px;">
-                    <input type="text" id="nombre_gp" placeholder="Nombre del Evento (Ej: GP de España, Torneo X...)">
-                </div>
-                <div id="listaEquipos" class="grid"></div>
-            </div>
-
-            <div class="seccion">
-                <h3>3. Programación y Enlaces</h3>
-                <div class="form-row">
-                    <div>
-                        <label style="font-size:10px; color:#888;">FECHA:</label>
-                        <input type="date" id="fecha">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; color:#888;">HORA:</label>
-                        <input type="time" id="hora" value="21:00">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; color:var(--main);">NOMBRE CANAL:</label>
-                        <input type="text" id="nombre_canal" placeholder="Ej: DAZN LaLiga">
-                    </div>
-                    <div>
-                        <label style="font-size:10px; color:var(--main);">AÑADIR ID UNA A UNA (+):</label>
-                        <div style="display: flex; gap: 5px;">
-                            <input type="text" id="id_input" placeholder="Pega el hash aquí...">
-                            <button onclick="agregarId()" style="background:var(--main); color:#000; font-weight:bold; width:50px; border:none; border-radius:6px; cursor:pointer;">+</button>
-                        </div>
-                        <div id="visor_ids" class="visor-ids">No hay IDs añadidas.</div>
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="añadirEventoALista()" style="width:100%; background:var(--main); color:#000; font-weight:bold; padding:20px; border:none; border-radius:12px; cursor:pointer; font-size: 1.2rem;">+ AÑADIR A LA PARRILLA</button>
+    <div id="bloqueo">
+        <div class="pin-card">
+            <h2>Nwakalo Secure v3</h2>
+            <p style="font-size: 10px; color: #555; margin-bottom: 20px;">KEY-ID: SESSION_PRIVATE_ENCRYPTED</p>
+            <input type="password" id="pin_input" class="pin-display" placeholder="Introduce Credencial...">
+            <button id="btn_unlock" onclick="intentarAcceso()" style="width:100%; padding:15px; background:var(--main); border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">DESBLOQUEAR PANEL</button>
+            <p id="msg_error" style="color: var(--error); font-size: 11px; margin-top: 15px; display: none; font-weight: bold;">ACCESO DENEGADO. Bloqueo temporal activo.</p>
         </div>
+    </div>
 
-        <div style="flex: 1.5;">
-            <div class="seccion">
-                <h3>PARTIDOS EN COLA</h3>
-                <div id="colaPartidos"></div>
-                <button onclick="limpiarTodo()" style="background:none; border:none; color:#ff5252; font-size:11px; width:100%; cursor:pointer; margin-top:10px;">🗑️ Vaciar todo</button>
+    <div id="mando-root">
+        <h2 style="text-align:center; color:var(--main); letter-spacing: 5px; margin-bottom: 25px; text-shadow: 0 0 10px rgba(0,255,136,0.3);">🛰️ MANDO PEPE PRO 3.0</h2>
+        
+        <div class="layout">
+            <div style="flex: 2.5;">
+                <div class="seccion">
+                    <h3>1. Seleccionar Competición</h3>
+                    <div id="listaLigas" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                    
+                    <h3 style="margin-top:25px;">2. Configurar Evento / Equipos</h3>
+                    <div id="motorBox" style="display:none; margin-bottom:12px;">
+                        <input type="text" id="gp_name" placeholder="Nombre del Gran Premio o Título del Evento">
+                    </div>
+                    <div id="listaEquipos" class="grid">Selecciona una liga para cargar equipos...</div>
+                </div>
+
+                <div class="seccion">
+                    <h3>3. Programación y Enlaces AceStream</h3>
+                    <div class="row">
+                        <div><label style="font-size:9px; display:block; margin-bottom:5px;">FECHA</label><input type="date" id="f_input"></div>
+                        <div><label style="font-size:9px; display:block; margin-bottom:5px;">HORA</label><input type="time" id="h_input" value="21:00"></div>
+                        <div><label style="font-size:9px; display:block; margin-bottom:5px; color:var(--main);">NOMBRE CANAL</label><input type="text" id="c_input" placeholder="Ej: DAZN LaLiga"></div>
+                        <div>
+                            <label style="font-size:9px; display:block; margin-bottom:5px; color:var(--main);">AÑADIR IDs UNA A UNA (+)</label>
+                            <div style="display:flex; gap:5px;">
+                                <input type="text" id="link_input" placeholder="Pegar hash aquí...">
+                                <button onclick="addLink()" style="background:var(--main); border:none; border-radius:5px; width:45px; cursor:pointer; font-weight:bold;">+</button>
+                            </div>
+                            <div id="visor_ids" class="visor-ids">No hay links añadidos...</div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="subirEvento()" class="btn-main">AÑADIR EVENTO A LA PARRILLA</button>
             </div>
 
-            <div class="seccion">
-                <h3>CÓDIGO FINAL (eventos.json)</h3>
-                <div id="codigoPreview" class="preview">[]</div>
-                <button onclick="copiarCodigo()" style="width:100%; margin-top:10px; background:#fff; color:#000; font-weight:bold; padding:15px; border:none; border-radius:8px; cursor:pointer;">📋 COPIAR JSON</button>
+            <div style="flex: 1.5;">
+                <div class="seccion">
+                    <h3>Eventos en Cola</h3>
+                    <div id="cola" style="max-height: 300px; overflow-y: auto;"></div>
+                    <button onclick="limpiarTodo()" style="background:none; border:none; color:var(--error); font-size:10px; width:100%; cursor:pointer; margin-top:15px; text-decoration: underline;">🗑️ Borrar toda la lista</button>
+                </div>
+
+                <div class="seccion">
+                    <h3>Código JSON Final</h3>
+                    <div id="jsonPreview" class="preview">[]</div>
+                    <button onclick="copy()" style="width:100%; margin-top:10px; background:#fff; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">📋 COPIAR PARA EVENTOS.JSON</button>
+                </div>
             </div>
         </div>
     </div>
 
 <script>
-    let BD = {};
-    let pTemp = { e1: "", l1: "", e2: "", l2: "", ligaId: "", tipo: "" };
-    let idsAcumuladas = [];
-    let listaFinal = [];
+    // --- SEGURIDAD ENCRIPTADA ---
+    // Clave: Lusilectra_01@
+    const LLAVE_MAESTRA = "THVzaWxlY3RyYV8wMUA="; 
 
-    document.getElementById('fecha').valueAsDate = new Date();
+    function intentarAcceso() {
+        const pin = document.getElementById('pin_input').value;
+        const btn = document.getElementById('btn_unlock');
+        const err = document.getElementById('msg_error');
 
-    fetch('base_datos.json?t=' + Date.now())
-        .then(res => res.json())
-        .then(data => {
-            BD = data;
-            renderLigas();
-        });
-
-    function renderLigas() {
-        const div = document.getElementById('listaLigas');
-        div.innerHTML = '';
-        Object.keys(BD.ligas).forEach(n => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-liga';
-            btn.innerHTML = `<img src="assets/deporte/${BD.ligas[n].logo}"><span>${n}</span>`;
-            btn.onclick = () => {
-                document.querySelectorAll('.btn-liga').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                cargarEquipos(n);
-            };
-            div.appendChild(btn);
-        });
+        if(window.btoa(pin) === LLAVE_MAESTRA) {
+            document.getElementById('bloqueo').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('bloqueo').style.display = 'none';
+                document.getElementById('mando-root').style.display = 'block';
+            }, 500);
+        } else {
+            btn.disabled = true;
+            btn.innerText = "BLOQUEADO";
+            err.style.display = 'block';
+            setTimeout(() => { 
+                btn.disabled = false; 
+                btn.innerText = "REINTENTAR";
+                err.style.display = 'none'; 
+                document.getElementById('pin_input').value = "";
+            }, 4000);
+        }
     }
 
-    function cargarEquipos(nombreLiga) {
-        const liga = BD.ligas[nombreLiga];
-        pTemp.ligaId = liga.id;
-        pTemp.tipo = (liga.id === "f1" || liga.id === "MotoGP") ? "motor" : "futbol";
+    // --- LÓGICA DEL MANDO ---
+    let BD = {};
+    let temp = { e1: "", l1: "", e2: "", l2: "", liga: "", tipo: "" };
+    let linksTemp = [];
+    let parrilla = [];
+
+    document.getElementById('f_input').valueAsDate = new Date();
+
+    // Cargar base de datos
+    fetch('base_datos.json?t=' + Date.now()).then(r => r.json()).then(data => {
+        BD = data;
+        const div = document.getElementById('listaLigas');
+        Object.keys(BD.ligas).forEach(n => {
+            div.innerHTML += `<button class="btn-liga" onclick="loadEq('${n}', this)">
+                <img src="assets/deporte/${BD.ligas[n].logo}"> <span>${n}</span></button>`;
+        });
+    });
+
+    function loadEq(n, btn) {
+        document.querySelectorAll('.btn-liga').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const liga = BD.ligas[n];
+        temp.liga = liga.id;
+        temp.tipo = (liga.id === "f1" || liga.id === "MotoGP") ? "motor" : "futbol";
+        document.getElementById('motorBox').style.display = (temp.tipo === "motor") ? "block" : "none";
         
-        document.getElementById('boxMotor').style.display = (pTemp.tipo === "motor") ? "block" : "none";
         const grid = document.getElementById('listaEquipos');
         grid.innerHTML = '';
-        pTemp.e1 = ""; pTemp.e2 = "";
+        temp.e1 = ""; temp.e2 = "";
 
         liga.equipos.forEach(eq => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-equipo';
-            btn.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
-            btn.onclick = () => {
-                if(pTemp.tipo === "motor") {
-                    pTemp.e1 = eq.n; pTemp.l1 = eq.a;
-                    document.querySelectorAll('.btn-equipo').forEach(b => b.classList.remove('solo-evento'));
-                    btn.classList.add('solo-evento');
+            const bEq = document.createElement('button');
+            bEq.className = 'btn-eq';
+            bEq.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
+            bEq.onclick = () => {
+                if(temp.tipo === "motor") {
+                    temp.e1 = eq.n; temp.l1 = eq.a;
+                    document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('motor-sel'));
+                    bEq.classList.add('motor-sel');
                 } else {
-                    if (!pTemp.e1 || (pTemp.e1 && pTemp.e2)) {
-                        pTemp.e1 = eq.n; pTemp.l1 = eq.a; pTemp.e2 = "";
-                        document.querySelectorAll('.btn-equipo').forEach(b => b.classList.remove('local', 'visita'));
-                        btn.classList.add('local');
+                    if(!temp.e1 || (temp.e1 && temp.e2)) {
+                        temp.e1 = eq.n; temp.l1 = eq.a; temp.e2 = "";
+                        document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('local', 'visita'));
+                        bEq.classList.add('local');
                     } else {
-                        pTemp.e2 = eq.n; pTemp.l2 = eq.a;
-                        btn.classList.add('visita');
+                        temp.e2 = eq.n; temp.l2 = eq.a; bEq.classList.add('visita');
                     }
                 }
             };
-            grid.appendChild(btn);
+            grid.appendChild(bEq);
         });
     }
 
-    function agregarId() {
-        const input = document.getElementById('id_input');
-        const id = input.value.trim();
-        if(id.length < 10) return alert("ID no válida");
-        idsAcumuladas.push(id);
-        input.value = "";
-        actualizarVisor();
+    function addLink() {
+        const val = document.getElementById('link_input').value.trim();
+        if(val.length < 10) return alert("ID demasiado corta");
+        linksTemp.push(val);
+        document.getElementById('link_input').value = "";
+        drawLinks();
     }
 
-    function actualizarVisor() {
-        const visor = document.getElementById('visor_ids');
-        visor.innerHTML = idsAcumuladas.length === 0 ? "No hay IDs añadidas..." : 
-            idsAcumuladas.map((id, i) => `<div class="id-tag"><span>Link ${i+1}: ${id.substring(0,10)}...</span> <span onclick="quitarId(${i})" style="color:red; cursor:pointer;">✖</span></div>`).join('');
+    function drawLinks() {
+        const v = document.getElementById('visor_ids');
+        if(linksTemp.length === 0) { v.innerHTML = "No hay links añadidos..."; return; }
+        v.innerHTML = linksTemp.map((l, i) => `
+            <div class="id-item">
+                <span>Link ${i+1}: <b>${l.substring(0,10)}...</b></span> 
+                <span onclick="linksTemp.splice(${i},1);drawLinks();" style="color:var(--error);cursor:pointer; font-weight:bold;">[ ELIMINAR ]</span>
+            </div>`).join('');
     }
 
-    function quitarId(i) { idsAcumuladas.splice(i,1); actualizarVisor(); }
-
-    function añadirEventoALista() {
-        const canalNombre = document.getElementById('nombre_canal').value;
-        const gpExtra = document.getElementById('nombre_gp').value;
-
-        if(!pTemp.e1 || idsAcumuladas.length === 0 || !canalNombre) return alert("Faltan datos (Equipos, Canal o IDs)");
-
-        const nuevo = {
-            fecha: document.getElementById('fecha').value,
-            hora: document.getElementById('hora').value,
-            e1: (pTemp.tipo === "motor") ? gpExtra : pTemp.e1,
-            logo1: (pTemp.tipo === "motor") ? `deporte/${pTemp.ligaId}.png` : `${pTemp.ligaId}/${pTemp.l1}`,
-            e2: (pTemp.tipo === "motor") ? pTemp.e1 : pTemp.e2,
-            logo2: (pTemp.tipo === "motor") ? `deporte/${pTemp.ligaId}.png` : `${pTemp.ligaId}/${pTemp.l2}`,
-            canal: canalNombre,
-            links: [...idsAcumuladas]
+    function subirEvento() {
+        const canal = document.getElementById('c_input').value.trim();
+        const gpNom = document.getElementById('gp_name').value.trim();
+        if(!temp.e1 || linksTemp.length === 0 || !canal) return alert("Error: Faltan equipos, canal o enlaces.");
+        
+        const item = {
+            fecha: document.getElementById('f_input').value,
+            hora: document.getElementById('h_input').value,
+            e1: (temp.tipo === "motor") ? gpNom : temp.e1,
+            logo1: (temp.tipo === "motor") ? `deporte/${temp.liga}.png` : `${temp.liga}/${temp.l1}`,
+            e2: (temp.tipo === "motor") ? temp.e1 : temp.e2,
+            logo2: (temp.tipo === "motor") ? `deporte/${temp.liga}.png` : `${temp.liga}/${temp.l2}`,
+            canal: canal,
+            links: [...linksTemp]
         };
-
-        listaFinal.push(nuevo);
-        idsAcumuladas = [];
-        actualizarVisor();
-        actualizarParrilla();
+        parrilla.push(item);
+        parrilla.sort((a,b) => (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+        
+        linksTemp = []; drawLinks();
+        document.getElementById('gp_name').value = "";
+        renderParrilla();
     }
 
-    function actualizarParrilla() {
-        const cola = document.getElementById('colaPartidos');
-        cola.innerHTML = '';
-        listaFinal.forEach((ev, i) => {
-            cola.innerHTML += `<div class="cola-item">
-                <span><b>${ev.hora}</b> - ${ev.e1} vs ${ev.e2}</span>
-                <button onclick="eliminarEvento(${i})" style="background:none; border:none; color:red; cursor:pointer;">✖</button>
-            </div>`;
-        });
-        document.getElementById('codigoPreview').innerText = JSON.stringify(listaFinal, null, 2);
+    function renderParrilla() {
+        const cola = document.getElementById('cola');
+        cola.innerHTML = parrilla.map((ev, i) => `
+            <div style="background:#000; padding:12px; border-radius:10px; margin-bottom:8px; font-size:12px; border-left:4px solid var(--main); display:flex; justify-content:space-between; align-items:center;">
+                <span><b>${ev.hora}</b> | ${ev.e1} vs ${ev.e2}</span>
+                <button onclick="parrilla.splice(${i},1);renderParrilla()" style="color:var(--error); background:none; border:none; cursor:pointer; font-weight:bold;">✖</button>
+            </div>`).join('');
+        document.getElementById('jsonPreview').innerText = JSON.stringify(parrilla, null, 2);
     }
 
-    function eliminarEvento(i) { listaFinal.splice(i,1); actualizarParrilla(); }
-    function limpiarTodo() { if(confirm("¿Borrar todo?")) { listaFinal = []; actualizarParrilla(); } }
+    function limpiarTodo() { if(confirm("¿Seguro que quieres vaciar toda la parrilla?")) { parrilla = []; renderParrilla(); } }
     
-    function copiarCodigo() {
-        navigator.clipboard.writeText(document.getElementById('codigoPreview').innerText).then(() => alert("✅ Copiado!"));
+    function copy() {
+        const txt = document.getElementById('jsonPreview').innerText;
+        navigator.clipboard.writeText(txt).then(() => {
+            const btn = document.querySelector('button[onclick="copy()"]');
+            btn.innerText = "✅ COPIADO CON ÉXITO";
+            setTimeout(() => btn.innerText = "📋 COPIAR PARA EVENTOS.JSON", 2000);
+        });
     }
 </script>
 </body>
