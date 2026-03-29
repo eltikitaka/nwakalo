@@ -2,170 +2,132 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV 3X3</title>
+    <title>NWAKALO TV PRO</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #121212; }
+        :root { --main: #00ff88; --bg: #050505; --card: #111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        * { box-sizing: border-box; }
-        html, body { 
-            height: 100vh; margin: 0; padding: 0; 
-            background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
-            overflow: hidden; /* BLOQUEA EL SCROLL COMPLETAMENTE */
+        body { 
+            height: 100vh; width: 100vw; background: var(--bg); 
+            color: #fff; font-family: sans-serif; overflow: hidden;
+            display: flex; flex-direction: column; padding: 10px;
         }
-
-        body { display: flex; flex-direction: column; padding: 10px 30px; }
 
         h1 { 
-            color: var(--main); letter-spacing: 15px; text-transform: uppercase; 
-            margin: 10px 0; font-size: 35px; font-weight: 900; text-align: center;
-            text-shadow: 0 0 20px rgba(0,255,136,0.3);
+            color: var(--main); text-align: center; font-size: 28px; 
+            letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase;
         }
 
-        /* REJILLA 3X3 PERFECTA */
+        /* CUADRICULA 3X3 SIN FALLOS */
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(3, 1fr); 
-            gap: 15px; 
-            flex: 1; /* ESTIRA LA REJILLA AL ALTO DE LA TELE */
-            margin-bottom: 20px;
+            grid-template-rows: repeat(3, 30vh); /* CADA FILA OCUPA EXACTO EL 30% DEL ALTO */
+            gap: 10px; 
+            width: 100%;
         }
 
         .card { 
-            background: var(--card); border-radius: 20px; border: 1px solid #222;
-            position: relative; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; padding: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            background: var(--card); border-radius: 15px; border: 1px solid #222;
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; position: relative; padding: 5px;
         }
 
-        .card.placeholder { opacity: 0.2; border: 1px dashed #333; }
+        /* EVENTOS VACÍOS SIN LOGOS ROTOS */
+        .card.placeholder { opacity: 0.15; border: 1px dashed #444; }
+        .card.placeholder .vs-container, .card.placeholder .img-box { display: none; }
 
         .hora-badge { 
-            position: absolute; top: 10px; left: 15px; 
-            background: var(--main); color: #000; padding: 2px 10px; 
-            border-radius: 6px; font-weight: 900; font-size: 13px;
+            position: absolute; top: 8px; left: 8px; 
+            background: var(--main); color: #000; padding: 2px 8px; 
+            border-radius: 5px; font-weight: bold; font-size: 12px;
         }
 
-        /* LOGOS CIRCULARES */
-        .vs-container { display: flex; align-items: center; gap: 10px; margin: 5px 0; }
-
+        .vs-container { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .img-box { 
-            background: #fff; width: 75px; height: 75px; 
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 3px solid #333;
+            background: #fff; width: 60px; height: 60px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
 
-        .nombres { text-align: center; }
-        .nombres h3 { margin: 5px 0; font-size: 18px; line-height: 1.1; color: #fff; }
-        .canal-txt { color: #555; text-transform: uppercase; font-size: 11px; font-weight: bold; }
+        .nombres { text-align: center; width: 100%; }
+        .nombres h3 { font-size: 16px; margin: 2px 0; color: #fff; }
+        .canal-txt { color: #555; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         
         .btn-link {
-            width: 85%; background: #1a1a1a; color: var(--main); 
-            text-align: center; padding: 10px; border-radius: 12px; 
-            font-weight: 900; font-size: 14px; border: 1px solid #333;
-            text-transform: uppercase; text-decoration: none; margin-top: 5px;
+            width: 80%; background: #222; color: var(--main); 
+            padding: 8px; border-radius: 10px; font-weight: bold; 
+            font-size: 12px; border: 1px solid #333; text-decoration: none; margin-top: 5px;
         }
-
-        .btn-link.locked { background: #0c0c0c; color: #333; border-color: #222; }
-        .wait-msg { font-size: 10px; color: #ff9f43; margin-top: 3px; font-weight: bold; }
-
-        #status { text-align: center; color: #1a1a1a; font-size: 10px; }
-        
-        /* MODO LOGO ÚNICO */
-        .single-mode .img-box { width: 110px; height: 110px; }
+        .btn-link.locked { color: #444; border-color: #1a1a1a; }
     </style>
 </head>
 <body>
 
     <h1>NWAKALO TV</h1>
-
     <div id="agenda"></div>
-    <div id="status">Actualizando automáticamente cada 5 minutos...</div>
 
 <script>
     const URL_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/refs/heads/main/eventos.json';
 
-    async function cargarAgenda() {
-        const container = document.getElementById('agenda');
+    async function cargar() {
         try {
-            const resp = await fetch(URL_RAW + '?v=' + Date.now());
-            let base64Data = await resp.text();
-            base64Data = base64Data.replace(/["\s]/g, '').trim();
+            const r = await fetch(URL_RAW + '?nocache=' + Date.now());
+            let data = await r.text();
+            data = data.replace(/["\s]/g, '').trim();
             
-            let eventos = [];
-            if(base64Data && base64Data.length > 10) {
-                const jsonStr = decodeURIComponent(escape(window.atob(base64Data)));
-                eventos = JSON.parse(jsonStr);
+            let evs = [];
+            if(data.length > 10) {
+                evs = JSON.parse(decodeURIComponent(escape(window.atob(data))));
             }
 
+            const container = document.getElementById('agenda');
             container.innerHTML = '';
             const ahora = new Date();
-            let mostrados = 0;
+            let count = 0;
 
-            eventos.forEach(ev => {
-                if(mostrados >= 9) return;
+            // Pintar eventos reales
+            evs.forEach(ev => {
+                if(count >= 9) return;
                 const [h, m] = ev.hora.split(':');
-                const fEv = new Date(); fEv.setHours(h, m, 0);
-                const difMins = (fEv - ahora) / (1000 * 60);
-                const hPasadas = (ahora - fEv) / (1000 * 60 * 60);
-
-                if (hPasadas > 3) return; 
-
-                mostrados++;
-                const disponible = difMins <= 15;
-                const isSingle = !ev.e2 || ev.e2.trim() === "";
+                const f = new Date(); f.setHours(h, m, 0);
+                const dif = (f - ahora) / 60000;
                 
-                const card = document.createElement('div');
-                card.className = `card ${isSingle ? 'single-mode' : ''}`;
-                
-                let l1 = ev.logo1.includes('http') ? ev.logo1 : `assets/equipos/${ev.logo1}`;
-                let l2 = ev.logo2 && !isSingle ? (ev.logo2.includes('http') ? ev.logo2 : `assets/equipos/${ev.logo2}`) : '';
+                if ((ahora - f) / 3600000 > 3) return; // Borrado tras 3h
 
-                card.innerHTML = `
+                count++;
+                const ok = dif <= 15;
+                const single = !ev.e2;
+                
+                const div = document.createElement('div');
+                div.className = `card ${single ? 'single' : ''}`;
+                div.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${l1}" onerror="this.src='assets/default.png'"></div>
-                        ${!isSingle ? `<div class="vs-text" style="color:var(--main); font-weight:900;">VS</div><div class="img-box"><img src="${l2}" onerror="this.src='assets/default.png'"></div>` : ''}
+                        <div class="img-box"><img src="assets/equipos/${ev.logo1}" onerror="this.src='assets/default.png'"></div>
+                        ${!single ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="assets/equipos/${ev.logo2}" onerror="this.src='assets/default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${ev.e2 ? ' vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1} ${ev.e2?'vs '+ev.e2:''}</h3>
                     </div>
-                    ${disponible 
-                        ? `<a href="acestream://${ev.link}" class="btn-link">VER AHORA</a>` 
-                        : `<div class="btn-link locked">BLOQUEADO</div><div class="wait-msg">Abre a las ${calcu(ev.hora)}</div>`
-                    }
+                    <div class="btn-link ${ok?'':'locked'}">${ok?'VER AHORA':'BLOQUEADO'}</div>
                 `;
-                container.appendChild(card);
+                container.appendChild(div);
             });
 
-            // Relleno fantasma (sin cuadros de imagen rotos)
-            for (let i = mostrados; i < 9; i++) {
+            // Relleno vacío (Sin logos rotos)
+            for (let i = count; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.innerHTML = `
-                    <div class="nombres">
-                        <div class="canal-txt">DISPONIBLE</div>
-                        <h3 style="color:#222;">PRÓXIMO EVENTO</h3>
-                    </div>
-                `;
+                dummy.innerHTML = `<div class="canal-txt">LIBRE</div><h3 style="color:#222">A PROGRAMAR</h3>`;
                 container.appendChild(dummy);
             }
-        } catch (e) { console.log("Error sincronizando..."); }
+        } catch (e) { console.log("Error"); }
     }
 
-    function calcu(h) {
-        const [hh, mm] = h.split(':');
-        let f = new Date(); f.setHours(hh, mm, 0);
-        f.setMinutes(f.getMinutes() - 15);
-        return f.getHours().toString().padStart(2, '0') + ":" + f.getMinutes().toString().padStart(2, '0');
-    }
-
-    cargarAgenda();
-    // REFRESCAR CADA 5 MINUTOS (300.000 ms)
-    setInterval(cargarAgenda, 300000);
+    cargar();
+    setInterval(cargar, 300000); // 5 MINUTOS
 </script>
 </body>
 </html>
