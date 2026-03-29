@@ -2,25 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV LOGO-FIX</title>
+    <title>NWAKALO TV DATABASE ENGINE</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; }
         html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
-        body { display: flex; flex-direction: column; padding: 15px 25px; }
-        h1 { color: var(--main); letter-spacing: 12px; text-transform: uppercase; margin: 0 0 15px 0; font-size: 32px; font-weight: 900; text-align: center; }
-        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 28vh); gap: 15px; flex-grow: 1; width: 100%; }
-        .card { background: var(--card); border-radius: 20px; padding: 10px; border: 2px solid #222; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; color: inherit; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.02); }
-        .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #444; opacity: 0.5; }
-        .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
-        .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-        .img-box { background: #fff; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
-        .img-box img { width: 80%; height: 80%; object-fit: contain; }
-        .nombres { text-align: center; }
-        .nombres h3 { margin: 5px 0; font-size: 18px; color: #fff; }
-        .canal-txt { color: #666; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .status-btn { width: 80%; background: #222; color: var(--main); padding: 8px; border-radius: 10px; font-weight: bold; font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px; }
+        body { display: flex; flex-direction: column; padding: 10px 20px; }
+        h1 { color: var(--main); letter-spacing: 12px; text-transform: uppercase; margin: 5px 0 10px 0; font-size: 28px; font-weight: 900; text-align: center; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 28vh); gap: 12px; flex-grow: 1; width: 100%; }
+        .card { background: var(--card); border-radius: 15px; border: 2px solid #222; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; color: inherit; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+        .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #444; opacity: 0.3; }
+        .hora-badge { position: absolute; top: 8px; left: 8px; background: var(--main); color: #000; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .vs-container { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .img-box { background: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
+        .img-box img { width: 85%; height: 85%; object-fit: contain; }
+        .nombres { text-align: center; width: 100%; }
+        .nombres h3 { margin: 3px 0; font-size: 16px; color: #fff; font-weight: bold; }
+        .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-btn { width: 80%; background: #222; color: var(--main); padding: 6px; border-radius: 8px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -29,8 +29,31 @@
     <div id="agenda"></div>
 
 <script>
-    // USAMOS RUTAS ABSOLUTAS PARA EVITAR FALLOS DE NAVEGADOR DE TV
     const GITHUB_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+    let diccionario = {};
+
+    // 1. CARGAR EL DICCIONARIO
+    async function cargarDiccionario() {
+        try {
+            const r = await fetch(GITHUB_RAW + 'base_datos.json?v=' + Date.now());
+            diccionario = await r.json();
+            console.log("Diccionario cargado:", diccionario);
+        } catch (e) { console.error("No se pudo cargar el diccionario"); }
+    }
+
+    // 2. BUSCAR EL LOGO EN EL DICCIONARIO
+    function obtenerRutaLogo(nombreEquipo) {
+        if (!nombreEquipo) return GITHUB_RAW + 'assets/default.png';
+        
+        // Si el equipo está en el diccionario (ej: "Arsenal" -> "ars.png")
+        if (diccionario[nombreEquipo]) {
+            return GITHUB_RAW + 'assets/equipos/' + diccionario[nombreEquipo];
+        }
+        
+        // Plan B: Nombre en minúsculas + .png
+        let planB = nombreEquipo.toLowerCase().trim().replace(/\s+/g, '') + '.png';
+        return GITHUB_RAW + 'assets/equipos/' + planB;
+    }
 
     async function cargarAgenda() {
         const container = document.getElementById('agenda');
@@ -47,65 +70,58 @@
 
             container.innerHTML = '';
             const ahora = new Date();
-            let mostrados = 0;
+            let count = 0;
 
             eventos.forEach((ev, i) => {
-                if(mostrados >= 9) return;
+                if(count >= 9) return;
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(); fEv.setHours(h, m, 0);
-                const dif = (fEv - ahora) / 60000;
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
-                mostrados++;
-                const disponible = dif <= 15;
+                count++;
+                const dif = (fEv - ahora) / 60000;
+                const ok = dif <= 15;
 
-                // Limpiar el nombre por si el mando envía la ruta completa
-                const logo1 = ev.logo1.split('/').pop();
-                const logo2 = ev.logo2 ? ev.logo2.split('/').pop() : '';
-
-                const card = document.createElement(disponible ? 'a' : 'div');
+                const card = document.createElement(ok ? 'a' : 'div');
                 card.className = 'card';
-                if(disponible) card.href = `acestream://${ev.link}`;
-                card.tabIndex = mostrados;
+                if(ok) card.href = `acestream://${ev.link}`;
+                card.tabIndex = count;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box">
-                            <img src="${GITHUB_RAW}assets/equipos/${logo1}" 
-                                 onerror="this.src='${GITHUB_RAW}assets/deporte/${logo1}'; this.onerror=function(){this.src='${GITHUB_RAW}assets/default.png'};">
-                        </div>
-                        ${ev.e2 ? `
-                        <b style="color:var(--main)">VS</b>
-                        <div class="img-box">
-                            <img src="${GITHUB_RAW}assets/equipos/${logo2}" 
-                                 onerror="this.src='${GITHUB_RAW}assets/deporte/${logo2}'; this.onerror=function(){this.src='${GITHUB_RAW}assets/default.png'};">
-                        </div>` : ''}
+                        <div class="img-box"><img src="${obtenerRutaLogo(ev.e1)}" onerror="this.src='${GITHUB_RAW}assets/default.png'"></div>
+                        ${ev.e2 ? `<b style="color:var(--main); font-size:10px;">VS</b><div class="img-box"><img src="${obtenerRutaLogo(ev.e2)}" onerror="this.src='${GITHUB_RAW}assets/default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
                         <h3>${ev.e1} ${ev.e2 ? 'vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${disponible ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            // RELLENO HASTA 9
-            for (let i = mostrados; i < 9; i++) {
+            for (let i = count; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.innerHTML = `<h3 style="color:rgba(255,255,255,0.4); font-size:14px;">EVENTO A PROGRAMAR</h3>`;
+                dummy.innerHTML = `<h3 style="color:#333; font-size:12px;">DISPONIBLE</h3>`;
                 container.appendChild(dummy);
             }
 
             if(container.firstChild) container.firstChild.focus();
 
-        } catch (e) { console.error("Error cargando agenda"); }
+        } catch (e) { console.error("Error cargando eventos"); }
     }
 
-    cargarAgenda();
-    setInterval(cargarAgenda, 300000); // 5 min
+    // INICIO
+    async function inicio() {
+        await cargarDiccionario(); // Primero el diccionario
+        await cargarAgenda();     // Luego los partidos
+    }
+
+    inicio();
+    setInterval(cargarAgenda, 300000); // Refresco cada 5 min
 </script>
 </body>
 </html>
