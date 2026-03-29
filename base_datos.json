@@ -1,34 +1,17 @@
 {
   "canales": {
-    "MOVISTAR_LA_LIGA": {
-      "nombre": "Movistar la Liga",
-      "opciones": [""]
-    },
-    "DAZN_LA_LIGA": {
-      "nombre": "Dazn la Liga",
-      "opciones": [""]
-    },
-    "DAZN_1": {
-      "nombre": "DAZN 1",
-      "opciones": [""]
-    },
-    "DAZN_2": {
-      "nombre": "DAZN 2",
-      "opciones": [""]
-    },
-    "DAZN_3": {
-      "nombre": "DAZN 3",
-      "opciones": [""]
-    },
-    "DAZN_4": {
-      "nombre": "DAZN 4",
-      "opciones": [""]
-    }
+    "MOVISTAR_LA_LIGA": { "nombre": "Movistar la Liga", "opciones": [""] },
+    "DAZN_LA_LIGA": { "nombre": "Dazn la Liga", "opciones": [""] },
+    "DAZN_1": { "nombre": "DAZN 1", "opciones": [""] },
+    "DAZN_2": { "nombre": "DAZN 2", "opciones": [""] },
+    "DAZN_3": { "nombre": "DAZN 3", "opciones": [""] },
+    "DAZN_4": { "nombre": "DAZN 4", "opciones": [""] }
   },
   "ligas": {
     "LIGA ESPAÑOLA": {
       "id": "laligaespana",
       "logo": "laliga.png",
+      "modo": "duelo",
       "equipos": [
         { "n": "Alavés", "a": "ala.png" }, { "n": "Athletic Club", "a": "ath.png" }, { "n": "Atlético Madrid", "a": "atm.png" }, { "n": "Barcelona", "a": "fcb.png" }, { "n": "Celta de Vigo", "a": "cel.png" }, { "n": "Elche CF", "a": "elc.png" }, { "n": "Espanyol", "a": "esp.png" }, { "n": "Getafe CF", "a": "get.png" }, { "n": "Girona FC", "a": "gir.png" }, { "n": "Levante UD", "a": "lev.png" }, { "n": "Mallorca", "a": "mal.png" }, { "n": "Osasuna", "a": "osa.png" }, { "n": "Rayo Vallecano", "a": "ray.png" }, { "n": "Real Betis", "a": "bet.png" }, { "n": "Real Madrid", "a": "rmadrid.png" }, { "n": "Real Oviedo", "a": "ovi.png" }, { "n": "Real Sociedad", "a": "rsoc.png" }, { "n": "Sevilla FC", "a": "sev.png" }, { "n": "Valencia CF", "a": "vcf.png" }, { "n": "Villarreal CF", "a": "vil.png" }
       ]
@@ -36,6 +19,7 @@
     "PREMIER LEAGUE": {
       "id": "premierleague",
       "logo": "premier.png",
+      "modo": "duelo",
       "equipos": [
         { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Burnley FC", "a": "bur.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Sunderlan FC", "a": "sun.png" }, { "n": "Leeds United", "a": "lee.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
       ]
@@ -43,6 +27,7 @@
     "MOTOGP": {
       "id": "MotoGP",
       "logo": "motogp.png",
+      "modo": "unico",
       "equipos": [
         { "n": "Entrenamientos", "a": "motogp.png" }, { "n": "Clasificación", "a": "motogp.png" }, { "n": "Carrera Sprint", "a": "motogp.png" }, { "n": "Carrera Domingo", "a": "motogp.png" }
       ]
@@ -50,9 +35,16 @@
     "FORMULA 1": {
       "id": "f1",
       "logo": "f1.png",
+      "modo": "unico",
       "equipos": [
         { "n": "Entrenamientos", "a": "f1.png" }, { "n": "Clasificación", "a": "f1.png" }, { "n": "Sprint F1", "a": "f1.png" }, { "n": "Carrera Domingo", "a": "f1.png" }
       ]
+    },
+    "EVENTOS ESPECIALES": {
+      "id": "especial",
+      "logo": "especial.png",
+      "modo": "manual",
+      "equipos": []
     }
   }
 }
