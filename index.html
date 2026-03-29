@@ -2,25 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV DATABASE ENGINE</title>
+    <title>NWAKALO TV - MANDO PEPE DIRECT</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
-        * { box-sizing: border-box; }
-        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
-        body { display: flex; flex-direction: column; padding: 10px 20px; }
-        h1 { color: var(--main); letter-spacing: 12px; text-transform: uppercase; margin: 5px 0 10px 0; font-size: 28px; font-weight: 900; text-align: center; }
-        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 28vh); gap: 12px; flex-grow: 1; width: 100%; }
-        .card { background: var(--card); border-radius: 15px; border: 2px solid #222; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; color: inherit; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); box-shadow: 0 0 20px rgba(0,255,136,0.3); }
-        .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #444; opacity: 0.3; }
-        .hora-badge { position: absolute; top: 8px; left: 8px; background: var(--main); color: #000; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
-        .vs-container { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .img-box { background: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
-        .img-box img { width: 85%; height: 85%; object-fit: contain; }
-        .nombres { text-align: center; width: 100%; }
-        .nombres h3 { margin: 3px 0; font-size: 16px; color: #fff; font-weight: bold; }
-        .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .status-btn { width: 80%; background: #222; color: var(--main); padding: 6px; border-radius: 8px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            height: 100vh; width: 100vw; background: var(--bg); 
+            color: #fff; font-family: sans-serif; overflow: hidden; 
+            display: flex; flex-direction: column; padding: 15px;
+        }
+
+        h1 { 
+            color: var(--main); text-align: center; font-size: 28px; 
+            letter-spacing: 12px; margin-bottom: 15px; text-transform: uppercase;
+        }
+
+        /* REJILLA 3X3 SIN BOTONES */
+        #agenda { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(3, 28vh); 
+            gap: 15px; flex-grow: 1;
+        }
+
+        .card { 
+            background: var(--card); border-radius: 20px; border: 2px solid #222;
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; position: relative; padding: 10px;
+            transition: 0.2s; text-decoration: none; color: inherit;
+        }
+
+        /* FOCUS PARA EL MANDO DE LA TELE */
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); }
+        .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #333; opacity: 0.4; }
+
+        .hora-badge { 
+            position: absolute; top: 10px; left: 10px; 
+            background: var(--main); color: #000; padding: 2px 10px; 
+            border-radius: 6px; font-weight: bold; font-size: 12px;
+        }
+
+        .img-box { 
+            background: #fff; width: 65px; height: 65px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; border: 2px solid #333; margin: 5px;
+        }
+        .img-box img { width: 80%; height: 80%; object-fit: contain; }
+
+        .nombres { text-align: center; }
+        .nombres h3 { margin: 5px 0; font-size: 18px; color: #fff; }
+        .canal-txt { color: #666; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        
+        .status-btn { 
+            width: 80%; background: #222; color: var(--main); 
+            padding: 8px; border-radius: 10px; font-weight: bold; 
+            font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -29,50 +67,27 @@
     <div id="agenda"></div>
 
 <script>
-    const GITHUB_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
-    let diccionario = {};
+    // RUTA DONDE TIENES TUS FOTOS EN GITHUB
+    const RUTA_FOTOS = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/equipos/';
+    const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    // 1. CARGAR EL DICCIONARIO
-    async function cargarDiccionario() {
-        try {
-            const r = await fetch(GITHUB_RAW + 'base_datos.json?v=' + Date.now());
-            diccionario = await r.json();
-            console.log("Diccionario cargado:", diccionario);
-        } catch (e) { console.error("No se pudo cargar el diccionario"); }
-    }
-
-    // 2. BUSCAR EL LOGO EN EL DICCIONARIO
-    function obtenerRutaLogo(nombreEquipo) {
-        if (!nombreEquipo) return GITHUB_RAW + 'assets/default.png';
-        
-        // Si el equipo está en el diccionario (ej: "Arsenal" -> "ars.png")
-        if (diccionario[nombreEquipo]) {
-            return GITHUB_RAW + 'assets/equipos/' + diccionario[nombreEquipo];
-        }
-        
-        // Plan B: Nombre en minúsculas + .png
-        let planB = nombreEquipo.toLowerCase().trim().replace(/\s+/g, '') + '.png';
-        return GITHUB_RAW + 'assets/equipos/' + planB;
-    }
-
-    async function cargarAgenda() {
+    async function cargar() {
         const container = document.getElementById('agenda');
         try {
-            const resp = await fetch(GITHUB_RAW + 'eventos.json?v=' + Date.now());
-            let base64Data = await resp.text();
-            base64Data = base64Data.replace(/["\s]/g, '').trim();
+            const r = await fetch(URL_JSON + '?v=' + Date.now());
+            let data = await r.text();
+            data = data.replace(/["\s]/g, '').trim();
             
-            let eventos = [];
-            if(base64Data.length > 10) {
-                const jsonStr = decodeURIComponent(escape(window.atob(base64Data)));
-                eventos = JSON.parse(jsonStr);
+            let evs = [];
+            if(data.length > 10) {
+                evs = JSON.parse(decodeURIComponent(escape(window.atob(data))));
             }
 
             container.innerHTML = '';
             const ahora = new Date();
             let count = 0;
 
-            eventos.forEach((ev, i) => {
+            evs.forEach(ev => {
                 if(count >= 9) return;
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(); fEv.setHours(h, m, 0);
@@ -82,6 +97,11 @@
                 const dif = (fEv - ahora) / 60000;
                 const ok = dif <= 15;
 
+                // USAMOS EL NOMBRE QUE VIENE DE MANDO PEPE DIRECTAMENTE
+                // Si MandoPepe envía "ars.png", cargará "RUTA_FOTOS/ars.png"
+                let img1 = ev.logo1.includes('.') ? ev.logo1 : ev.logo1 + '.png';
+                let img2 = ev.logo2 && ev.logo2.includes('.') ? ev.logo2 : (ev.logo2 ? ev.logo2 + '.png' : '');
+
                 const card = document.createElement(ok ? 'a' : 'div');
                 card.className = 'card';
                 if(ok) card.href = `acestream://${ev.link}`;
@@ -89,9 +109,9 @@
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
-                    <div class="vs-container">
-                        <div class="img-box"><img src="${obtenerRutaLogo(ev.e1)}" onerror="this.src='${GITHUB_RAW}assets/default.png'"></div>
-                        ${ev.e2 ? `<b style="color:var(--main); font-size:10px;">VS</b><div class="img-box"><img src="${obtenerRutaLogo(ev.e2)}" onerror="this.src='${GITHUB_RAW}assets/default.png'"></div>` : ''}
+                    <div style="display:flex; align-items:center;">
+                        <div class="img-box"><img src="${RUTA_FOTOS}${img1}" onerror="this.src='${RUTA_FOTOS}default.png'"></div>
+                        ${ev.e2 ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${RUTA_FOTOS}${img2}" onerror="this.src='${RUTA_FOTOS}default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
@@ -102,26 +122,22 @@
                 container.appendChild(card);
             });
 
+            // Rellenar hasta 9 para mantener el 3x3 limpio
             for (let i = count; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.innerHTML = `<h3 style="color:#333; font-size:12px;">DISPONIBLE</h3>`;
+                dummy.innerHTML = `<h3 style="color:#222; font-size:14px;">DISPONIBLE</h3>`;
                 container.appendChild(dummy);
             }
 
             if(container.firstChild) container.firstChild.focus();
 
-        } catch (e) { console.error("Error cargando eventos"); }
+        } catch (e) { console.log("Error cargando..."); }
     }
 
-    // INICIO
-    async function inicio() {
-        await cargarDiccionario(); // Primero el diccionario
-        await cargarAgenda();     // Luego los partidos
-    }
-
-    inicio();
-    setInterval(cargarAgenda, 300000); // Refresco cada 5 min
+    cargar();
+    // ACTUALIZA SOLO CADA 5 MINUTOS (300.000 ms)
+    setInterval(cargar, 300000);
 </script>
 </body>
 </html>
