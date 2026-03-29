@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO BÚNKER</title>
+    <title>MANDO BÚNKER PRO</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
         
-        /* PANTALLA RESTRINGIDA (ESTILO TV) */
+        /* PANTALLA RESTRINGIDA */
         #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
         .tv-card { background: #111; padding: 50px; border-radius: 30px; border: 2px solid #333; max-width: 400px; }
         .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
@@ -16,7 +16,7 @@
         .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
 
-        /* DISEÑO DE LOGOS Y BOTONES (TU FAVORITO) */
+        /* DISEÑO DE LOGOS Y BOTONES */
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; }
         .img-holder, .img-wrap { background: #e0e0e0; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #fff; }
@@ -31,8 +31,13 @@
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
         input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; font-size: 14px; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); position: relative; }
+        
+        /* AGENDA CON SELECTOR */
+        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; position: relative; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .item-cola.active { border-left-color: var(--main); background: rgba(0, 255, 136, 0.05); }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .check-event { width: 18px; height: 18px; cursor: pointer; accent-color: var(--main); }
+        
         textarea { height: 100px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
@@ -41,25 +46,24 @@
 <div id="bloqueo">
     <div class="tv-card">
         <h2 style="margin:0;">ACCESO RESTRINGIDO</h2>
-        <p style="color:#777; font-size:14px;">Vincula este dispositivo para entrar al mando</p>
+        <p style="color:#777; font-size:14px;">Vincula este dispositivo</p>
         <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">Envía este código al administrador para autorizar tu acceso.</p>
+        <p style="font-size:11px; color:#555;">Añade este ID al código para entrar.</p>
     </div>
 </div>
 
 <div id="mando-root">
-    <h1 style="color:var(--main); text-align:center; letter-spacing:4px; margin-bottom:30px;">MANDO BÚNKER</h1>
     <div class="layout">
         <div>
             <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL MANUAL</h3>
+                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="text" id="esp_tipo" placeholder="Deporte">
                     <input type="text" id="esp_evento" placeholder="Evento">
                 </div>
                 <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px; margin-top:10px;">
-                    <input type="text" id="esp_logo" placeholder="Logo (ej: ciclismo.png)">
-                    <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); padding:10px; margin:0; font-size:12px;">FIJAR DATOS</button>
+                    <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)">
+                    <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); padding:10px; margin:0; font-size:12px;">FIJAR</button>
                 </div>
             </div>
             <div class="seccion">
@@ -80,49 +84,42 @@
                 <input type="text" id="l_in" placeholder="ID AceStream + ENTER..." onkeydown="if(event.key==='Enter') addLink()">
                 <div id="v_links" style="margin-top:10px; font-size:13px; color:var(--main); font-weight: bold;">Links: 0</div>
             </div>
-            <button onclick="guardarTodo()" class="btn-main" style="font-size: 18px; padding: 20px;">AÑADIR A LA AGENDA</button>
+            <button onclick="guardarTodo()" class="btn-main" style="font-size: 18px; padding: 20px;">AÑADIR AL ALMACÉN</button>
         </div>
         <div>
             <div class="seccion">
-                <h3>Agenda</h3>
+                <h3 style="display:flex; justify-content:space-between; align-items:center;">
+                    Almacén de Eventos
+                    <span style="font-size:10px; color:var(--main)">Marcar para TV</span>
+                </h3>
                 <div id="cola_eventos"></div>
-                <button onclick="if(confirm('¿Borrar?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar</button>
+                <button onclick="if(confirm('¿Vaciar?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar Todo</button>
             </div>
             <div class="seccion">
-                <h3>GitHub</h3>
+                <h3>Código para GitHub (Solo marcados)</h3>
                 <textarea id="output" readonly></textarea>
-                <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR</button>
+                <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR SELECCIONADOS</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // ⬇️ EDITAR AQUÍ TUS DISPOSITIVOS AUTORIZADOS ⬇️
-    // ==========================================
-    const AUTORIZADOS = [
-        "LUSI-01",  // Ejemplo
-        "BUNKER-3VXWL" 
-    ];
-    // ==========================================
+    // LISTA DE AUTORIZADOS
+    const AUTORIZADOS = ["BUNKER-A1B2C", "TU-CODIGO-AQUI"];
 
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('pepe_agenda') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
     let links = [];
 
-    // LÓGICA DE VINCULACIÓN TIPO TV
     function chequearAcceso() {
-        // Generamos un ID basado en el navegador (siempre será el mismo para ese móvil)
         let fingerprint = localStorage.getItem('bunker_fingerprint');
         if(!fingerprint) {
             fingerprint = "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
             localStorage.setItem('bunker_fingerprint', fingerprint);
         }
-        
         document.getElementById('mi_id').innerText = fingerprint;
-
         if(AUTORIZADOS.includes(fingerprint)) {
             document.getElementById('bloqueo').style.display = 'none';
             document.getElementById('mando-root').style.display = 'block';
@@ -146,7 +143,7 @@
         });
     }
 
-    // Funciones de lógica (Equipos, Especiales, Links, etc - Respetando tu diseño)
+    // CARGAR EQUIPOS
     function cargarEquipos(ligaNombre, btn) {
         document.querySelectorAll('.btn-cat').forEach(x => x.classList.remove('active'));
         btn.classList.add('active');
@@ -166,7 +163,7 @@
             b.innerHTML = `<div class="img-wrap"><img src="${ruta}" onerror="this.src='assets/default.png'"></div><br>${eq.n}`;
             b.onclick = () => {
                 if(cur.modo === "unico") {
-                    cur.e1 = `${ligaNombre}: ${eq.n}`; cur.l1 = `../deporte/${eq.a}`;
+                    cur.e1 = `${ligaNombre}: ${eq.n}`; cur.l1 = `../deporte/${eq.a}`; cur.e2 = ""; cur.l2 = "";
                     document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                 } else {
                     if(!cur.e1 || (cur.e1 && cur.e2)) {
@@ -193,21 +190,48 @@
     function guardarTodo() {
         if(!cur.e1) return alert("Elige evento");
         if(links.length === 0) return alert("Faltan links");
-        agenda.push({ fecha: document.getElementById('f_in').value, hora: document.getElementById('h_in').value, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, canal: document.getElementById('c_in').value || cur.cat, links: [...links] });
+        agenda.push({ 
+            id: Date.now(), 
+            visible: true, 
+            fecha: document.getElementById('f_in').value, 
+            hora: document.getElementById('h_in').value, 
+            e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, 
+            canal: document.getElementById('c_in').value || cur.cat, 
+            links: [...links] 
+        });
         updateAgenda(); links = []; cur.e1 = ""; cur.e2 = ""; renderLinks();
-        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); alert("✅ Añadido");
+        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
+    }
+
+    function toggleEvento(id) {
+        const index = agenda.findIndex(e => e.id === id);
+        if(index !== -1) {
+            agenda[index].visible = !agenda[index].visible;
+            updateAgenda();
+        }
     }
 
     function updateAgenda() {
         localStorage.setItem('pepe_agenda', JSON.stringify(agenda));
-        document.getElementById('output').value = window.btoa(unescape(encodeURIComponent(JSON.stringify(agenda))));
-        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `<div class="item-cola"><b>${e.hora}</b> | ${e.e1} ${e.e2 ? 'vs '+e.e2 : ''} <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda()">×</span></div>`).join('');
+        
+        // Solo enviamos al código de GitHub los que tengan visible: true
+        const filtrados = agenda.filter(e => e.visible);
+        document.getElementById('output').value = window.btoa(unescape(encodeURIComponent(JSON.stringify(filtrados))));
+        
+        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
+            <div class="item-cola ${e.visible ? 'active' : ''}">
+                <input type="checkbox" class="check-event" ${e.visible ? 'checked' : ''} onchange="toggleEvento(${e.id})">
+                <div style="flex:1">
+                    <b style="color:${e.visible ? 'var(--main)' : '#777'}">${e.hora}</b><br>
+                    <span style="font-size:10px">${e.e1} ${e.e2 ? 'vs '+e.e2 : ''}</span>
+                </div>
+                <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda()">×</span>
+            </div>
+        `).join('');
     }
 
-    function copyToClipboard() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado"); }
+    function copyToClipboard() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado para GitHub"); }
     document.getElementById('f_in').valueAsDate = new Date();
-
-    // Arrancar chequeo
     chequearAcceso();
 </script>
 </body>
