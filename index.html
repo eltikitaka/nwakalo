@@ -3,96 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV</title>
+    <title>NWAKALO TV 3X3</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #121212; --grey: #222; }
+        :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         
-        body { 
+        * { box-sizing: border-box; }
+        html, body { 
+            height: 100%; margin: 0; padding: 0; 
             background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
-            margin: 0; padding: 40px; text-align: center; overflow-x: hidden;
+            overflow: hidden; /* EVITA EL SCROLL PARA QUE SEA 3X3 FIJO */
         }
+
+        body { display: flex; flex-direction: column; padding: 20px 40px 10px 40px; }
 
         .btn-refresh {
-            position: fixed; top: 25px; right: 25px;
+            position: fixed; top: 15px; right: 20px;
             background: rgba(0, 255, 136, 0.1); border: 1px solid var(--main);
-            color: var(--main); padding: 12px 25px; border-radius: 50px;
-            cursor: pointer; font-size: 14px; z-index: 100; font-weight: bold;
-            transition: 0.3s; backdrop-filter: blur(5px);
+            color: var(--main); padding: 8px 20px; border-radius: 50px;
+            cursor: pointer; font-size: 12px; z-index: 100; font-weight: bold;
         }
-        .btn-refresh:hover { background: var(--main); color: #000; box-shadow: 0 0 20px var(--main); }
 
         h1 { 
-            color: var(--main); letter-spacing: 12px; text-transform: uppercase; 
-            margin-bottom: 50px; font-size: 45px; font-weight: 900;
-            text-shadow: 0 0 20px rgba(0,255,136,0.2);
+            color: var(--main); letter-spacing: 10px; text-transform: uppercase; 
+            margin: 0 0 15px 0; font-size: 30px; font-weight: 900; text-align: center;
         }
 
-        /* DISEÑO FIJO 3X3 */
+        /* DISEÑO 3X3 QUE SE ADAPTA A LA PANTALLA */
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 25px; 
-            max-width: 1400px; 
-            margin: auto; 
+            grid-template-rows: repeat(3, 1fr); /* FUERZA 3 FILAS */
+            gap: 15px; 
+            flex-grow: 1; /* OCUPA TODO EL ESPACIO DISPONIBLE */
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
         .card { 
-            background: var(--card); border-radius: 25px; padding: 25px; 
-            border: 1px solid #222; position: relative; transition: 0.3s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-height: 320px;
+            background: var(--card); border-radius: 20px; padding: 15px; 
+            border: 1px solid #222; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
-        .card:hover { border-color: var(--main); transform: translateY(-5px); }
 
-        /* ESTILO PARA CUADROS DE RELLENO */
-        .card.placeholder { opacity: 0.4; border: 1px dashed #333; background: rgba(255,255,255,0.02); }
-        .card.placeholder:hover { transform: none; border-color: #333; }
+        .card.placeholder { opacity: 0.3; border: 1px dashed #333; }
 
         .hora-badge { 
-            position: absolute; top: 15px; left: 15px; 
-            background: var(--main); color: #000; padding: 4px 12px; 
-            border-radius: 10px; font-weight: 900; font-size: 14px;
+            position: absolute; top: 10px; left: 10px; 
+            background: var(--main); color: #000; padding: 3px 10px; 
+            border-radius: 8px; font-weight: 900; font-size: 12px;
         }
 
         .vs-container { 
             display: flex; align-items: center; justify-content: center; 
-            gap: 15px; margin: 35px 0 15px 0; width: 100%;
+            gap: 10px; margin-top: 15px;
         }
 
+        /* ARREGLO DE LOGOS CIRCULARES */
         .img-box { 
-            background: #ffffff; width: 85px; height: 85px; 
+            background: #ffffff; width: 70px; height: 70px; 
             border-radius: 50%; display: flex; align-items: center; 
             justify-content: center; overflow: hidden;
-            border: 4px solid #333;
+            border: 3px solid #333;
         }
 
         .img-box img { width: 75%; height: 75%; object-fit: contain; }
-        .vs-text { font-weight: 900; color: var(--main); font-size: 18px; font-style: italic; }
+        .vs-text { font-weight: 900; color: var(--main); font-size: 16px; font-style: italic; }
 
-        .nombres h3 { margin: 10px 0; font-size: 20px; color: #fff; letter-spacing: 0.5px; }
-        .canal-txt { color: #555; text-transform: uppercase; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+        .nombres { text-align: center; }
+        .nombres h3 { margin: 5px 0; font-size: 18px; color: #fff; line-height: 1.1; }
+        .canal-txt { color: #555; text-transform: uppercase; font-size: 11px; font-weight: bold; }
         
         .btn-link {
-            display: block; width: 100%; max-width: 200px;
+            display: block; width: 90%;
             background: #1a1a1a; color: var(--main); text-decoration: none; text-align: center; 
-            padding: 14px; border-radius: 15px; font-weight: 900; margin-top: 15px;
-            border: 1px solid #333; transition: 0.2s; text-transform: uppercase;
+            padding: 10px; border-radius: 12px; font-weight: 900; font-size: 13px;
+            border: 1px solid #333; text-transform: uppercase;
         }
 
-        .btn-link.locked { background: #111; color: #333; border-color: #222; cursor: not-allowed; }
-        .wait-msg { font-size: 10px; color: #ff9f43; margin-top: 8px; font-weight: bold; }
+        .btn-link.locked { background: #111; color: #333; border-color: #222; }
+        .wait-msg { font-size: 9px; color: #ff9f43; margin-top: 4px; font-weight: bold; }
 
-        #status { margin-top: 50px; color: #333; font-size: 12px; font-weight: bold; }
+        #status { text-align: center; padding: 5px; color: #222; font-size: 10px; font-weight: bold; }
+
+        /* AJUSTE PARA MODO LOGO ÚNICO */
+        .single-mode .img-box { width: 100px; height: 100px; border-color: var(--main); }
     </style>
 </head>
 <body>
 
-    <button class="btn-refresh" onclick="cargarAgenda()">🔄 ACTUALIZAR</button>
+    <button class="btn-refresh" onclick="cargarAgenda()">🔄 REFRESCAR</button>
 
     <h1>NWAKALO TV</h1>
 
     <div id="agenda"></div>
-    <div id="status">Sincronizando con NWAKALO Server...</div>
+    
+    <div id="status">Sincronizando...</div>
 
 <script>
     const URL_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/refs/heads/main/eventos.json';
@@ -114,80 +122,73 @@
 
             container.innerHTML = '';
             const ahora = new Date();
-            let eventosMostrados = 0;
+            let mostrados = 0;
 
-            // 1. RENDERIZAR EVENTOS REALES
+            // RENDER REALES (MÁXIMO 9)
             eventos.forEach(ev => {
-                const [horas, minutos] = ev.hora.split(':');
-                const fechaEvento = new Date();
-                fechaEvento.setHours(parseInt(horas), parseInt(minutos), 0);
+                if(mostrados >= 9) return;
 
-                const difMinutos = (fechaEvento - ahora) / (1000 * 60);
-                const horasPasadas = (ahora - fechaEvento) / (1000 * 60 * 60);
+                const [h, m] = ev.hora.split(':');
+                const fEv = new Date();
+                fEv.setHours(parseInt(h), parseInt(m), 0);
 
-                if (horasPasadas > 3) return; 
+                const difMins = (fEv - ahora) / (1000 * 60);
+                const hPasadas = (ahora - fEv) / (1000 * 60 * 60);
 
-                eventosMostrados++;
-                const estaDisponible = difMinutos <= 15;
+                if (hPasadas > 3) return; 
+
+                mostrados++;
+                const disponible = difMins <= 15;
                 const isSingle = !ev.e2 || ev.e2.trim() === "";
                 
                 const card = document.createElement('div');
                 card.className = `card ${isSingle ? 'single-mode' : ''}`;
                 
+                // RUTAS DE LOGOS CORREGIDAS
                 let l1 = ev.logo1.includes('http') ? ev.logo1 : `assets/equipos/${ev.logo1}`;
                 let l2 = ev.logo2 && !isSingle ? (ev.logo2.includes('http') ? ev.logo2 : `assets/equipos/${ev.logo2}`) : '';
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${l1}" onerror="this.src='assets/default.png'"></div>
-                        ${!isSingle ? `<div class="vs-text">VS</div><div class="img-box"><img src="${l2}" onerror="this.src='assets/default.png'"></div>` : ''}
+                        <div class="img-box"><img src="${l1}" onerror="this.src='assets/deporte/${ev.logo1}'; this.onerror=function(){this.src='assets/default.png'};"></div>
+                        ${!isSingle ? `<div class="vs-text">VS</div><div class="img-box"><img src="${l2}" onerror="this.src='assets/deporte/${ev.logo2}'; this.onerror=function(){this.src='assets/default.png'};"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${ev.e2 ? ' <span style="color:var(--main); font-size:14px;">vs</span> ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1}${ev.e2 ? ' vs ' + ev.e2 : ''}</h3>
                     </div>
-                    ${estaDisponible 
+                    ${disponible 
                         ? `<a href="acestream://${ev.link}" class="btn-link">VER AHORA</a>` 
-                        : `<div class="btn-link locked">BLOQUEADO</div><div class="wait-msg">Disponible a las ${calcularHoraApertura(ev.hora)}</div>`
+                        : `<div class="btn-link locked">BLOQUEADO</div><div class="wait-msg">Abre a las ${calcuHora(ev.hora)}</div>`
                     }
                 `;
                 container.appendChild(card);
             });
 
-            // 2. RENDERIZAR RELLENO (Hasta llegar a 9)
-            const minEventos = 9;
-            for (let i = eventosMostrados; i < minEventos; i++) {
+            // RELLENO HASTA 9
+            for (let i = mostrados; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
                 dummy.innerHTML = `
-                    <div class="vs-container">
-                        <div class="img-box" style="background:#1a1a1a; border-color:#222;">
-                            <img src="assets/default.png" style="opacity:0.2; filter:grayscale(1);">
-                        </div>
-                    </div>
-                    <div class="nombres">
-                        <div class="canal-txt">PRÓXIMO EVENTO</div>
-                        <h3 style="color:#333;">A PROGRAMAR</h3>
-                    </div>
-                    <div class="btn-link locked" style="border-style:dashed;">PRÓXIMAMENTE</div>
+                    <div class="vs-container"><div class="img-box" style="background:#111; border-color:#222;"><img src="assets/default.png" style="opacity:0.1"></div></div>
+                    <div class="nombres"><div class="canal-txt">LIBRE</div><h3 style="color:#222;">PRÓXIMO EVENTO</h3></div>
+                    <div class="btn-link locked" style="border-style:dashed; opacity:0.2;">ESPERANDO...</div>
                 `;
                 container.appendChild(dummy);
             }
 
-            status.innerText = "Sincronizado: " + ahora.toLocaleTimeString();
+            status.innerText = "Última sincronización: " + ahora.toLocaleTimeString();
         } catch (e) {
-            console.error(e);
-            status.innerHTML = "<b style='color:#ff4444'>ERROR: Código no válido.</b>";
+            status.innerHTML = "<b style='color:red'>Error de conexión</b>";
         }
     }
 
-    function calcularHoraApertura(horaEvento) {
-        const [h, m] = horaEvento.split(':');
-        let fecha = new Date();
-        fecha.setHours(h, m, 0);
-        fecha.setMinutes(fecha.getMinutes() - 15);
-        return fecha.getHours().toString().padStart(2, '0') + ":" + fecha.getMinutes().toString().padStart(2, '0');
+    function calcuHora(hEv) {
+        const [h, m] = hEv.split(':');
+        let f = new Date(); f.setHours(h, m, 0);
+        f.setMinutes(f.getMinutes() - 15);
+        return f.getHours().toString().padStart(2, '0') + ":" + f.getMinutes().toString().padStart(2, '0');
     }
 
     cargarAgenda();
