@@ -11,25 +11,22 @@
             margin: 0; padding: 40px; overflow-x: hidden;
         }
 
-        /* BOTÓN REFRESCAR */
         .btn-refresh {
             position: fixed; top: 25px; right: 25px;
             background: rgba(255,255,255,0.05); border: 1px solid #333;
             color: #fff; padding: 12px 25px; border-radius: 50px;
             cursor: pointer; font-size: 14px; z-index: 100;
             transition: 0.3s; backdrop-filter: blur(10px);
-            font-weight: bold; letter-spacing: 1px;
+            font-weight: bold;
         }
-        .btn-refresh:hover { background: var(--main); color: #000; border-color: var(--main); box-shadow: 0 0 15px var(--main); }
+        .btn-refresh:hover { background: var(--main); color: #000; box-shadow: 0 0 15px var(--main); }
 
-        h1 { text-align: center; color: var(--main); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 50px; font-size: 35px; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+        h1 { text-align: center; color: var(--main); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 50px; font-size: 35px; }
 
         .agenda-container { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); 
-            gap: 30px; 
-            max-width: 1400px;
-            margin: auto;
+            gap: 30px; max-width: 1400px; margin: auto;
         }
 
         .card { 
@@ -38,7 +35,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             display: flex; flex-direction: column; align-items: center;
         }
-        .card:hover { border-color: var(--main); transform: translateY(-5px); }
 
         .hora-badge { 
             position: absolute; top: 20px; left: 20px; 
@@ -46,12 +42,7 @@
             border-radius: 12px; font-weight: 900; font-size: 15px;
         }
 
-        .canal-badge {
-            position: absolute; top: 22px; right: 25px;
-            color: #555; font-size: 13px; font-weight: bold; text-transform: uppercase;
-        }
-
-        /* LOGOS CON FONDO BLANCO CIRCULAR */
+        /* LOGOS BLANCOS CIRCULARES */
         .vs-container { 
             display: flex; align-items: center; justify-content: center; 
             gap: 25px; margin: 40px 0 20px 0; width: 100%;
@@ -62,33 +53,26 @@
             border-radius: 50%; display: flex; align-items: center; 
             justify-content: center; overflow: hidden;
             border: 4px solid #222; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            transition: 0.3s;
         }
-        .card:hover .img-box { border-color: #fff; }
 
-        .img-box img { width: 70%; height: 70%; object-fit: contain; }
+        .img-box img { width: 75%; height: 75%; object-fit: contain; }
 
-        .vs-text { font-weight: 900; color: #333; font-size: 20px; background: #222; padding: 5px 10px; border-radius: 8px; color: var(--main); }
+        .vs-text { font-weight: 900; color: var(--main); font-size: 18px; background: #222; padding: 5px 10px; border-radius: 8px; }
 
         .nombres { text-align: center; margin-bottom: 20px; width: 100%; }
-        .nombres h3 { margin: 10px 0; font-size: 22px; letter-spacing: 0.5px; color: #eee; }
+        .nombres h3 { margin: 10px 0; font-size: 22px; color: #eee; }
         
         .links-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
 
         .btn-link {
-            background: #1a1a1a; color: #fff;
-            text-decoration: none; text-align: center; padding: 14px;
-            border-radius: 15px; font-weight: bold; font-size: 13px;
+            background: #1a1a1a; color: #fff; text-decoration: none; text-align: center; 
+            padding: 14px; border-radius: 15px; font-weight: bold; font-size: 13px;
             border: 1px solid #333; transition: 0.2s;
-            text-transform: uppercase;
         }
-        .btn-link:hover { background: var(--main); color: #000; border-color: var(--main); }
+        .btn-link:hover { background: var(--main); color: #000; }
 
-        /* MODO LOGO ÚNICO (Ciclismo, F1...) */
         .single-mode .img-box { width: 140px; height: 140px; }
-        .single-mode .vs-text { display: none; }
-
-        #msg { text-align: center; color: #444; margin-top: 20px; font-size: 14px; }
+        #msg { text-align: center; color: #444; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -97,35 +81,33 @@
 
     <h1>BÚNKER TV</h1>
 
-    <div id="agenda" class="agenda-container">
-        </div>
-    
-    <div id="msg">Cargando eventos desde el búnker...</div>
+    <div id="agenda" class="agenda-container"></div>
+    <div id="msg">Iniciando sistema...</div>
 
 <script>
-    // URL RAW DE TU GITHUB
-    const URL_AGENDA = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/refs/heads/main/eventos.json'; 
+    // URL de tu archivo en GitHub
+    const URL_RAW = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/refs/heads/main/eventos.json';
 
     async function cargarAgenda() {
         const container = document.getElementById('agenda');
         const msg = document.getElementById('msg');
-        msg.innerText = "Buscando actualizaciones...";
+        msg.innerText = "Sincronizando con GitHub...";
 
         try {
-            // El ?nocache evita que el navegador guarde la versión vieja del archivo
-            const resp = await fetch(URL_AGENDA + '?nocache=' + Date.now());
-            if (!resp.ok) throw new Error('Error al conectar');
+            // Usamos un proxy para evitar el error de CORS y el caché
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(URL_RAW)}&ts=${Date.now()}`);
             
-            const eventos = await resp.json();
+            if (!response.ok) throw new Error();
+            
+            const data = await response.json();
+            // AllOrigins devuelve el contenido dentro de data.contents como un string
+            const eventos = JSON.parse(data.contents);
             
             renderizar(eventos);
-            msg.innerText = "Sincronizado con éxito";
+            msg.innerText = "Agenda actualizada: " + new Date().toLocaleTimeString();
         } catch (e) {
+            msg.innerText = "⚠️ Error de conexión. Revisa el archivo en GitHub.";
             console.error(e);
-            msg.innerText = "Error al conectar con GitHub";
-            if(container.innerHTML === "") {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:red;">No se pudo cargar la agenda. Revisa la conexión.</p>';
-            }
         }
     }
 
@@ -133,47 +115,35 @@
         const container = document.getElementById('agenda');
         container.innerHTML = '';
 
-        if(eventos.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#555;">No hay eventos activos en la agenda.</p>';
-            return;
-        }
-
         eventos.forEach(ev => {
-            // Si no hay e2, es modo logo único
             const isSingle = !ev.e2 || ev.e2.trim() === "";
             const card = document.createElement('div');
             card.className = `card ${isSingle ? 'single-mode' : ''}`;
             
-            // Lógica de rutas de logos (asegurando fondo blanco)
-            // Si el logo ya tiene la ruta completa no la tocamos, si no, la construimos
+            // Construcción de rutas de logos
             let logo1 = ev.logo1.includes('http') ? ev.logo1 : `assets/equipos/${ev.logo1}`;
-            let logo2 = ev.logo2 ? (ev.logo2.includes('http') ? ev.logo2 : `assets/equipos/${ev.logo2}`) : '';
+            let logo2 = ev.logo2 && !isSingle ? (ev.logo2.includes('http') ? ev.logo2 : `assets/equipos/${ev.logo2}`) : '';
 
             card.innerHTML = `
                 <div class="hora-badge">${ev.hora}</div>
-                <div class="canal-badge">${ev.canal}</div>
-                
                 <div class="vs-container">
                     <div class="img-box">
-                        <img src="${logo1}" onerror="this.src='assets/deporte/${ev.logo1.split('/').pop()}'; this.onerror=function(){this.src='assets/default.png'};">
+                        <img src="${logo1}" onerror="this.src='assets/default.png'">
                     </div>
-                    
                     ${!isSingle ? `<div class="vs-text">VS</div>` : ''}
-                    
                     ${!isSingle ? `
                         <div class="img-box">
                             <img src="${logo2}" onerror="this.src='assets/default.png'">
                         </div>
                     ` : ''}
                 </div>
-
                 <div class="nombres">
-                    <h3>${ev.e1}${ev.e2 ? ' <span style="color:var(--main)">vs</span> ' + ev.e2 : ''}</h3>
+                    <h3>${ev.e1}${ev.e2 ? ' vs ' + ev.e2 : ''}</h3>
+                    <p style="color:#555; font-size:12px; margin:0;">${ev.canal || ''}</p>
                 </div>
-
                 <div class="links-grid">
-                    ${ev.links.map((link, index) => `
-                        <a href="acestream://${link}" class="btn-link">OPCIÓN ${index + 1}</a>
+                    ${ev.links.map((link, i) => `
+                        <a href="acestream://${link}" class="btn-link">OPCIÓN ${i + 1}</a>
                     `).join('')}
                 </div>
             `;
@@ -181,11 +151,9 @@
         });
     }
 
-    // Carga automática al abrir
     cargarAgenda();
-
-    // Refrescar automáticamente cada 5 minutos por si se te olvida darle al botón
-    setInterval(cargarAgenda, 300000);
+    // Auto-refrescar cada 2 minutos
+    setInterval(cargarAgenda, 120000);
 </script>
 </body>
 </html>
