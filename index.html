@@ -2,73 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV REFIX</title>
+    <title>NWAKALO TV LOGO-FIX</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
-        
         * { box-sizing: border-box; }
-        html, body { 
-            height: 100%; margin: 0; padding: 0; 
-            background: var(--bg); color: #fff; font-family: sans-serif; 
-            overflow: hidden; 
-        }
-
+        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; }
         body { display: flex; flex-direction: column; padding: 15px 25px; }
-
-        h1 { 
-            color: var(--main); letter-spacing: 12px; text-transform: uppercase; 
-            margin: 0 0 15px 0; font-size: 32px; font-weight: 900; text-align: center;
-        }
-
-        /* CUADRÍCULA 3X3 QUE SE AJUSTA AL ALTO */
-        #agenda { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(3, 28vh); 
-            gap: 15px; 
-            flex-grow: 1;
-            width: 100%;
-        }
-
-        .card { 
-            background: var(--card); border-radius: 20px; padding: 10px; 
-            border: 2px solid #222; position: relative;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.2s;
-            text-decoration: none; color: inherit;
-        }
-
-        /* EFECTO SELECCIÓN PARA EL MANDO */
+        h1 { color: var(--main); letter-spacing: 12px; text-transform: uppercase; margin: 0 0 15px 0; font-size: 32px; font-weight: 900; text-align: center; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 28vh); gap: 15px; flex-grow: 1; width: 100%; }
+        .card { background: var(--card); border-radius: 20px; padding: 10px; border: 2px solid #222; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; text-decoration: none; color: inherit; }
         .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.02); }
-
-        /* ESTILO BLANCO PARA HUECOS VACÍOS */
         .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #444; opacity: 0.5; }
-
-        .hora-badge { 
-            position: absolute; top: 10px; left: 10px; 
-            background: var(--main); color: #000; padding: 2px 10px; 
-            border-radius: 6px; font-weight: bold; font-size: 12px;
-        }
-
+        .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
         .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-
-        .img-box { 
-            background: #fff; width: 65px; height: 65px; 
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 2px solid #333;
-        }
-
+        .img-box { background: #fff; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
-
         .nombres { text-align: center; }
         .nombres h3 { margin: 5px 0; font-size: 18px; color: #fff; }
         .canal-txt { color: #666; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        
-        .status-btn {
-            width: 80%; background: #222; color: var(--main); 
-            padding: 8px; border-radius: 10px; font-weight: bold; 
-            font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px;
-        }
+        .status-btn { width: 80%; background: #222; color: var(--main); padding: 8px; border-radius: 10px; font-weight: bold; font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -78,6 +30,31 @@
 
 <script>
     const GITHUB_BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+
+    // FUNCIÓN INTELIGENTE PARA CARGAR IMÁGENES
+    function tratarImagen(img, nombre) {
+        if (!nombre) return;
+        const nombreLimpio = nombre.split('/').pop().toLowerCase();
+        
+        // Intento 1: assets/equipos/
+        img.src = GITHUB_BASE + 'assets/equipos/' + nombreLimpio;
+        
+        img.onerror = function() {
+            // Intento 2: assets/deporte/
+            if (img.src.includes('equipos')) {
+                img.src = GITHUB_BASE + 'assets/deporte/' + nombreLimpio;
+            } 
+            // Intento 3: Nombre tal cual sin minúsculas
+            else if (img.src.includes('deporte')) {
+                img.src = GITHUB_BASE + 'assets/equipos/' + nombre.split('/').pop();
+            }
+            // Final: Imagen por defecto
+            else {
+                img.src = GITHUB_BASE + 'assets/default.png';
+                img.onerror = null;
+            }
+        };
+    }
 
     async function cargarAgenda() {
         const container = document.getElementById('agenda');
@@ -105,8 +82,6 @@
 
                 mostrados++;
                 const disponible = dif <= 15;
-                const logo1 = ev.logo1.split('/').pop();
-                const logo2 = ev.logo2 ? ev.logo2.split('/').pop() : '';
 
                 const card = document.createElement(disponible ? 'a' : 'div');
                 card.className = 'card';
@@ -116,8 +91,8 @@
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${GITHUB_BASE}assets/equipos/${logo1}" onerror="this.src='${GITHUB_BASE}assets/default.png'"></div>
-                        ${ev.e2 ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${GITHUB_BASE}assets/equipos/${logo2}" onerror="this.src='${GITHUB_BASE}assets/default.png'"></div>` : ''}
+                        <div class="img-box"><img id="l1_${mostrados}"></div>
+                        ${ev.e2 ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="l2_${mostrados}"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
@@ -126,9 +101,12 @@
                     <div class="status-btn">${disponible ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
+                
+                // Ejecutar carga inteligente de logos
+                tratarImagen(document.getElementById(`l1_${mostrados}`), ev.logo1);
+                if(ev.e2) tratarImagen(document.getElementById(`l2_${mostrados}`), ev.logo2);
             });
 
-            // RELLENO HASTA 9 (BLANCO)
             for (let i = mostrados; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
@@ -136,14 +114,12 @@
                 container.appendChild(dummy);
             }
 
-            // Foco inicial para el mando
             if(container.firstChild) container.firstChild.focus();
 
-        } catch (e) { console.error("Error cargando datos"); }
+        } catch (e) { console.error("Error crítico"); }
     }
 
     cargarAgenda();
-    // Auto-actualización cada 5 minutos
     setInterval(cargarAgenda, 300000);
 </script>
 </body>
