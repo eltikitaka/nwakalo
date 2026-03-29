@@ -2,54 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE 3.0 - MASTER EDITION</title>
+    <title>MANDO PEPE 3.1 - CONTROL TOTAL</title>
     <style>
-        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --accent: #007bff; --error: #ff4757; --warning: #ffa502; }
+        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --accent: #007bff; --error: #ff4757; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        
-        /* BLOQUEO */
-        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .pin-card { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #333; text-align: center; width: 350px; }
         .pin-display { font-size: 18px; background: #000; border: 1px solid #444; color: var(--main); width: 100%; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
-        
-        /* LAYOUT */
         #mando-root { display: none; max-width: 1400px; margin: auto; }
         .layout { display: flex; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
-
-        /* GRID EQUIPOS */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; padding: 15px; background: #000; border-radius: 10px; border: 1px solid #222; }
-        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 10px; transition: 0.2s; }
+        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 10px; }
         .btn-eq img { width: 45px; height: 45px; background: #fff; border-radius: 50%; padding: 5px; object-fit: contain; margin-bottom: 5px; border: 2px solid #444; }
         .btn-eq.local { background: var(--accent) !important; border-color: #fff; }
         .btn-eq.visita { background: var(--error) !important; border-color: #fff; }
-        .btn-eq.motor-sel { background: var(--warning) !important; color: #000; font-weight: bold; }
-
+        .btn-eq.motor-sel { background: #ffa502 !important; color: #000; font-weight: bold; }
         .btn-liga { background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; font-weight: bold; font-size: 10px; min-width: 100px; }
-        .btn-liga img { width: 35px; height: 35px; border-radius: 50%; background: #fff; padding: 3px; }
+        .btn-liga img { width: 35px; height: 35px; border-radius: 50%; background: #fff; padding: 3px; object-fit: contain; }
         .btn-liga.active { background: var(--main); color: #000; }
-
-        /* FORMULARIO */
         .row { display: grid; grid-template-columns: 1fr 1fr 1.5fr 2.5fr; gap: 15px; margin-top: 15px; background: #000; padding: 15px; border-radius: 10px; }
         input { background: #1a1a1a; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-weight: bold; }
-        
-        .visor-ids { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 11px; min-height: 40px; }
-        .id-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #222; color: #888; }
-        
+        .visor-ids { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 11px; }
+        .id-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #222; }
         .preview { background: #000; color: var(--main); padding: 15px; border-radius: 10px; font-family: monospace; font-size: 11px; max-height: 200px; overflow-y: auto; border: 1px solid #222; }
         .btn-main { width:100%; background:var(--main); color:#000; padding:18px; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top: 10px; }
-        
-        /* BADGE CONTADOR */
-        .badge { background: var(--main); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="bloqueo">
         <div class="pin-card">
-            <h2>ACCESO MAESTRO</h2>
-            <input type="password" id="pin_input" class="pin-display" placeholder="Escribe tu clave...">
-            <button onclick="intentarAcceso()" style="width:100%; padding:15px; background:var(--main); border:none; border-radius:10px; font-weight:bold; cursor:pointer;">DESBLOQUEAR</button>
+            <h2>NWAKALO SECURE</h2>
+            <input type="password" id="pin_input" class="pin-display" placeholder="Clave Maestra...">
+            <button onclick="intentarAcceso()" style="width:100%; padding:15px; background:var(--main); border:none; border-radius:10px; font-weight:bold; cursor:pointer; color:#000;">ENTRAR</button>
         </div>
     </div>
 
@@ -57,50 +43,40 @@
         <div class="layout">
             <div style="flex: 2.5;">
                 <div class="seccion">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3>1. Competición y Equipos</h3>
-                        <button onclick="resetActual()" style="background:none; border:1px solid #444; color:#888; font-size:10px; padding:5px 10px; border-radius:5px; cursor:pointer;">Reset Partido</button>
-                    </div>
+                    <h3>1. Liga y Equipos</h3>
                     <div id="listaLigas" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom:15px;"></div>
-                    <div id="motorBox" style="display:none; margin-bottom:10px;"><input type="text" id="gp_name" placeholder="Nombre del GP / Evento"></div>
+                    <div id="motorBox" style="display:none; margin-bottom:10px;"><input type="text" id="gp_name" placeholder="Nombre del GP / Evento Especial"></div>
                     <div id="listaEquipos" class="grid"></div>
                 </div>
-
                 <div class="seccion">
-                    <h3>2. Datos y Enlaces</h3>
+                    <h3>2. Configuración</h3>
                     <div class="row">
                         <div><label style="font-size:9px;">FECHA</label><input type="date" id="f_input"></div>
                         <div><label style="font-size:9px;">HORA</label><input type="time" id="h_input" value="21:00"></div>
-                        <div><label style="font-size:9px;">CANAL</label><input type="text" id="c_input" placeholder="Ej: DAZN 1"></div>
+                        <div><label style="font-size:9px;">CANAL</label><input type="text" id="c_input" placeholder="DAZN 1"></div>
                         <div>
-                            <label style="font-size:9px;">LINKS <span id="count_links" class="badge">0</span></label>
+                            <label style="font-size:9px;">IDs ACESTREAM</label>
                             <div style="display:flex; gap:5px;">
-                                <input type="text" id="link_input" placeholder="Hash AceStream...">
+                                <input type="text" id="link_input" placeholder="Hash...">
                                 <button onclick="addLink()" style="background:var(--main); border:none; width:40px; border-radius:5px; cursor:pointer;">+</button>
                             </div>
                             <div id="visor_ids" class="visor-ids"></div>
                         </div>
                     </div>
                 </div>
-                <button onclick="subirEvento()" class="btn-main">AÑADIR A LA LISTA FINAL</button>
+                <button onclick="subirEvento()" class="btn-main">AÑADIR A PARRILLA</button>
             </div>
-
             <div style="flex: 1.5;">
                 <div class="seccion">
-                    <h3>Importar Jornada</h3>
-                    <textarea id="import_input" placeholder="Pega aquí el JSON de GitHub para editarlo..." style="width:100%; height:60px; background:#000; color:#00ff88; border:1px dashed #444; border-radius:8px; font-size:10px; padding:10px; box-sizing:border-box;"></textarea>
-                    <button onclick="importarJSON()" style="width:100%; margin-top:5px; background:#222; color:#fff; border:1px solid #444; padding:8px; border-radius:5px; cursor:pointer; font-size:11px;">📥 Cargar Datos en Mando</button>
+                    <h3>Importar Existente</h3>
+                    <textarea id="import_input" placeholder="Pega JSON aquí..." style="width:100%; height:50px; background:#000; color:#00ff88; border:1px dashed #444; border-radius:8px; font-size:10px; padding:10px;"></textarea>
+                    <button onclick="importarJSON()" style="width:100%; margin-top:5px; background:#222; color:#fff; border:1px solid #444; padding:8px; border-radius:5px; cursor:pointer;">Cargar para Editar</button>
                 </div>
-
+                <div class="seccion"><h3>Lista de Hoy</h3><div id="cola"></div></div>
                 <div class="seccion">
-                    <h3>Eventos Listos</h3>
-                    <div id="cola"></div>
-                </div>
-
-                <div class="seccion">
-                    <h3>Resultado Final</h3>
+                    <h3>Código para eventos.json</h3>
                     <div id="jsonPreview" class="preview">[]</div>
-                    <button onclick="copy()" style="width:100%; margin-top:10px; background:#fff; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">📋 COPIAR JSON</button>
+                    <button onclick="copy()" style="width:100%; margin-top:10px; background:#fff; padding:15px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">COPIAR JSON</button>
                 </div>
             </div>
         </div>
@@ -119,7 +95,7 @@
         if(window.btoa(document.getElementById('pin_input').value) === LLAVE_MAESTRA) {
             document.getElementById('bloqueo').style.display = 'none';
             document.getElementById('mando-root').style.display = 'block';
-        } else { alert("PIN Incorrecto"); }
+        } else { alert("Clave Incorrecta"); }
     }
 
     fetch('base_datos.json?t=' + Date.now()).then(r => r.json()).then(data => {
@@ -137,8 +113,7 @@
         temp.liga = liga.id;
         temp.tipo = (liga.id === "f1" || liga.id === "MotoGP") ? "motor" : "futbol";
         document.getElementById('motorBox').style.display = (temp.tipo === "motor") ? "block" : "none";
-        const grid = document.getElementById('listaEquipos');
-        grid.innerHTML = '';
+        const grid = document.getElementById('listaEquipos'); grid.innerHTML = '';
         temp.e1 = ""; temp.e2 = "";
         liga.equipos.forEach(eq => {
             const bEq = document.createElement('button');
@@ -163,17 +138,12 @@
 
     function addLink() {
         const val = document.getElementById('link_input').value.trim();
-        if(val.length < 10) return;
-        if(linksTemp.includes(val)) return alert("ID ya añadida anteriormente.");
-        linksTemp.push(val);
-        document.getElementById('link_input').value = "";
-        drawLinks();
+        if(val.length < 10 || linksTemp.includes(val)) return;
+        linksTemp.push(val); document.getElementById('link_input').value = ""; drawLinks();
     }
 
     function drawLinks() {
-        document.getElementById('count_links').innerText = linksTemp.length;
-        document.getElementById('visor_ids').innerHTML = linksTemp.map((l, i) => `
-            <div class="id-item">L${i+1}: ${l.substring(0,10)}... <span onclick="linksTemp.splice(${i},1);drawLinks();" style="color:red;cursor:pointer">✖</span></div>`).join('');
+        document.getElementById('visor_ids').innerHTML = linksTemp.map((l, i) => `<div class="id-item">ID ${i+1}: ${l.substring(0,8)}... <span onclick="linksTemp.splice(${i},1);drawLinks();" style="color:red;cursor:pointer">✖</span></div>`).join('');
     }
 
     function subirEvento() {
@@ -184,46 +154,30 @@
             hora: document.getElementById('h_input').value,
             e1: (temp.tipo === "motor") ? document.getElementById('gp_name').value : temp.e1,
             logo1: (temp.tipo === "motor") ? `deporte/${temp.liga}.png` : `${temp.liga}/${temp.l1}`,
-            e2: (temp.tipo === "motor") ? temp.e1 : temp.e2,
             logo2: (temp.tipo === "motor") ? `deporte/${temp.liga}.png` : `${temp.liga}/${temp.l2}`,
+            e2: (temp.tipo === "motor") ? temp.e1 : temp.e2,
             canal: canal,
             links: [...linksTemp]
         });
-        resetActual();
-        renderParrilla();
+        reset(); renderParrilla();
     }
 
-    function resetActual() {
-        linksTemp = []; drawLinks();
-        temp.e1 = ""; temp.e2 = "";
-        document.getElementById('gp_name').value = "";
+    function reset() {
+        linksTemp = []; drawLinks(); temp.e1 = ""; temp.e2 = "";
         document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('local', 'visita', 'motor-sel'));
     }
 
     function renderParrilla() {
         parrilla.sort((a,b) => (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
-        document.getElementById('cola').innerHTML = parrilla.map((ev, i) => `
-            <div style="background:#000;padding:10px;border-radius:8px;margin-bottom:5px;font-size:11px;border-left:3px solid var(--main);">
-                ${ev.hora} - ${ev.e1} <span onclick="parrilla.splice(${i},1);renderParrilla()" style="float:right;color:red;cursor:pointer">✖</span>
-            </div>`).join('');
+        document.getElementById('cola').innerHTML = parrilla.map((ev, i) => `<div style="background:#000;padding:8px;border-radius:5px;margin-bottom:5px;font-size:11px;">${ev.hora} - ${ev.e1} <span onclick="parrilla.splice(${i},1);renderParrilla()" style="float:right;color:red;cursor:pointer">✖</span></div>`).join('');
         document.getElementById('jsonPreview').innerText = JSON.stringify(parrilla, null, 2);
     }
 
     function importarJSON() {
-        try {
-            const data = JSON.parse(document.getElementById('import_input').value);
-            if(Array.isArray(data)) {
-                parrilla = data;
-                renderParrilla();
-                alert("¡Jornada cargada con éxito!");
-            }
-        } catch(e) { alert("Error al leer el JSON. Asegúrate de copiarlo bien."); }
+        try { const d = JSON.parse(document.getElementById('import_input').value); if(Array.isArray(d)) { parrilla = d; renderParrilla(); } } catch(e) { alert("JSON inválido"); }
     }
 
-    function copy() {
-        navigator.clipboard.writeText(document.getElementById('jsonPreview').innerText).then(() => alert("Copiado"));
-    }
-    function limpiarTodo() { if(confirm("¿Vaciar todo?")) { parrilla = []; renderParrilla(); } }
+    function copy() { navigator.clipboard.writeText(document.getElementById('jsonPreview').innerText).then(() => alert("Copiado")); }
 </script>
 </body>
 </html>
