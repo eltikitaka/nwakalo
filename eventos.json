@@ -1,15 +1,16 @@
 [
 {
-"fecha": "2026-03-28",
-"hora": "21:00",
-"e1": "GP EEUU",
-"logo1": "deporte/MotoGP.png",
-"e2": "Carrera Sprint",
-"logo2": "deporte/MotoGP.png",
+"fecha": "2026-03-29",
+"hora": "07:00",
+"e1": "",
+"logo1": "deporte/f1.png",
+"e2": "Carrera Domingo",
+"logo2": "deporte/f1.png",
 "canal": "DAZN 1",
 "canalLogo": "dazn_1.png",
 "links": [
-"acestream://c53bdb3be55d12c5188d25085f1bb16911c15cea"
+"d719181097d256073844390b3e094fbcb1bceaa4",
+"b08e158ea3f5c72084f5ff8e3c30ca2e4d1ff6d1"
 ]
 }
 ]
