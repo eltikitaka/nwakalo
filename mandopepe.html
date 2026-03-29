@@ -2,34 +2,42 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE 4.0 - BÚNKER EDITION</title>
+    <title>MANDO PEPE 4.0 - GOLD EDITION</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
         #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .pin-card { background: #111; padding: 40px; border-radius: 20px; border: 2px solid #333; text-align: center; }
-        #mando-root { display: none; max-width: 1200px; margin: auto; }
-        .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        #mando-root { display: none; max-width: 1100px; margin: auto; }
+        .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 25px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid #222; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; background: #000; padding: 10px; border-radius: 10px; }
-        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 10px; }
-        .btn-eq img { width: 35px; height: 35px; background: #fff; border-radius: 50%; padding: 3px; margin-bottom: 5px; }
-        .btn-eq.sel { border-color: var(--main); background: #004422; }
-        .btn-liga { background: #222; color: #fff; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 10px; border: 1px solid #444; }
-        .btn-liga.active { background: var(--main); color: #000; }
-        input, textarea { background: #000; color: var(--main); border: 1px solid #333; padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; }
-        .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .item-cola { background: #000; padding: 10px; border-radius: 5px; margin-bottom: 5px; font-size: 11px; border-left: 3px solid var(--main); position: relative; }
-        .del-btn { position: absolute; right: 10px; top: 10px; color: red; cursor: pointer; font-weight: bold; }
+        
+        /* EQUIPOS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; }
+        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .btn-eq img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
+        .btn-eq.sel { border-color: var(--main); background: #004422; box-shadow: 0 0 10px var(--main); }
+        
+        /* LIGAS */
+        .btn-liga { background: #222; color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 11px; border: 1px solid #444; margin-right: 5px; margin-bottom: 8px; }
+        .btn-liga.active { background: var(--main); color: #000; font-weight: bold; }
+        
+        input { background: #000; color: var(--main); border: 1px solid #444; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 8px; font-weight: bold; }
+        .btn-main { width: 100%; background: var(--main); color: #000; padding: 18px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; font-size: 14px; }
+        
+        /* LISTA DERECHA */
+        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); position: relative; }
+        .del-btn { position: absolute; right: 12px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; }
+        .tag-links { display: inline-block; background: #333; color: #00ff88; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div id="bloqueo">
     <div class="pin-card">
-        <h2>NWAKALO BÚNKER</h2>
-        <input type="password" id="pin_input" placeholder="Clave Maestra..." style="text-align:center; margin-bottom:15px;">
-        <button onclick="acceso()" class="btn-main">ENTRAR</button>
+        <h2 style="letter-spacing: 2px;">NWAKALO BÚNKER 4.0</h2>
+        <input type="password" id="pin_input" placeholder="PIN de Seguridad..." style="text-align:center;">
+        <button onclick="acceso()" class="btn-main">ENTRAR AL SISTEMA</button>
     </div>
 </div>
 
@@ -37,34 +45,39 @@
     <div class="layout">
         <div>
             <div class="seccion">
-                <h3>1. Selección de Evento</h3>
-                <div id="ligas" style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:15px;"></div>
-                <div id="equipos" class="grid"></div>
+                <h3>1. Selección de Equipos</h3>
+                <div id="ligas"></div>
+                <div id="equipos" class="grid">Selecciona una liga...</div>
             </div>
+            
             <div class="seccion">
-                <h3>2. Datos y Links</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                    <input type="date" id="f_in">
-                    <input type="time" id="h_in" value="21:00">
-                    <input type="text" id="c_in" placeholder="Canal (Ej: DAZN 1)">
+                <h3>2. Horario y Canal</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1.2fr; gap:12px;">
+                    <div><label style="font-size:10px; color:#666;">FECHA</label><input type="date" id="f_in"></div>
+                    <div><label style="font-size:10px; color:#666;">HORA</label><input type="time" id="h_in" value="21:00"></div>
+                    <div><label style="font-size:10px; color:#666;">CANAL</label><input type="text" id="c_in" placeholder="Ej: DAZN 1"></div>
                 </div>
-                <input type="text" id="l_in" placeholder="Pegar ID AceStream y pulsar Enter..." onkeydown="if(event.key==='Enter') addLink()">
-                <div id="v_links" style="font-size:10px; margin-top:10px; color:#888;"></div>
+                
+                <h3 style="margin-top:20px;">3. Links AceStream (Varios permitidos)</h3>
+                <input type="text" id="l_in" placeholder="Pega el ID y pulsa ENTER..." onkeydown="if(event.key==='Enter') addLink()">
+                <div id="v_links" style="margin-top:10px; display:flex; gap:5px; flex-wrap:wrap;"></div>
             </div>
-            <button onclick="guardarEvento()" class="btn-main">AÑADIR A MI AGENDA PRIVADA</button>
+            
+            <button onclick="guardarEvento()" class="btn-main">Añadir Evento a la Agenda</button>
         </div>
 
         <div>
             <div class="seccion">
-                <h3>Agenda Actual</h3>
+                <h3>Agenda Activa</h3>
                 <div id="cola_eventos"></div>
-                <button onclick="limpiarExpirados()" style="background:none; border:1px solid #444; color:#666; font-size:10px; width:100%; cursor:pointer; margin-top:10px;">Forzar Limpieza (-3h)</button>
+                <button onclick="limpiarTodo()" style="background:none; border:1px solid #444; color:#666; font-size:10px; width:100%; margin-top:10px; cursor:pointer; padding:5px;">Borrar Agenda Completa</button>
             </div>
+            
             <div class="seccion">
-                <h3>Código para GitHub</h3>
-                <p style="font-size:9px; color:#666;">Copia este código cifrado en tu eventos.json</p>
-                <textarea id="output" readonly style="height:80px; font-size:9px; word-break: break-all;"></textarea>
-                <button onclick="copy()" class="btn-main" style="background:#fff;">COPIAR CÓDIGO CIFRADO</button>
+                <h3>Exportar a GitHub (Cifrado)</h3>
+                <p style="font-size:10px; color:#666; margin-bottom:10px;">Copia este código y pégalo tal cual en tu archivo <b>eventos.json</b></p>
+                <textarea id="output" readonly style="height:120px; font-size:10px; background:#000; color:#00ff88; border:1px solid #333; width:100%; padding:10px; word-break:break-all; border-radius:8px;"></textarea>
+                <button onclick="copy()" class="btn-main" style="background:#fff; color:#000; margin-top:10px;">Copiar al Portapapeles</button>
             </div>
         </div>
     </div>
@@ -73,45 +86,49 @@
 <script>
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('pepe_agenda') || "[]");
-    let current = { e1:"", l1:"", e2:"", l2:"", liga:"", tipo:"" };
+    let current = { e1:"", l1:"", e2:"", l2:"", liga_id:"" };
     let links = [];
 
-    // ACCESO
     function acceso() {
+        // PIN: Lusilectra_01@
         if(window.btoa(document.getElementById('pin_input').value) === "THVzaWxlY3RyYV8wMUA=") {
             document.getElementById('bloqueo').style.display='none';
             document.getElementById('mando-root').style.display='block';
             limpiarExpirados();
-        }
+        } else { alert("PIN Incorrecto"); }
     }
 
-    // CARGAR BD
+    // CARGAR BASE DE DATOS
     fetch('base_datos.json').then(r => r.json()).then(data => {
         BD = data;
         const div = document.getElementById('ligas');
         Object.keys(BD.ligas).forEach(l => {
             div.innerHTML += `<button class="btn-liga" onclick="verEq('${l}', this)">${l}</button>`;
         });
+        renderAgenda();
     });
 
     function verEq(l, btn) {
         document.querySelectorAll('.btn-liga').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const liga = BD.ligas[l];
-        current.liga = liga.id;
+        current.liga_id = liga.id;
         const grid = document.getElementById('equipos');
         grid.innerHTML = "";
+        
         liga.equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
-            b.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}"><br>${eq.n}`;
+            b.innerHTML = `<img src="assets/equipos/${liga.id}/${eq.a}" onerror="this.src='assets/default.png'"><br>${eq.n}`;
             b.onclick = () => {
+                // Lógica de selección 1 y 2
                 if(!current.e1 || (current.e1 && current.e2)) {
-                    current.e1 = eq.n; current.l1 = eq.a; current.e2 = "";
+                    current.e1 = eq.n; current.l1 = `${liga.id}/${eq.a}`; 
+                    current.e2 = ""; current.l2 = "";
                     document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel'));
                     b.classList.add('sel');
                 } else {
-                    current.e2 = eq.n; current.l2 = eq.a;
+                    current.e2 = eq.n; current.l2 = `${liga.id}/${eq.a}`;
                     b.classList.add('sel');
                 }
             };
@@ -120,67 +137,90 @@
     }
 
     function addLink() {
-        const val = document.getElementById('l_in').value;
-        if(val) { links.push(val); document.getElementById('l_in').value=""; drawLinks(); }
+        const val = document.getElementById('l_in').value.trim();
+        if(val) {
+            links.push(val);
+            document.getElementById('l_in').value = "";
+            renderLinksVisibles();
+        }
     }
 
-    function drawLinks() {
-        document.getElementById('v_links').innerText = "Links: " + links.length;
+    function renderLinksVisibles() {
+        const div = document.getElementById('v_links');
+        div.innerHTML = links.map((l, i) => `<span class="tag-links">ID ${i+1} <b onclick="links.splice(${i},1);renderLinksVisibles()" style="cursor:pointer;margin-left:5px;color:red;">×</b></span>`).join('');
     }
 
     function guardarEvento() {
-        if(!current.e1 || links.length === 0) return alert("Faltan datos");
+        if(!current.e1 || !current.e2) return alert("Selecciona 2 equipos primero.");
+        if(links.length === 0) return alert("Añade al menos un link (pega y pulsa Enter).");
+        
         const ev = {
             fecha: document.getElementById('f_in').value,
             hora: document.getElementById('h_in').value,
-            e1: current.e1, logo1: `${current.liga}/${current.l1}`,
-            e2: current.e2, logo2: `${current.liga}/${current.l2}`,
-            canal: document.getElementById('c_in').value,
+            e1: current.e1, logo1: current.l1,
+            e2: current.e2, logo2: current.l2,
+            canal: document.getElementById('c_in').value || "TV",
             links: [...links]
         };
+        
         agenda.push(ev);
-        save();
-        renderAgenda();
-        links = []; current = {e1:"",l1:"",e2:"",l2:"",liga:""};
+        actualizarTodo();
+        
+        // Reset local
+        links = [];
+        current = {e1:"", l1:"", e2:"", l2:"", liga_id:""};
         document.querySelectorAll('.btn-eq').forEach(x => x.classList.remove('sel'));
+        document.getElementById('v_links').innerHTML = "";
+        alert("¡Partido añadido!");
     }
 
-    function save() {
+    function actualizarTodo() {
         localStorage.setItem('pepe_agenda', JSON.stringify(agenda));
-        // CIFRAMOS EN BASE64 PARA GITHUB
+        // Generar Cifrado para GitHub
         const str = JSON.stringify(agenda);
         document.getElementById('output').value = window.btoa(unescape(encodeURIComponent(str)));
+        renderAgenda();
     }
 
     function renderAgenda() {
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola">
-                <b>${e.hora}</b> - ${e.e1} vs ${e.e2}
+                <b>${e.hora}</b> | ${e.e1} vs ${e.e2} <br>
+                <small style="color:#888;">${e.canal} (${e.links.length} links)</small>
                 <span class="del-btn" onclick="borrar(${i})">✖</span>
             </div>
         `).join('');
     }
 
-    function borrar(i) { agenda.splice(i, 1); save(); renderAgenda(); }
+    function borrar(i) {
+        agenda.splice(i, 1);
+        actualizarTodo();
+    }
+
+    function limpiarTodo() {
+        if(confirm("¿Seguro que quieres vaciar toda la agenda?")) {
+            agenda = [];
+            actualizarTodo();
+        }
+    }
 
     function limpiarExpirados() {
         const ahora = new Date();
         agenda = agenda.filter(ev => {
             const inicio = new Date(`${ev.fecha}T${ev.hora}`);
-            const exp = new Date(inicio.getTime() + (3 * 3600000));
-            return ahora < exp;
+            return ahora < new Date(inicio.getTime() + (3 * 3600000)); // 3 horas
         });
-        save();
-        renderAgenda();
+        actualizarTodo();
     }
 
     function copy() { 
         const area = document.getElementById('output');
         area.select();
         document.execCommand('copy');
-        alert("¡Código cifrado copiado! Pégalo en tu eventos.json");
+        alert("¡Código cifrado copiado! Pégalo en eventos.json");
     }
 
+    // Set fecha de hoy por defecto
     document.getElementById('f_in').valueAsDate = new Date();
 </script>
 </body>
