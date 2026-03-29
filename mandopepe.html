@@ -7,7 +7,6 @@
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
         
-        /* BLOQUEO DE ACCESO */
         #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
         .tv-card { background: #111; padding: 50px; border-radius: 30px; border: 2px solid #333; max-width: 400px; }
         .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
@@ -16,7 +15,6 @@
         .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
 
-        /* DISEÑO DE LOGOS (FONDO GRIS CIRCULAR) */
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; font-size: 11px; }
         .img-holder, .img-wrap { background: #e0e0e0; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #fff; }
@@ -31,14 +29,15 @@
         input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        /* ALMACÉN */
         .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; display: flex; align-items: center; gap: 10px; position: relative; }
         .item-cola.active { border-left-color: var(--main); background: rgba(0, 255, 136, 0.05); }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
-        .check-event { width: 20px; height: 20px; accent-color: var(--main); cursor: pointer; }
         
         textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
+        
+        /* CONTADOR DE LINKS */
+        .badge-links { background: var(--main); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 10px; float: right; }
     </style>
 </head>
 <body>
@@ -74,36 +73,39 @@
             </div>
 
             <div class="seccion">
-                <h3>3. Configuración del Link</h3>
+                <h3>3. Configuración y IDs AceStream</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="time" id="h_in" value="21:00">
                     <input type="text" id="c_in" placeholder="Nombre Canal">
                 </div>
-                <input type="text" id="l_in" placeholder="Pega AQUÍ el ID AceStream">
-                <button onclick="crearEvento()" class="btn-main">CREAR CUADRO EN TV</button>
+                <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:1px solid #333;">
+                    <p style="margin:0 0 10px 0; font-size:12px; color:#777;">Pega el ID AceStream y dale al botón (puedes añadir varios uno a uno):</p>
+                    <input type="text" id="l_in" placeholder="ID AceStream aquí...">
+                    <button onclick="crearEvento()" class="btn-main" style="background:#fff; color:#000;">+ AÑADIR ID A LA LISTA</button>
+                </div>
             </div>
         </div>
 
         <div>
             <div class="seccion">
-                <h3>Agenda (Marcados van a TV)</h3>
-                <div id="cola_eventos"></div>
-                <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer;">Vaciar lista</button>
+                <h3>Agenda NWAKALO TV <span id="count-agenda" class="badge-links">0</span></h3>
+                <div id="cola_eventos" style="max-height: 500px; overflow-y: auto;"></div>
+                <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer; margin-top:10px;">Vaciar lista completa</button>
             </div>
 
             <div class="seccion">
                 <h3>Código Cifrado (GitHub)</h3>
                 <textarea id="output" readonly onclick="this.select()"></textarea>
-                <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR CÓDIGO</button>
+                <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
+    const AUTORIZADOS = ["BUNKER-3VXWL"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v4') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v5') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
 
     function chequearAcceso() {
@@ -171,48 +173,61 @@
     function fijarEspecial() {
         cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
         cur.l1 = document.getElementById('esp_logo').value || 'especial.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales cargados.");
+        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales fijados.");
     }
 
+    // AHORA CREA UN EVENTO INDEPENDIENTE POR CADA CLICK SIN BORRAR LOS DATOS
     function crearEvento() {
         const link = document.getElementById('l_in').value.trim();
-        if(!cur.e1 || !link) return alert("Faltan datos o link");
+        const hora = document.getElementById('h_in').value;
+        const canal = document.getElementById('c_in').value || cur.cat;
+
+        if(!cur.e1) return alert("Primero selecciona los equipos.");
+        if(!link) return alert("Pega el ID AceStream.");
+        if(!hora) return alert("Pon la hora del evento.");
 
         agenda.push({
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             visible: true,
-            hora: document.getElementById('h_in').value,
-            canal: document.getElementById('c_in').value || cur.cat,
+            hora: hora,
+            canal: canal,
             e1: cur.e1, logo1: cur.l1,
             e2: cur.e2, logo2: cur.l2,
-            link: link // UN SOLO LINK POR CUADRO
+            link: link
         });
 
+        // Limpiamos solo el input del link para el siguiente
         document.getElementById('l_in').value = "";
+        document.getElementById('l_in').focus();
         updateAgenda();
     }
 
     function updateAgenda() {
-        localStorage.setItem('nw_agenda_v4', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v5', JSON.stringify(agenda));
+        document.getElementById('count-agenda').innerText = agenda.length;
+
         const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
         
-        // CODIFICACIÓN BASE64 PARA GITHUB
+        // CODIFICACIÓN BASE64 (UTF-8 safe)
         const jsonStr = JSON.stringify(filtrados);
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(jsonStr)));
         
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola ${e.visible ? 'active' : ''}">
-                <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
-                <div style="flex:1"><b>${e.hora}</b> - ${e.e1} ${e.e2?'vs '+e.e2:''}</div>
+                <input type="checkbox" class="check-event" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
+                <div style="flex:1">
+                    <b>${e.hora}</b> - ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
+                    <span style="font-size:9px; color:var(--main)">ID: ${e.link.substring(0,15)}...</span>
+                </div>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
-        `).join('');
+        `).reverse().join(''); // Reverse para ver lo último arriba
     }
 
     function copyToClipboard() {
         document.getElementById('output').select();
         document.execCommand('copy');
-        alert("Código CIFRADO copiado para GitHub.");
+        alert("Código copiado. Pégalo en eventos.json");
     }
 
     chequearAcceso();
