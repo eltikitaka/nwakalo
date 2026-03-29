@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO BÚNKER PRO</title>
+    <title>NWAKALO CONTROL PRO</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
@@ -28,17 +28,16 @@
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
         .btn-eq.sel .img-wrap { border: 2px solid var(--main); background: #fff; }
 
-        /* INPUTS */
         input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        /* ALMACÉN DERECHO */
+        /* ALMACÉN */
         .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; display: flex; align-items: center; gap: 10px; position: relative; }
         .item-cola.active { border-left-color: var(--main); background: rgba(0, 255, 136, 0.05); }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
         .check-event { width: 20px; height: 20px; accent-color: var(--main); cursor: pointer; }
         
-        textarea { height: 120px; font-size: 11px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; }
+        textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
     </style>
 </head>
@@ -46,10 +45,9 @@
 
 <div id="bloqueo">
     <div class="tv-card">
-        <h2 style="margin:0;">BÚNKER CONTROL</h2>
-        <p style="color:#777; font-size:14px;">Dispositivo no vinculado</p>
+        <h2 style="margin:0;">NWAKALO CONTROL</h2>
         <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">Autoriza este ID en el código para entrar.</p>
+        <p style="font-size:11px; color:#555;">ID REQUERIDO: BUNKER-3VXWL</p>
     </div>
 </div>
 
@@ -57,52 +55,44 @@
     <div class="layout">
         <div>
             <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL / OTROS</h3>
+                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Deporte (ej: UFC)">
+                    <input type="text" id="esp_tipo" placeholder="Deporte / Canal">
                     <input type="text" id="esp_evento" placeholder="Nombre Evento">
                 </div>
-                <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png o link imagen)" style="margin-top:10px;">
+                <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
                 <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); font-size:12px;">FIJAR DATOS</button>
             </div>
 
             <div class="seccion">
                 <h3>1. Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
-                
                 <div id="box-equipos">
-                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Equipos / Participantes</h3>
-                    <div id="equipos" class="grid">Selecciona una liga...</div>
+                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Equipos</h3>
+                    <div id="equipos" class="grid"></div>
                 </div>
             </div>
 
             <div class="seccion">
-                <h3>3. Detalles y Links</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                    <input type="date" id="f_in">
+                <h3>3. Configuración del Link</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="time" id="h_in" value="21:00">
-                    <input type="text" id="c_in" placeholder="Canal">
+                    <input type="text" id="c_in" placeholder="Nombre Canal">
                 </div>
-                <input type="text" id="l_in" placeholder="Pega ID AceStream y pulsa ENTER..." onkeydown="if(event.key==='Enter') addLink()">
-                <div id="v_links" style="margin-top:10px; font-size:13px; color:var(--main); font-weight: bold;">Links añadidos: 0</div>
+                <input type="text" id="l_in" placeholder="Pega AQUÍ el ID AceStream">
+                <button onclick="crearEvento()" class="btn-main">CREAR CUADRO EN TV</button>
             </div>
-            
-            <button onclick="guardarAlAlmacen()" class="btn-main" style="font-size: 18px; padding: 20px;">+ AÑADIR AL ALMACÉN</button>
         </div>
 
         <div>
             <div class="seccion">
-                <h3 style="display:flex; justify-content:space-between; align-items:center;">
-                    Almacén de Eventos
-                    <span style="font-size:10px; color:var(--main)">MARCAR PARA TV</span>
-                </h3>
+                <h3>Agenda (Marcados van a TV)</h3>
                 <div id="cola_eventos"></div>
                 <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer;">Vaciar lista</button>
             </div>
 
             <div class="seccion">
-                <h3>Código para eventos.json</h3>
-                <p style="font-size:10px; color:#777; margin-bottom:5px;">Copia esto y pégalo en tu archivo de GitHub:</p>
+                <h3>Código Cifrado (GitHub)</h3>
                 <textarea id="output" readonly onclick="this.select()"></textarea>
                 <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR CÓDIGO</button>
             </div>
@@ -111,20 +101,14 @@
 </div>
 
 <script>
-    // --- ACCESO AUTORIZADO ---
-    const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
-
+    const AUTORIZADOS = ["BUNKER-3VXWL"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('bunker_agenda_v3') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v4') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
-    let links = [];
 
     function chequearAcceso() {
-        let id = localStorage.getItem('bunker_id');
-        if(!id) {
-            id = "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
-            localStorage.setItem('bunker_id', id);
-        }
+        let id = localStorage.getItem('bunker_id') || "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+        localStorage.setItem('bunker_id', id);
         document.getElementById('mi_id').innerText = id;
         if(AUTORIZADOS.includes(id)) {
             document.getElementById('bloqueo').style.display = 'none';
@@ -140,8 +124,7 @@
             Object.keys(BD.ligas).forEach(l => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-cat';
-                const img = BD.ligas[l].logo;
-                btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${img}" onerror="this.src='assets/deporte/${img}';"></div><span>${l}</span>`;
+                btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
                 btn.onclick = () => cargarEquipos(l, btn);
                 menu.appendChild(btn);
             });
@@ -152,35 +135,32 @@
     function cargarEquipos(ligaNom, btn) {
         document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const liga = BD.ligas[ligaNom];
         const grid = document.getElementById('equipos');
-        const boxEquipos = document.getElementById('box-equipos');
         const espBox = document.getElementById('especial-wrapper');
-        
         cur.cat = ligaNom; grid.innerHTML = "";
-        if(ligaNom === "EVENTOS ESPECIALES") {
-            espBox.style.display = 'block'; boxEquipos.style.display = 'none'; cur.modo = "especial"; return;
-        }
         
-        espBox.style.display = 'none'; boxEquipos.style.display = 'block';
+        if(ligaNom === "EVENTOS ESPECIALES") {
+            espBox.style.display = 'block'; cur.modo = "especial"; return;
+        }
+        espBox.style.display = 'none';
         cur.modo = (ligaNom === "FORMULA 1" || ligaNom === "MOTOGP" || ligaNom === "CICLISMO") ? "unico" : "duelo";
         cur.e1 = ""; cur.e2 = "";
 
-        liga.equipos.forEach(eq => {
+        BD.ligas[ligaNom].equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
-            const imgRuta = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `${liga.id}/${eq.a}`;
-            b.innerHTML = `<div class="img-wrap"><img src="assets/equipos/${imgRuta}" onerror="this.src='assets/deporte/${eq.a}'; this.onerror=function(){this.src='assets/default.png'};"></div><br>${eq.n}`;
+            const imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${BD.ligas[ligaNom].id}/${eq.a}`;
+            b.innerHTML = `<div class="img-wrap"><img src="${imgPath}" onerror="this.src='assets/default.png'"></div><span>${eq.n}</span>`;
             b.onclick = () => {
                 if(cur.modo === "unico") {
                     cur.e1 = eq.n; cur.l1 = eq.a; cur.e2 = ""; cur.l2 = "";
                     document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                 } else {
                     if(!cur.e1 || (cur.e1 && cur.e2)) {
-                        cur.e1 = eq.n; cur.l1 = `${liga.id}/${eq.a}`; cur.e2 = "";
+                        cur.e1 = eq.n; cur.l1 = `${BD.ligas[ligaNom].id}/${eq.a}`; cur.e2 = "";
                         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                     } else {
-                        cur.e2 = eq.n; cur.l2 = `${liga.id}/${eq.a}`; b.classList.add('sel');
+                        cur.e2 = eq.n; cur.l2 = `${BD.ligas[ligaNom].id}/${eq.a}`; b.classList.add('sel');
                     }
                 }
             };
@@ -189,79 +169,52 @@
     }
 
     function fijarEspecial() {
-        const t = document.getElementById('esp_tipo').value;
-        const n = document.getElementById('esp_evento').value;
-        const l = document.getElementById('esp_logo').value || 'especial.png';
-        if(!t || !n) return alert("Faltan datos");
-        cur.e1 = `${t}: ${n}`; cur.l1 = l; cur.e2 = ""; cur.l2 = ""; alert("✅ Datos Especiales Fijados");
+        cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
+        cur.l1 = document.getElementById('esp_logo').value || 'especial.png';
+        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales cargados.");
     }
 
-    function addLink() {
-        const val = document.getElementById('l_in').value.trim();
-        if(val) { links.push(val); document.getElementById('l_in').value = ""; renderLinks(); }
-    }
-    function renderLinks() { document.getElementById('v_links').innerText = "Links añadidos: " + links.length; }
+    function crearEvento() {
+        const link = document.getElementById('l_in').value.trim();
+        if(!cur.e1 || !link) return alert("Faltan datos o link");
 
-    function guardarAlAlmacen() {
-        if(!cur.e1) return alert("Selecciona equipos o evento");
-        if(links.length === 0) return alert("Añade al menos un link");
-        
         agenda.push({
             id: Date.now(),
             visible: true,
             hora: document.getElementById('h_in').value,
             canal: document.getElementById('c_in').value || cur.cat,
             e1: cur.e1, logo1: cur.l1,
-            e2: cur.e2 || "", logo2: cur.l2 || "",
-            links: [...links]
+            e2: cur.e2, logo2: cur.l2,
+            link: link // UN SOLO LINK POR CUADRO
         });
-        
-        links = []; renderLinks();
-        cur.e1 = ""; cur.e2 = "";
-        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
+
+        document.getElementById('l_in').value = "";
         updateAgenda();
     }
 
-    function toggleVisibilidad(id) {
-        const idx = agenda.findIndex(e => e.id === id);
-        if(idx !== -1) { agenda[idx].visible = !agenda[idx].visible; updateAgenda(); }
-    }
-
     function updateAgenda() {
-        localStorage.setItem('bunker_agenda_v3', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v4', JSON.stringify(agenda));
+        const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
         
-        // FILTRAR SOLO LOS MARCADOS PARA LA TV
-        const paraTV = agenda.filter(e => e.visible).map(e => {
-            // Creamos una copia sin el ID interno de gestión
-            const { id, visible, ...limpio } = e;
-            return limpio;
-        });
-
-        // MOSTRAR JSON LIMPIO EN EL TEXTAREA
-        document.getElementById('output').value = JSON.stringify(paraTV, null, 2);
+        // CODIFICACIÓN BASE64 PARA GITHUB
+        const jsonStr = JSON.stringify(filtrados);
+        document.getElementById('output').value = btoa(unescape(encodeURIComponent(jsonStr)));
         
-        // RENDERIZAR LISTA DERECHA
-        const cola = document.getElementById('cola_eventos');
-        cola.innerHTML = agenda.map((e, i) => `
+        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola ${e.visible ? 'active' : ''}">
-                <input type="checkbox" class="check-event" ${e.visible ? 'checked' : ''} onchange="toggleVisibilidad(${e.id})">
-                <div style="flex:1">
-                    <b style="color:${e.visible ? 'var(--main)' : '#666'}">${e.hora}</b> - ${e.canal}<br>
-                    <span style="font-size:10px">${e.e1} ${e.e2 ? 'vs '+e.e2 : ''}</span>
-                </div>
-                <span class="del-btn" onclick="if(confirm('¿Eliminar?')){agenda.splice(${i},1);updateAgenda();}">×</span>
+                <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
+                <div style="flex:1"><b>${e.hora}</b> - ${e.e1} ${e.e2?'vs '+e.e2:''}</div>
+                <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
         `).join('');
     }
 
     function copyToClipboard() {
-        const out = document.getElementById('output');
-        out.select();
+        document.getElementById('output').select();
         document.execCommand('copy');
-        alert("Copiado. Pégalo en eventos.json de GitHub.");
+        alert("Código CIFRADO copiado para GitHub.");
     }
 
-    document.getElementById('f_in').valueAsDate = new Date();
     chequearAcceso();
 </script>
 </body>
