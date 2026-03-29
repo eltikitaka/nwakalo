@@ -7,50 +7,30 @@
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
         
-        #mando-root { max-width: 1200px; margin: auto; }
+        /* PANTALLA RESTRINGIDA (ESTILO TV) */
+        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .tv-card { background: #111; padding: 50px; border-radius: 30px; border: 2px solid #333; max-width: 400px; }
+        .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
+        
+        #mando-root { display: none; max-width: 1200px; margin: auto; }
         .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
 
-        /* LOGOS: FONDO GRIS CLARO PARA QUE LOS LOGOS BLANCOS SE VEAN */
+        /* DISEÑO DE LOGOS Y BOTONES (TU FAVORITO) */
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .btn-cat { 
-            background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; 
-            cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; transition: 0.3s;
-        }
-        
-        /* Círculo con ligero tinte gris para contraste */
-        .img-holder, .img-wrap { 
-            background: #e0e0e0; /* Gris muy claro en vez de blanco puro */
-            width: 55px; height: 55px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden;
-            border: 2px solid #fff;
-        }
-        
-        .btn-cat img, .btn-eq img { 
-            width: 80%; height: 80%; object-fit: contain; 
-            filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.5)); /* Sombra suave para logos blancos */
-        }
-
+        .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; }
+        .img-holder, .img-wrap { background: #e0e0e0; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #fff; }
+        .btn-cat img, .btn-eq img { width: 80%; height: 80%; object-fit: contain; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.5)); }
         .btn-cat.active { background: var(--main); color: #000; border-color: #fff; font-weight: bold; }
-
-        /* GRID EQUIPOS */
-        .grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; 
-            max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; 
-        }
-        .btn-eq { 
-            background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; 
-            cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; 
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; }
+        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
         .btn-eq.sel .img-wrap { border: 2px solid var(--main); background: #fff; }
 
         /* PANEL ESPECIAL */
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
         input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; font-size: 14px; }
-        
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        
         .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); position: relative; }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
         textarea { height: 100px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; }
@@ -58,34 +38,40 @@
 </head>
 <body>
 
+<div id="bloqueo">
+    <div class="tv-card">
+        <h2 style="margin:0;">ACCESO RESTRINGIDO</h2>
+        <p style="color:#777; font-size:14px;">Vincula este dispositivo para entrar al mando</p>
+        <div class="codigo-tv" id="mi_id">----</div>
+        <p style="font-size:11px; color:#555;">Envía este código al administrador para autorizar tu acceso.</p>
+    </div>
+</div>
+
 <div id="mando-root">
     <h1 style="color:var(--main); text-align:center; letter-spacing:4px; margin-bottom:30px;">MANDO BÚNKER</h1>
-    
     <div class="layout">
         <div>
             <div class="panel-especial" id="especial-wrapper">
                 <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL MANUAL</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Deporte (Ciclismo...)">
-                    <input type="text" id="esp_evento" placeholder="Evento (Final...)">
+                    <input type="text" id="esp_tipo" placeholder="Deporte">
+                    <input type="text" id="esp_evento" placeholder="Evento">
                 </div>
                 <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px; margin-top:10px;">
                     <input type="text" id="esp_logo" placeholder="Logo (ej: ciclismo.png)">
                     <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); padding:10px; margin:0; font-size:12px;">FIJAR DATOS</button>
                 </div>
             </div>
-
             <div class="seccion">
-                <h3>1. Ligas y Categorías</h3>
+                <h3>1. Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
                 <div id="box-equipos">
-                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Selecciona Equipos / Sesión</h3>
-                    <div id="equipos" class="grid">Elige categoría arriba...</div>
+                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Selecciona Equipos</h3>
+                    <div id="equipos" class="grid">Elige arriba...</div>
                 </div>
             </div>
-
             <div class="seccion">
-                <h3>3. Configuración y Links</h3>
+                <h3>3. Configuración</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
                     <input type="date" id="f_in">
                     <input type="time" id="h_in" value="21:00">
@@ -94,77 +80,85 @@
                 <input type="text" id="l_in" placeholder="ID AceStream + ENTER..." onkeydown="if(event.key==='Enter') addLink()">
                 <div id="v_links" style="margin-top:10px; font-size:13px; color:var(--main); font-weight: bold;">Links: 0</div>
             </div>
-            
             <button onclick="guardarTodo()" class="btn-main" style="font-size: 18px; padding: 20px;">AÑADIR A LA AGENDA</button>
         </div>
-
         <div>
             <div class="seccion">
-                <h3>Agenda Próxima</h3>
+                <h3>Agenda</h3>
                 <div id="cola_eventos"></div>
-                <button onclick="if(confirm('¿Borrar agenda?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar Agenda</button>
+                <button onclick="if(confirm('¿Borrar?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar</button>
             </div>
             <div class="seccion">
-                <h3>Cifrado GitHub</h3>
+                <h3>GitHub</h3>
                 <textarea id="output" readonly></textarea>
-                <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR CÓDIGO</button>
+                <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // ==========================================
+    // ⬇️ EDITAR AQUÍ TUS DISPOSITIVOS AUTORIZADOS ⬇️
+    // ==========================================
+    const AUTORIZADOS = [
+        "LUSI-01",  // Ejemplo
+        "TU-CODIGO-AQUI" 
+    ];
+    // ==========================================
+
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('pepe_agenda') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
     let links = [];
 
-    // Cargar Base de Datos
-    fetch('base_datos.json').then(r => r.json()).then(data => {
-        BD = data;
-        const div = document.getElementById('categorias');
-        Object.keys(BD.ligas).forEach(l => {
-            const b = document.createElement('button');
-            b.className = 'btn-cat';
-            const logoL = BD.ligas[l].logo;
-            // INTENTO DOBLE DE RUTA PARA ICONOS DE LIGA
-            b.innerHTML = `
-                <div class="img-holder">
-                    <img src="assets/equipos/${logoL}" onerror="this.src='assets/deporte/${logoL}'; this.onerror=function(){this.src='assets/default.png'};">
-                </div>
-                <span>${l}</span>`;
-            b.onclick = () => cargarEquipos(l, b);
-            div.appendChild(b);
-        });
-        updateAgenda();
-    });
+    // LÓGICA DE VINCULACIÓN TIPO TV
+    function chequearAcceso() {
+        // Generamos un ID basado en el navegador (siempre será el mismo para ese móvil)
+        let fingerprint = localStorage.getItem('bunker_fingerprint');
+        if(!fingerprint) {
+            fingerprint = "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+            localStorage.setItem('bunker_fingerprint', fingerprint);
+        }
+        
+        document.getElementById('mi_id').innerText = fingerprint;
 
+        if(AUTORIZADOS.includes(fingerprint)) {
+            document.getElementById('bloqueo').style.display = 'none';
+            document.getElementById('mando-root').style.display = 'block';
+            iniciarMando();
+        }
+    }
+
+    function iniciarMando() {
+        fetch('base_datos.json').then(r => r.json()).then(data => {
+            BD = data;
+            const div = document.getElementById('categorias');
+            Object.keys(BD.ligas).forEach(l => {
+                const b = document.createElement('button');
+                b.className = 'btn-cat';
+                const logoL = BD.ligas[l].logo;
+                b.innerHTML = `<div class="img-holder"><img src="assets/equipos/${logoL}" onerror="this.src='assets/deporte/${logoL}';"></div><span>${l}</span>`;
+                b.onclick = () => cargarEquipos(l, b);
+                div.appendChild(b);
+            });
+            updateAgenda();
+        });
+    }
+
+    // Funciones de lógica (Equipos, Especiales, Links, etc - Respetando tu diseño)
     function cargarEquipos(ligaNombre, btn) {
         document.querySelectorAll('.btn-cat').forEach(x => x.classList.remove('active'));
         btn.classList.add('active');
-        
         const liga = BD.ligas[ligaNombre];
         const grid = document.getElementById('equipos');
         const boxEquipos = document.getElementById('box-equipos');
         const espBox = document.getElementById('especial-wrapper');
-
-        cur.cat = ligaNombre;
-        grid.innerHTML = "";
-        
-        // MODO ESPECIAL
-        if(ligaNombre === "EVENTOS ESPECIALES") {
-            espBox.style.display = 'block';
-            boxEquipos.style.display = 'none';
-            cur.modo = "especial";
-            return;
-        }
-        
-        // MODO NORMAL / MOTOR
-        espBox.style.display = 'none';
-        boxEquipos.style.display = 'block';
+        cur.cat = ligaNombre; grid.innerHTML = "";
+        if(ligaNombre === "EVENTOS ESPECIALES") { espBox.style.display = 'block'; boxEquipos.style.display = 'none'; cur.modo = "especial"; return; }
+        espBox.style.display = 'none'; boxEquipos.style.display = 'block';
         cur.modo = (ligaNombre === "FORMULA 1" || ligaNombre === "MOTOGP") ? "unico" : "duelo";
         cur.e1 = ""; cur.e2 = "";
-
         liga.equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
@@ -172,15 +166,13 @@
             b.innerHTML = `<div class="img-wrap"><img src="${ruta}" onerror="this.src='assets/default.png'"></div><br>${eq.n}`;
             b.onclick = () => {
                 if(cur.modo === "unico") {
-                    cur.e1 = `${ligaNombre}: ${eq.n}`; cur.l1 = `../deporte/${eq.a}`; cur.e2 = ""; cur.l2 = "";
+                    cur.e1 = `${ligaNombre}: ${eq.n}`; cur.l1 = `../deporte/${eq.a}`;
                     document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                 } else {
                     if(!cur.e1 || (cur.e1 && cur.e2)) {
                         cur.e1 = eq.n; cur.l1 = `${liga.id}/${eq.a}`; cur.e2 = "";
                         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                    } else {
-                        cur.e2 = eq.n; cur.l2 = `${liga.id}/${eq.a}`; b.classList.add('sel');
-                    }
+                    } else { cur.e2 = eq.n; cur.l2 = `${liga.id}/${eq.a}`; b.classList.add('sel'); }
                 }
             };
             grid.appendChild(b);
@@ -191,46 +183,32 @@
         const t = document.getElementById('esp_tipo').value;
         const n = document.getElementById('esp_evento').value;
         const l = document.getElementById('esp_logo').value;
-        if(!t || !n) return alert("Rellena Deporte y Evento.");
-        cur.e1 = `${t}: ${n}`;
-        cur.l1 = `../deporte/${l || 'especial.png'}`;
-        cur.e2 = ""; cur.l2 = "";
-        alert("✅ Datos fijados.");
+        if(!t || !n) return alert("Faltan datos");
+        cur.e1 = `${t}: ${n}`; cur.l1 = `../deporte/${l || 'especial.png'}`; cur.e2 = ""; cur.l2 = ""; alert("✅ Fijado");
     }
 
-    function addLink() {
-        const val = document.getElementById('l_in').value.trim();
-        if(val) { links.push(val); document.getElementById('l_in').value = ""; renderLinks(); }
-    }
+    function addLink() { const val = document.getElementById('l_in').value.trim(); if(val) { links.push(val); document.getElementById('l_in').value = ""; renderLinks(); } }
     function renderLinks() { document.getElementById('v_links').innerText = "Links: " + links.length; }
 
     function guardarTodo() {
-        if(!cur.e1) return alert("Selecciona evento.");
-        if(cur.modo === "duelo" && !cur.e2) return alert("Falta el rival.");
-        if(links.length === 0) return alert("Añade links.");
-        agenda.push({
-            fecha: document.getElementById('f_in').value,
-            hora: document.getElementById('h_in').value,
-            e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2,
-            canal: document.getElementById('c_in').value || cur.cat,
-            links: [...links]
-        });
-        updateAgenda();
-        links = []; cur.e1 = ""; cur.e2 = ""; renderLinks();
-        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
-        alert("✅ Añadido");
+        if(!cur.e1) return alert("Elige evento");
+        if(links.length === 0) return alert("Faltan links");
+        agenda.push({ fecha: document.getElementById('f_in').value, hora: document.getElementById('h_in').value, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, canal: document.getElementById('c_in').value || cur.cat, links: [...links] });
+        updateAgenda(); links = []; cur.e1 = ""; cur.e2 = ""; renderLinks();
+        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); alert("✅ Añadido");
     }
 
     function updateAgenda() {
         localStorage.setItem('pepe_agenda', JSON.stringify(agenda));
         document.getElementById('output').value = window.btoa(unescape(encodeURIComponent(JSON.stringify(agenda))));
-        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
-            <div class="item-cola"><b>${e.hora}</b> | ${e.e1} ${e.e2 ? 'vs '+e.e2 : ''} <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda()">×</span></div>
-        `).join('');
+        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `<div class="item-cola"><b>${e.hora}</b> | ${e.e1} ${e.e2 ? 'vs '+e.e2 : ''} <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda()">×</span></div>`).join('');
     }
 
-    function copyToClipboard() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado."); }
+    function copyToClipboard() { document.getElementById('output').select(); document.execCommand('copy'); alert("Copiado"); }
     document.getElementById('f_in').valueAsDate = new Date();
+
+    // Arrancar chequeo
+    chequearAcceso();
 </script>
 </body>
 </html>
