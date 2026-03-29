@@ -2,64 +2,76 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV PRO</title>
+    <title>NWAKALO TV SUPREME</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #111; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         
         body { 
             height: 100vh; width: 100vw; background: var(--bg); 
-            color: #fff; font-family: sans-serif; overflow: hidden;
-            display: flex; flex-direction: column; padding: 10px;
+            color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden;
+            display: flex; flex-direction: column; padding: 5px 20px;
         }
 
         h1 { 
-            color: var(--main); text-align: center; font-size: 28px; 
-            letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase;
+            color: var(--main); text-align: center; font-size: 24px; 
+            letter-spacing: 12px; margin: 10px 0; text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0,255,136,0.4);
         }
 
-        /* CUADRICULA 3X3 SIN FALLOS */
+        /* REJILLA 3X3 PARA TELE */
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(3, 30vh); /* CADA FILA OCUPA EXACTO EL 30% DEL ALTO */
-            gap: 10px; 
+            grid-template-rows: repeat(3, 28vh); /* Forzamos el tamaño para que quepan los 9 */
+            gap: 12px; 
             width: 100%;
+            flex-grow: 1;
         }
 
         .card { 
-            background: var(--card); border-radius: 15px; border: 1px solid #222;
+            background: var(--card); border-radius: 15px; border: 2px solid #222;
             display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; position: relative; padding: 5px;
+            justify-content: center; position: relative; padding: 10px;
+            transition: 0.3s;
+            text-decoration: none; /* Para que el enlace no se vea azul */
         }
 
-        /* EVENTOS VACÍOS SIN LOGOS ROTOS */
-        .card.placeholder { opacity: 0.15; border: 1px dashed #444; }
-        .card.placeholder .vs-container, .card.placeholder .img-box { display: none; }
+        /* EFECTO PARA EL MANDO DE LA TELE (FOCUS) */
+        .card:focus, .card:hover { 
+            border-color: var(--main); 
+            background: #1a1a1a;
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .card.placeholder { opacity: 0.1; border: 1px dashed #444; pointer-events: none; }
 
         .hora-badge { 
-            position: absolute; top: 8px; left: 8px; 
+            position: absolute; top: 8px; left: 10px; 
             background: var(--main); color: #000; padding: 2px 8px; 
-            border-radius: 5px; font-weight: bold; font-size: 12px;
+            border-radius: 5px; font-weight: 900; font-size: 11px;
         }
 
-        .vs-container { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        
         .img-box { 
-            background: #fff; width: 60px; height: 60px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background: #fff; width: 55px; height: 55px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; border: 2px solid #333;
         }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
 
         .nombres { text-align: center; width: 100%; }
-        .nombres h3 { font-size: 16px; margin: 2px 0; color: #fff; }
-        .canal-txt { color: #555; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .nombres h3 { font-size: 15px; margin: 4px 0; color: #fff; font-weight: 600; }
+        .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         
-        .btn-link {
-            width: 80%; background: #222; color: var(--main); 
-            padding: 8px; border-radius: 10px; font-weight: bold; 
-            font-size: 12px; border: 1px solid #333; text-decoration: none; margin-top: 5px;
+        .status-btn {
+            width: 85%; background: #222; color: var(--main); 
+            padding: 6px; border-radius: 8px; font-weight: 800; 
+            font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px;
         }
-        .btn-link.locked { color: #444; border-color: #1a1a1a; }
+        .locked .status-btn { color: #444; border-color: #1a1a1a; background: #080808; }
     </style>
 </head>
 <body>
@@ -86,44 +98,47 @@
             const ahora = new Date();
             let count = 0;
 
-            // Pintar eventos reales
             evs.forEach(ev => {
                 if(count >= 9) return;
                 const [h, m] = ev.hora.split(':');
                 const f = new Date(); f.setHours(h, m, 0);
                 const dif = (f - ahora) / 60000;
                 
-                if ((ahora - f) / 3600000 > 3) return; // Borrado tras 3h
+                if ((ahora - f) / 3600000 > 3) return;
 
                 count++;
                 const ok = dif <= 15;
-                const single = !ev.e2;
+                const single = !ev.e2 || ev.e2.trim() === "";
                 
-                const div = document.createElement('div');
-                div.className = `card ${single ? 'single' : ''}`;
-                div.innerHTML = `
+                // Creamos el cuadro como un ENLACE para que el mando pueda "enfocarlo"
+                const card = document.createElement(ok ? 'a' : 'div');
+                card.className = `card ${ok ? '' : 'locked'}`;
+                if(ok) card.href = `acestream://${ev.link}`;
+                card.tabIndex = count; // Permite navegación con flechas del mando
+
+                card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
                         <div class="img-box"><img src="assets/equipos/${ev.logo1}" onerror="this.src='assets/default.png'"></div>
-                        ${!single ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="assets/equipos/${ev.logo2}" onerror="this.src='assets/default.png'"></div>` : ''}
+                        ${!single ? `<b style="color:var(--main); font-size:12px;">VS</b><div class="img-box"><img src="assets/equipos/${ev.logo2}" onerror="this.src='assets/default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1} ${ev.e2?'vs '+ev.e2:''}</h3>
+                        <h3>${ev.e1} ${!single ? 'vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="btn-link ${ok?'':'locked'}">${ok?'VER AHORA':'BLOQUEADO'}</div>
+                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
-                container.appendChild(div);
+                container.appendChild(card);
             });
 
-            // Relleno vacío (Sin logos rotos)
+            // Rellenar hasta 9
             for (let i = count; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.innerHTML = `<div class="canal-txt">LIBRE</div><h3 style="color:#222">A PROGRAMAR</h3>`;
+                dummy.innerHTML = `<h3 style="color:#222; font-size:12px;">A PROGRAMAR</h3>`;
                 container.appendChild(dummy);
             }
-        } catch (e) { console.log("Error"); }
+        } catch (e) { console.log("Error de carga"); }
     }
 
     cargar();
