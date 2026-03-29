@@ -2,80 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV SUPREME</title>
+    <title>NWAKALO TV REFIX</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #111; --white-card: rgba(255,255,255,0.08); }
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         
-        body { 
-            height: 100vh; width: 100vw; background: var(--bg); 
-            color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            overflow: hidden; display: flex; flex-direction: column; padding: 10px 20px;
+        * { box-sizing: border-box; }
+        html, body { 
+            height: 100%; margin: 0; padding: 0; 
+            background: var(--bg); color: #fff; font-family: sans-serif; 
+            overflow: hidden; 
         }
+
+        body { display: flex; flex-direction: column; padding: 15px 25px; }
 
         h1 { 
-            color: var(--main); text-align: center; font-size: 26px; 
-            letter-spacing: 12px; margin: 10px 0; text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(0,255,136,0.3);
+            color: var(--main); letter-spacing: 12px; text-transform: uppercase; 
+            margin: 0 0 15px 0; font-size: 32px; font-weight: 900; text-align: center;
         }
 
-        /* REJILLA 3X3 REAL - ADAPTADA A PANTALLA TV */
+        /* CUADRÍCULA 3X3 QUE SE AJUSTA AL ALTO */
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             grid-template-rows: repeat(3, 28vh); 
-            gap: 15px; width: 100%; flex-grow: 1;
+            gap: 15px; 
+            flex-grow: 1;
+            width: 100%;
         }
 
-        /* CUADROS Y ENFOQUE MANDO */
         .card { 
-            background: var(--card); border-radius: 15px; border: 2px solid #222;
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; position: relative; padding: 10px;
-            transition: all 0.25s ease; text-decoration: none; color: inherit;
+            background: var(--card); border-radius: 20px; padding: 10px; 
+            border: 2px solid #222; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.2s;
+            text-decoration: none; color: inherit;
         }
 
-        .card.placeholder { 
-            background: var(--white-card); 
-            border: 1px dashed rgba(255,255,255,0.2);
-        }
+        /* EFECTO SELECCIÓN PARA EL MANDO */
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.02); }
 
-        /* CUANDO PASAS CON EL MANDO */
-        .card:focus { 
-            border-color: var(--main); 
-            background: rgba(0, 255, 136, 0.12);
-            transform: scale(1.04);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
-            z-index: 10;
-        }
+        /* ESTILO BLANCO PARA HUECOS VACÍOS */
+        .card.placeholder { background: rgba(255,255,255,0.05); border: 1px dashed #444; opacity: 0.5; }
 
         .hora-badge { 
-            position: absolute; top: 10px; left: 12px; 
+            position: absolute; top: 10px; left: 10px; 
             background: var(--main); color: #000; padding: 2px 10px; 
-            border-radius: 6px; font-weight: 900; font-size: 11px;
+            border-radius: 6px; font-weight: bold; font-size: 12px;
         }
 
-        .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        
-        /* LOGOS CIRCULARES */
+        .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+
         .img-box { 
-            background: #fff; width: 65px; height: 65px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; border: 2px solid #333;
+            background: #fff; width: 65px; height: 65px; 
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; overflow: hidden; border: 2px solid #333;
         }
+
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
 
-        .nombres { text-align: center; width: 100%; }
-        .nombres h3 { font-size: 17px; margin: 4px 0; color: #fff; font-weight: 600; line-height: 1.2; }
-        .canal-txt { color: #777; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .nombres { text-align: center; }
+        .nombres h3 { margin: 5px 0; font-size: 18px; color: #fff; }
+        .canal-txt { color: #666; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         
         .status-btn {
-            width: 85%; background: #1a1a1a; color: var(--main); 
-            padding: 8px; border-radius: 10px; font-weight: 800; 
-            font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 10px;
+            width: 80%; background: #222; color: var(--main); 
+            padding: 8px; border-radius: 10px; font-weight: bold; 
+            font-size: 12px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px;
         }
-        .locked .status-btn { color: #444; border-color: #1a1a1a; background: #080808; }
     </style>
 </head>
 <body>
@@ -84,76 +77,74 @@
     <div id="agenda"></div>
 
 <script>
-    // CONFIGURACIÓN DE RUTAS DIRECTAS A GITHUB
-    const USER = 'eltikitaka';
-    const REPO = 'nwakalo';
-    const BASE_GITHUB = `https://raw.githubusercontent.com/${USER}/${REPO}/main/`;
+    const GITHUB_BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
 
-    async function cargar() {
+    async function cargarAgenda() {
         const container = document.getElementById('agenda');
         try {
-            // Fetch con timestamp para saltar la caché de la tele
-            const r = await fetch(BASE_GITHUB + 'eventos.json?v=' + Date.now());
-            let data = await r.text();
-            data = data.replace(/["\s]/g, '').trim();
+            const resp = await fetch(GITHUB_BASE + 'eventos.json?v=' + Date.now());
+            let base64Data = await resp.text();
+            base64Data = base64Data.replace(/["\s]/g, '').trim();
             
-            let evs = [];
-            if(data.length > 10) {
-                // Descifrado Base64 UTF-8
-                evs = JSON.parse(decodeURIComponent(escape(window.atob(data))));
+            let eventos = [];
+            if(base64Data.length > 10) {
+                const jsonStr = decodeURIComponent(escape(window.atob(base64Data)));
+                eventos = JSON.parse(jsonStr);
             }
 
             container.innerHTML = '';
             const ahora = new Date();
-            let count = 0;
+            let mostrados = 0;
 
-            evs.forEach(ev => {
-                if(count >= 9) return;
-                
+            eventos.forEach(ev => {
+                if(mostrados >= 9) return;
                 const [h, m] = ev.hora.split(':');
-                const f = new Date(); f.setHours(h, m, 0);
-                const dif = (f - ahora) / 60000;
-                
-                // Regla de auto-borrado (3 horas)
-                if ((ahora - f) / 3600000 > 3) return;
+                const fEv = new Date(); fEv.setHours(h, m, 0);
+                const dif = (fEv - ahora) / 60000;
+                if ((ahora - fEv) / 3600000 > 3) return; 
 
-                count++;
-                const ok = dif <= 15;
-                const single = !ev.e2 || ev.e2.trim() === "";
+                mostrados++;
+                const disponible = dif <= 15;
+                const logo1 = ev.logo1.split('/').pop();
+                const logo2 = ev.logo2 ? ev.logo2.split('/').pop() : '';
 
-                // Limpieza de nombres de logos para evitar errores de ruta
-                const l1 = ev.logo1.split('/').pop();
-                const l2 = ev.logo2 ? ev.logo2.split('/').pop() : '';
-
-                const card = document.createElement(ok ? 'a' : 'div');
-                card.className = `card ${ok ? '' : 'locked'}`;
-                if(ok) card.href = `acestream://${ev.link}`;
-                card.tabIndex = count; // Habilita navegación con mando
+                const card = document.createElement(disponible ? 'a' : 'div');
+                card.className = 'card';
+                if(disponible) card.href = `acestream://${ev.link}`;
+                card.tabIndex = mostrados;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box">
-                            <img src="${BASE_GITHUB}assets/equipos/${l1}" onerror="this.src='${BASE_GITHUB}assets/deporte/${l1}'; this.onerror=function(){this.src='${BASE_GITHUB}assets/default.png'};">
-                        </div>
-                        ${!single ? `
-                        <b style="color:var(--main); font-size:12px;">VS</b>
-                        <div class="img-box">
-                            <img src="${BASE_GITHUB}assets/equipos/${l2}" onerror="this.src='${BASE_GITHUB}assets/deporte/${l2}'; this.onerror=function(){this.src='${BASE_GITHUB}assets/default.png'};">
-                        </div>` : ''}
+                        <div class="img-box"><img src="${GITHUB_BASE}assets/equipos/${logo1}" onerror="this.src='${GITHUB_BASE}assets/default.png'"></div>
+                        ${ev.e2 ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${GITHUB_BASE}assets/equipos/${logo2}" onerror="this.src='${GITHUB_BASE}assets/default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1} ${!single ? 'vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1} ${ev.e2 ? 'vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${disponible ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            // Rellenar huecos vacíos con cuadros blancos translúcidos
-            for (let i = count; i < 9; i++) {
+            // RELLENO HASTA 9 (BLANCO)
+            for (let i = mostrados; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.
-                    
+                dummy.innerHTML = `<h3 style="color:rgba(255,255,255,0.4); font-size:14px;">EVENTO A PROGRAMAR</h3>`;
+                container.appendChild(dummy);
+            }
+
+            // Foco inicial para el mando
+            if(container.firstChild) container.firstChild.focus();
+
+        } catch (e) { console.error("Error cargando datos"); }
+    }
+
+    cargarAgenda();
+    // Auto-actualización cada 5 minutos
+    setInterval(cargarAgenda, 300000);
+</script>
+</body>
+</html>
