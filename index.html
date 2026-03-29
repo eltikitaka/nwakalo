@@ -2,76 +2,71 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV SUPREME</title>
+    <title>NWAKALO TV WHITE</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #111; }
+        :root { --main: #00ff88; --bg: #050505; --card: #111; --white-card: rgba(255,255,255,0.1); }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         
         body { 
             height: 100vh; width: 100vw; background: var(--bg); 
-            color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden;
-            display: flex; flex-direction: column; padding: 5px 20px;
+            color: #fff; font-family: sans-serif; overflow: hidden;
+            display: flex; flex-direction: column; padding: 10px 20px;
         }
 
-        h1 { 
-            color: var(--main); text-align: center; font-size: 24px; 
-            letter-spacing: 12px; margin: 10px 0; text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(0,255,136,0.4);
-        }
+        h1 { color: var(--main); text-align: center; font-size: 26px; letter-spacing: 10px; margin: 10px 0; text-transform: uppercase; }
 
-        /* REJILLA 3X3 PARA TELE */
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: repeat(3, 28vh); /* Forzamos el tamaño para que quepan los 9 */
-            gap: 12px; 
-            width: 100%;
-            flex-grow: 1;
+            grid-template-rows: repeat(3, 28vh); 
+            gap: 15px; width: 100%; flex-grow: 1;
         }
 
+        /* CUADROS NORMALES Y DE RELLENO EN BLANCO */
         .card { 
-            background: var(--card); border-radius: 15px; border: 2px solid #222;
+            background: var(--card); border-radius: 15px; border: 2px solid #333;
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; position: relative; padding: 10px;
-            transition: 0.3s;
-            text-decoration: none; /* Para que el enlace no se vea azul */
+            transition: all 0.2s ease; text-decoration: none; color: inherit;
+            cursor: pointer;
         }
 
-        /* EFECTO PARA EL MANDO DE LA TELE (FOCUS) */
-        .card:focus, .card:hover { 
+        .card.placeholder { 
+            background: var(--white-card); 
+            border: 1px dashed rgba(255,255,255,0.3);
+        }
+
+        /* EFECTO SELECCIÓN MANDO (FOCUS) */
+        .card:focus { 
             border-color: var(--main); 
-            background: #1a1a1a;
-            transform: scale(1.03);
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+            background: rgba(0, 255, 136, 0.15);
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+            z-index: 10;
         }
-
-        .card.placeholder { opacity: 0.1; border: 1px dashed #444; pointer-events: none; }
 
         .hora-badge { 
-            position: absolute; top: 8px; left: 10px; 
+            position: absolute; top: 10px; left: 10px; 
             background: var(--main); color: #000; padding: 2px 8px; 
             border-radius: 5px; font-weight: 900; font-size: 11px;
         }
 
-        .vs-container { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        
         .img-box { 
-            background: #fff; width: 55px; height: 55px; border-radius: 50%; 
+            background: #fff; width: 65px; height: 65px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; border: 2px solid #333;
+            overflow: hidden; border: 2px solid #333; margin-bottom: 8px;
         }
-        .img-box img { width: 80%; height: 80%; object-fit: contain; }
+        .img-box img { width: 85%; height: 85%; object-fit: contain; }
 
-        .nombres { text-align: center; width: 100%; }
-        .nombres h3 { font-size: 15px; margin: 4px 0; color: #fff; font-weight: 600; }
-        .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .nombres { text-align: center; }
+        .nombres h3 { font-size: 16px; margin: 5px 0; color: #fff; }
+        .canal-txt { color: #aaa; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         
         .status-btn {
-            width: 85%; background: #222; color: var(--main); 
-            padding: 6px; border-radius: 8px; font-weight: 800; 
-            font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 5px;
+            width: 80%; background: #222; color: var(--main); 
+            padding: 7px; border-radius: 10px; font-weight: 800; 
+            font-size: 12px; border: 1px solid #444; text-transform: uppercase; margin-top: 8px;
         }
-        .locked .status-btn { color: #444; border-color: #1a1a1a; background: #080808; }
     </style>
 </head>
 <body>
@@ -84,7 +79,7 @@
 
     async function cargar() {
         try {
-            const r = await fetch(URL_RAW + '?nocache=' + Date.now());
+            const r = await fetch(URL_RAW + '?v=' + Date.now());
             let data = await r.text();
             data = data.replace(/["\s]/g, '').trim();
             
@@ -103,46 +98,48 @@
                 const [h, m] = ev.hora.split(':');
                 const f = new Date(); f.setHours(h, m, 0);
                 const dif = (f - ahora) / 60000;
-                
                 if ((ahora - f) / 3600000 > 3) return;
 
                 count++;
                 const ok = dif <= 15;
-                const single = !ev.e2 || ev.e2.trim() === "";
                 
-                // Creamos el cuadro como un ENLACE para que el mando pueda "enfocarlo"
-                const card = document.createElement(ok ? 'a' : 'div');
-                card.className = `card ${ok ? '' : 'locked'}`;
-                if(ok) card.href = `acestream://${ev.link}`;
-                card.tabIndex = count; // Permite navegación con flechas del mando
+                // Usamos 'a' para que sea navegable por el mando
+                const card = document.createElement('a');
+                card.className = 'card';
+                card.href = ok ? `acestream://${ev.link}` : '#';
+                card.tabIndex = count; // Importante para el mando
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
-                    <div class="vs-container">
-                        <div class="img-box"><img src="assets/equipos/${ev.logo1}" onerror="this.src='assets/default.png'"></div>
-                        ${!single ? `<b style="color:var(--main); font-size:12px;">VS</b><div class="img-box"><img src="assets/equipos/${ev.logo2}" onerror="this.src='assets/default.png'"></div>` : ''}
+                    <div class="img-box">
+                        <img src="assets/equipos/${ev.logo1}" onerror="this.src='${ev.logo1}'; this.onerror=function(){this.src='assets/default.png'};">
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1} ${!single ? 'vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1} ${ev.e2?'vs '+ev.e2:''}</h3>
                     </div>
                     <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            // Rellenar hasta 9
+            // Rellenar hasta 9 con cuadros blancos
             for (let i = count; i < 9; i++) {
                 const dummy = document.createElement('div');
                 dummy.className = 'card placeholder';
-                dummy.innerHTML = `<h3 style="color:#222; font-size:12px;">A PROGRAMAR</h3>`;
+                dummy.tabIndex = i + 1; // También navegables
+                dummy.innerHTML = `<h3 style="color:rgba(255,255,255,0.5); font-size:14px;">EVENTO A PROGRAMAR</h3>`;
                 container.appendChild(dummy);
             }
-        } catch (e) { console.log("Error de carga"); }
+
+            // Forzar el foco en el primer elemento al cargar
+            setTimeout(() => { if(container.firstChild) container.firstChild.focus(); }, 500);
+
+        } catch (e) { console.log("Error"); }
     }
 
     cargar();
-    setInterval(cargar, 300000); // 5 MINUTOS
+    setInterval(cargar, 300000); // 5 min
 </script>
 </body>
 </html>
