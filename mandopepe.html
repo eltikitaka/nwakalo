@@ -11,17 +11,26 @@
         .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
         .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
 
-        /* CATEGORÍAS Y EQUIPOS CON CÍRCULO BLANCO */
+        /* LOGOS: FONDO GRIS CLARO PARA QUE LOS LOGOS BLANCOS SE VEAN */
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         .btn-cat { 
             background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; 
             cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; transition: 0.3s;
         }
+        
+        /* Círculo con ligero tinte gris para contraste */
         .img-holder, .img-wrap { 
-            background: white; width: 55px; height: 55px; border-radius: 50%; 
+            background: #e0e0e0; /* Gris muy claro en vez de blanco puro */
+            width: 55px; height: 55px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden;
+            border: 2px solid #fff;
         }
-        .btn-cat img, .btn-eq img { width: 40px; height: 40px; object-fit: contain; }
+        
+        .btn-cat img, .btn-eq img { 
+            width: 80%; height: 80%; object-fit: contain; 
+            filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.5)); /* Sombra suave para logos blancos */
+        }
+
         .btn-cat.active { background: var(--main); color: #000; border-color: #fff; font-weight: bold; }
 
         /* GRID EQUIPOS */
@@ -34,7 +43,7 @@
             cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; 
         }
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
-        .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
+        .btn-eq.sel .img-wrap { border: 2px solid var(--main); background: #fff; }
 
         /* PANEL ESPECIAL */
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
@@ -55,10 +64,10 @@
     <div class="layout">
         <div>
             <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL (EDITABLE)</h3>
+                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL MANUAL</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Deporte (Ciclismo, Tenis...)">
-                    <input type="text" id="esp_evento" placeholder="Evento (4ª etapa Volta...)">
+                    <input type="text" id="esp_tipo" placeholder="Deporte (Ciclismo...)">
+                    <input type="text" id="esp_evento" placeholder="Evento (Final...)">
                 </div>
                 <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px; margin-top:10px;">
                     <input type="text" id="esp_logo" placeholder="Logo (ej: ciclismo.png)">
@@ -67,16 +76,16 @@
             </div>
 
             <div class="seccion">
-                <h3>Categorías</h3>
+                <h3>1. Ligas y Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
                 <div id="box-equipos">
-                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">Selecciona Equipos / Sesión</h3>
-                    <div id="equipos" class="grid">Elige una liga...</div>
+                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Selecciona Equipos / Sesión</h3>
+                    <div id="equipos" class="grid">Elige categoría arriba...</div>
                 </div>
             </div>
 
             <div class="seccion">
-                <h3>Configuración y Links</h3>
+                <h3>3. Configuración y Links</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
                     <input type="date" id="f_in">
                     <input type="time" id="h_in" value="21:00">
@@ -91,12 +100,12 @@
 
         <div>
             <div class="seccion">
-                <h3>Agenda</h3>
+                <h3>Agenda Próxima</h3>
                 <div id="cola_eventos"></div>
-                <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar Agenda</button>
+                <button onclick="if(confirm('¿Borrar agenda?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#444; font-size:10px; cursor:pointer;">Vaciar Agenda</button>
             </div>
             <div class="seccion">
-                <h3>Código GitHub</h3>
+                <h3>Cifrado GitHub</h3>
                 <textarea id="output" readonly></textarea>
                 <button onclick="copyToClipboard()" class="btn-main" style="background:#fff; color:#000;">COPIAR CÓDIGO</button>
             </div>
@@ -110,16 +119,20 @@
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
     let links = [];
 
-    // Cargar Base de Datos y Generar Botones con Logo
+    // Cargar Base de Datos
     fetch('base_datos.json').then(r => r.json()).then(data => {
         BD = data;
         const div = document.getElementById('categorias');
         Object.keys(BD.ligas).forEach(l => {
             const b = document.createElement('button');
             b.className = 'btn-cat';
-            // Mostramos el logo de la liga en el botón superior
-            const rutaLogoLiga = `assets/equipos/${BD.ligas[l].logo}`;
-            b.innerHTML = `<div class="img-holder"><img src="${rutaLogoLiga}" onerror="this.src='assets/default.png'"></div><span>${l}</span>`;
+            const logoL = BD.ligas[l].logo;
+            // INTENTO DOBLE DE RUTA PARA ICONOS DE LIGA
+            b.innerHTML = `
+                <div class="img-holder">
+                    <img src="assets/equipos/${logoL}" onerror="this.src='assets/deporte/${logoL}'; this.onerror=function(){this.src='assets/default.png'};">
+                </div>
+                <span>${l}</span>`;
             b.onclick = () => cargarEquipos(l, b);
             div.appendChild(b);
         });
@@ -138,7 +151,7 @@
         cur.cat = ligaNombre;
         grid.innerHTML = "";
         
-        // --- LOGICA EVENTOS ESPECIALES ---
+        // MODO ESPECIAL
         if(ligaNombre === "EVENTOS ESPECIALES") {
             espBox.style.display = 'block';
             boxEquipos.style.display = 'none';
@@ -146,7 +159,7 @@
             return;
         }
         
-        // --- LOGICA FUTBOL / MOTOR ---
+        // MODO NORMAL / MOTOR
         espBox.style.display = 'none';
         boxEquipos.style.display = 'block';
         cur.modo = (ligaNombre === "FORMULA 1" || ligaNombre === "MOTOGP") ? "unico" : "duelo";
@@ -193,9 +206,8 @@
 
     function guardarTodo() {
         if(!cur.e1) return alert("Selecciona evento.");
-        if(cur.modo === "duelo" && !cur.e2) return alert("Falta segundo equipo.");
+        if(cur.modo === "duelo" && !cur.e2) return alert("Falta el rival.");
         if(links.length === 0) return alert("Añade links.");
-
         agenda.push({
             fecha: document.getElementById('f_in').value,
             hora: document.getElementById('h_in').value,
@@ -203,11 +215,10 @@
             canal: document.getElementById('c_in').value || cur.cat,
             links: [...links]
         });
-
         updateAgenda();
         links = []; cur.e1 = ""; cur.e2 = ""; renderLinks();
         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
-        alert("✅ Añadido.");
+        alert("✅ Añadido");
     }
 
     function updateAgenda() {
