@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO CONTROL - V7 DINÁMICO</title>
+    <title>NWAKALO CONTROL - MODO MANUAL</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
@@ -26,7 +26,7 @@
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
         .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
 
-        input, select { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; font-size: 14px; }
+        input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
         .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; display: flex; align-items: center; gap: 10px; position: relative; }
@@ -72,10 +72,12 @@
 
             <div class="seccion">
                 <h3>3. Configuración y Multi-ID</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:10px;">
+                <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px;">
+                    <input type="text" id="f_in" placeholder="Fecha (Ej: Hoy o 25/10)">
                     <input type="time" id="h_in" value="21:00">
-                    <select id="c_in"><option value="">Cargando canales...</option></select>
                 </div>
+                <input type="text" id="c_in" placeholder="Nombre Canal (Escríbelo tú mismo)">
+                
                 <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:2px solid var(--main);">
                     <input type="text" id="l_in" placeholder="Pega el ID AceStream aquí...">
                     <button onclick="crearEvento()" class="btn-main">+ AÑADIR ID A LA AGENDA</button>
@@ -100,9 +102,9 @@
 </div>
 
 <script>
-    const AUTORIZADOS = ["BUNKER-QMPBJ"]; ["BUNKER-D1P1E"];  
+    const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v7') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v8') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
 
     function chequearAcceso() {
@@ -120,7 +122,6 @@
         const r = await fetch('base_datos.json?v=' + Date.now());
         BD = await r.json();
         
-        // 1. CARGAR CATEGORÍAS
         const menu = document.getElementById('categorias');
         menu.innerHTML = "";
         Object.keys(BD.ligas).forEach(l => {
@@ -129,16 +130,6 @@
             btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
             btn.onclick = () => cargarEquipos(l, btn);
             menu.appendChild(btn);
-        });
-
-        // 2. CARGAR CANALES EN EL SELECT
-        const selectCanal = document.getElementById('c_in');
-        selectCanal.innerHTML = '<option value="">-- Elige Canal --</option>';
-        Object.keys(BD.canales).forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = BD.canales[c].nombre;
-            opt.innerText = BD.canales[c].nombre;
-            selectCanal.appendChild(opt);
         });
 
         updateAgenda();
@@ -154,7 +145,6 @@
         const config = BD.ligas[ligaNom];
         espBox.style.display = (ligaNom === "EVENTOS ESPECIALES") ? 'block' : 'none';
         
-        // RESPETAMOS TU JSON: Usamos "modo"
         cur.modo = config.modo || "duelo";
         cur.e1 = ""; cur.e2 = "";
 
@@ -183,12 +173,13 @@
     function fijarEspecial() {
         cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
         cur.l1 = document.getElementById('esp_logo').value || 'default.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos fijados.");
+        cur.e2 = ""; cur.l2 = ""; alert("Especial fijado.");
     }
 
     function crearEvento() {
         const linkInput = document.getElementById('l_in');
         const link = linkInput.value.trim();
+        const fecha = document.getElementById('f_in').value;
         const hora = document.getElementById('h_in').value;
         const canal = document.getElementById('c_in').value;
 
@@ -198,6 +189,7 @@
         agenda.push({
             id: Date.now() + Math.random(),
             visible: true,
+            fecha: fecha || "Hoy",
             hora: hora,
             canal: canal || "Streaming",
             e1: cur.e1, logo1: cur.l1,
@@ -205,13 +197,15 @@
             link: link
         });
 
+        // Limpiamos solo ID y Canal para el siguiente, mantenemos equipos, fecha y hora.
         linkInput.value = "";
+        document.getElementById('c_in').value = "";
         linkInput.focus();
         updateAgenda();
     }
 
     function updateAgenda() {
-        localStorage.setItem('nw_agenda_v7', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v8', JSON.stringify(agenda));
         document.getElementById('count-agenda').innerText = agenda.length;
         const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
         const jsonStr = JSON.stringify(filtrados);
@@ -221,7 +215,7 @@
             <div class="item-cola ${e.visible ? 'active' : ''}">
                 <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
                 <div style="flex:1">
-                    <b>${e.hora}</b> - ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
+                    <b>${e.fecha} - ${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
                     <span style="font-size:9px; color:var(--main)">${e.canal} | ID: ${e.link.substring(0,10)}...</span>
                 </div>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
@@ -232,7 +226,7 @@
     function copyToClipboard() {
         document.getElementById('output').select();
         document.execCommand('copy');
-        alert("¡Copiado! Pégalo en GitHub.");
+        alert("¡Copiado para GitHub!");
     }
 
     chequearAcceso();
