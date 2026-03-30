@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - LÓGICA COMPETICIÓN</title>
+    <title>NWAKALO TV - V15 STABLE</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; overflow-y: auto; }
-        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; }
+        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; }
         #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
         .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 15px; transition: 0.2s; text-decoration: none; color: inherit; min-height: 220px; }
         .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); outline: none; }
@@ -17,7 +17,7 @@
         .img-box img { width: 85%; height: 85%; object-fit: contain; }
         .nombres { text-align: center; }
         .nombres h3 { margin: 5px 0; font-size: 16px; color: #fff; }
-        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; }
         .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 10px; text-align: center; }
         .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
@@ -32,41 +32,44 @@
     const ASSETS = BASE_URL + 'assets/';
     let DB_EQUIPOS = [];
 
-    // 1. CARGAR DB PARA RESPALDO
+    // 1. CARGAMOS LA BASE DE DATOS
     async function cargarDB() {
         try {
             const r = await fetch(BASE_URL + 'base_datos.json?v=' + Date.now());
             DB_EQUIPOS = await r.json();
-            cargarApp();
-        } catch (e) { console.error("Error DB"); cargarApp(); }
+            iniciarApp();
+        } catch (e) { 
+            console.error("Error DB, arrancando sin ella..."); 
+            iniciarApp(); 
+        }
     }
 
-    // 2. LÓGICA DE RUTA INTELIGENTE (Prioriza la carpeta del mando)
+    // 2. LÓGICA DE RUTAS (SIN BUCLES)
     function obtenerRuta(logo) {
         if (!logo || logo === "undefined" || logo === "null") return ASSETS + 'default.png';
 
-        // Si el mando ya mandó la competición (ej: "champions/madrid.png")
+        // Si ya tiene carpeta (ej: "laliga/madrid.png")
         if (logo.includes('/')) {
             return ASSETS + 'equipos/' + logo;
         }
 
-        // Si no tiene barra, buscamos en la DB para ver si tiene competición asignada
-        const e = DB_EQUIPOS.find(x => x.logo === logo || x.logo === logo + '.png');
-        if (e && e.categoria) {
-            return ASSETS + 'equipos/' + e.categoria + '/' + logo + (logo.includes('.') ? '' : '.png');
+        // Si no tiene barra, consultamos la DB (como el mando)
+        const encontrado = DB_EQUIPOS.find(x => x.logo === logo || x.logo === logo + '.png');
+        if (encontrado && encontrado.categoria) {
+            return ASSETS + 'equipos/' + encontrado.categoria + '/' + logo + (logo.includes('.') ? '' : '.png');
         }
 
-        // Si no hay nada de lo anterior, es un logo de deporte
+        // Por defecto, asumimos que es deporte (F1, etc)
         return ASSETS + 'deporte/' + logo + (logo.includes('.') ? '' : '.png');
     }
 
-    async function cargarApp() {
+    async function iniciarApp() {
         const container = document.getElementById('agenda');
         try {
             const r = await fetch(BASE_URL + 'eventos.json?v=' + Date.now());
             const text = await r.text();
-            const raw = text.replace(/["\s]/g, '').trim();
-            const evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
+            const b64 = text.replace(/["\s]/g, '').trim();
+            const evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
 
             container.innerHTML = '';
             const ahora = new Date();
@@ -87,8 +90,14 @@
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${obtenerRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
-                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${obtenerRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                        <div class="img-box">
+                            <img src="${obtenerRuta(ev.logo1)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
+                        </div>
+                        ${esDuelo ? `
+                        <b style="color:var(--main)">VS</b>
+                        <div class="img-box">
+                            <img src="${obtenerRuta(ev.logo2)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
+                        </div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
@@ -104,7 +113,7 @@
     }
 
     cargarDB();
-    setInterval(cargarApp, 60000);
+    setInterval(iniciarApp, 60000);
 </script>
 </body>
 </html>
