@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - REFIX TOTAL</title>
+    <title>NWAKALO TV - LÓGICA ESPEJO</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,8 +19,8 @@
         .nombres { text-align: center; width: 100%; }
         .nombres h3 { margin: 5px 0; font-size: 17px; color: #fff; font-weight: bold; }
         .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .status-btn { width: 80%; background: #222; color: #666; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 8px; }
-        .ready .status-btn { color: var(--main); border-color: var(--main); }
+        .status-btn { width: 80%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 8px; }
+        .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
 </head>
 <body>
@@ -29,41 +29,41 @@
     <div id="agenda"></div>
 
 <script>
-    // Asegúrate de que esta URL es EXACTA a tu repositorio
     const BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
     const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    function cargarFoto(imgId, ruta) {
+    // ESTA ES LA FUNCIÓN QUE COPIA AL MANDO PEPE
+    function cargarFotoMando(imgId, ruta) {
         const el = document.getElementById(imgId);
-        if (!el) return;
-        
-        // Si no hay ruta, directo al default
-        if (!ruta || ruta === "undefined" || ruta === "null") {
-            el.src = BASE + 'default.png';
+        if (!el || !ruta || ruta === "undefined" || ruta === "null") {
+            if(el) el.src = BASE + 'default.png';
             return;
         }
 
-        const nombreArchivo = ruta.includes('/') ? ruta.split('/').pop() : ruta;
+        // El mando pepe hace esto: prueba en equipos, y si falla, prueba en deporte
+        // Pero el mando ya sabe si es "laliga/madrid.png" o "f1.png"
         
-        // Lista de intentos en orden de probabilidad
-        const intentos = [
-            BASE + 'equipos/' + ruta,        // 1. Ruta completa (laliga/madrid.png)
-            BASE + 'deporte/' + nombreArchivo, // 2. En deporte
-            BASE + 'equipos/' + nombreArchivo, // 3. En equipos a pelo
-            BASE + nombreArchivo,              // 4. En raíz de assets
-            BASE + 'default.png'               // 5. El último recurso
-        ];
+        let urlInicial = "";
+        if (ruta.includes('/')) {
+            urlInicial = BASE + 'equipos/' + ruta;
+        } else {
+            urlInicial = BASE + 'deporte/' + ruta;
+        }
 
-        let i = 0;
-        el.src = intentos[i];
+        el.src = urlInicial;
 
         el.onerror = () => {
-            i++;
-            if (i < intentos.length) {
-                el.src = intentos[i];
+            // Si falló la primera, intentamos la otra carpeta por si acaso
+            if (el.src.includes('equipos/')) {
+                el.src = BASE + 'deporte/' + ruta;
             } else {
-                el.onerror = null; // Evitar bucle infinito
+                el.src = BASE + 'equipos/' + ruta;
             }
+            // Si vuelve a fallar, el default.png
+            el.onerror = () => {
+                el.src = BASE + 'default.png';
+                el.onerror = null;
+            };
         };
     }
 
@@ -71,51 +71,47 @@
         const container = document.getElementById('agenda');
         try {
             const r = await fetch(URL_JSON + '?v=' + Date.now());
-            const rawText = await r.text();
-            
-            // Descifrado
-            const b64 = rawText.replace(/["\s]/g, '').trim();
-            const jsonStr = decodeURIComponent(escape(window.atob(b64)));
-            const evs = JSON.parse(jsonStr);
+            const text = await r.text();
+            const raw = text.replace(/["\s]/g, '').trim();
+            const evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
 
             container.innerHTML = '';
             const ahora = new Date();
 
-            evs.forEach((ev, idx) => {
+            evs.forEach((ev, i) => {
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(); fEv.setHours(h, m, 0);
-                
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
-                const listo = (fEv - ahora) / 60000 <= 20;
-                const esDuelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined" && ev.e2 !== "null");
+                const ok = (fEv - ahora) / 60000 <= 20; 
+                const duelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined" && ev.e2 !== "null");
 
-                const card = document.createElement(listo ? 'a' : 'div');
-                card.className = `card ${!esDuelo ? 'single-logo' : ''} ${listo ? 'ready' : ''}`;
-                if(listo) card.href = `acestream://${ev.link}`;
-                card.tabIndex = idx + 1;
+                const card = document.createElement(ok ? 'a' : 'div');
+                card.className = `card ${!duelo ? 'single-logo' : ''} ${ok ? 'activo' : ''}`;
+                if(ok) card.href = `acestream://${ev.link}`;
+                card.tabIndex = i + 1;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img id="img_a_${idx}"></div>
-                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="img_b_${idx}"></div>` : ''}
+                        <div class="img-box"><img id="ia_${i}"></div>
+                        ${duelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="ib_${i}"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${esDuelo ? ' vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1}${duelo ? ' vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${listo ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
                 
-                // Disparo de carga de fotos
-                cargarFoto(`img_a_${idx}`, ev.logo1);
-                if(esDuelo) cargarFoto(`img_b_${idx}`, ev.logo2);
+                // Usamos la lógica del mando
+                cargarFotoMando(`ia_${i}`, ev.logo1);
+                if(duelo) cargarFotoMando(`ib_${i}`, ev.logo2);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.error("Fallo en App:", e); }
+        } catch (e) { console.error("Error"); }
     }
 
     cargar();
