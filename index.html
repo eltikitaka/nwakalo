@@ -2,24 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - DOBLE LÓGICA</title>
+    <title>NWAKALO TV - V11 FIX</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; width: 100vw; background: var(--bg); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; }
         body::-webkit-scrollbar { width: 0px; }
+        
         h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; }
+        
         #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 28vh; gap: 15px; width: 100%; }
+        
         .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 15px; transition: 0.2s; text-decoration: none; color: inherit; }
         .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); outline: none; }
+        
         .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+        
         .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; }
         .img-box { background: #fff; width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
         .single-logo .img-box { width: 85px; height: 85px; }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
+        
         .nombres { text-align: center; width: 100%; }
         .nombres h3 { margin: 5px 0; font-size: 17px; color: #fff; font-weight: bold; }
         .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        
         .status-btn { width: 80%; background: #222; color: var(--main); padding: 8px; border-radius: 10px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 8px; }
     </style>
 </head>
@@ -32,30 +39,33 @@
     const BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
     const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    // FUNCIÓN 1: Lógica MandoPepe (Para Partidos)
-    function logicaMandoPepe(imgElement, nombre) {
-        if (!nombre) return;
-        const file = nombre.includes('.') ? nombre : nombre + '.png';
-        // Solo busca en equipos, tal cual lo hace el mando
-        imgElement.src = BASE + 'equipos/' + file;
-        imgElement.onerror = () => { imgElement.src = BASE + 'default.png'; };
-    }
+    /**
+     * NUEVA LÓGICA DE IMAGEN UNIFICADA
+     * Resuelve: "laliga/madrid.png" -> assets/equipos/laliga/madrid.png
+     * Resuelve: "f1.png" -> assets/deporte/f1.png
+     */
+    function cargarImagen(imgElement, ruta) {
+        if (!ruta) {
+            imgElement.src = BASE + 'default.png';
+            return;
+        }
 
-    // FUNCIÓN 2: Lógica Especial (Para F1, MotoGP, etc.)
-    function logicaEspecial(imgElement, nombre) {
-        if (!nombre) return;
-        const archivo = nombre.split('/').pop();
-        const intentos = [
-            BASE + 'deporte/' + archivo,
-            BASE + archivo,
-            BASE + 'equipos/' + archivo
-        ];
-        let i = 0;
-        imgElement.src = intentos[i];
-        imgElement.onerror = function() {
-            i++;
-            if (i < intentos.length) { this.src = intentos[i]; }
-            else { this.src = BASE + 'default.png'; this.onerror = null; }
+        // Si la ruta contiene carpeta (ej: laliga/madrid.png)
+        if (ruta.includes('/')) {
+            imgElement.src = BASE + 'equipos/' + ruta;
+        } else {
+            // Si es un archivo suelto, probamos en carpeta deporte (F1, Moto...)
+            imgElement.src = BASE + 'deporte/' + ruta;
+        }
+
+        imgElement.onerror = () => {
+            // Último intento: Raíz de equipos si falló deporte
+            if (!ruta.includes('/')) {
+                imgElement.src = BASE + 'equipos/' + ruta;
+                imgElement.onerror = () => { imgElement.src = BASE + 'default.png'; };
+            } else {
+                imgElement.src = BASE + 'default.png';
+            }
         };
     }
 
@@ -64,6 +74,8 @@
         try {
             const r = await fetch(URL_JSON + '?v=' + Date.now());
             let raw = await r.text();
+            
+            // Limpieza del cifrado
             raw = raw.replace(/["\s]/g, '').trim();
             let evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
 
@@ -72,13 +84,15 @@
             let count = 0;
 
             evs.forEach((ev) => {
+                // Control horario (3 horas)
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(); fEv.setHours(h, m, 0);
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
                 count++;
+                // Abrir 15 minutos antes
                 const ok = (fEv - ahora) / 60000 <= 15;
-                const individual = !ev.e2 || ev.e2.trim() === "" || ev.e2 === "undefined";
+                const individual = !ev.e2 || ev.e2.trim() === "" || ev.e2 === "undefined" || ev.e2 === "null";
 
                 const card = document.createElement(ok ? 'a' : 'div');
                 card.className = `card ${individual ? 'single-logo' : ''}`;
@@ -99,19 +113,26 @@
                 `;
                 container.appendChild(card);
                 
-                // APLICAR DOBLE LÓGICA SEGÚN EL TIPO DE EVENTO
-                if (individual) {
-                    logicaEspecial(document.getElementById(`la_${count}`), ev.logo1);
-                } else {
-                    logicaMandoPepe(document.getElementById(`la_${count}`), ev.logo1);
-                    logicaMandoPepe(document.getElementById(`lb_${count}`), ev.logo2);
+                // Carga de imágenes con la nueva función corregida
+                const imgA = document.getElementById(`la_${count}`);
+                cargarImagen(imgA, ev.logo1);
+
+                if (!individual) {
+                    const imgB = document.getElementById(`lb_${count}`);
+                    cargarImagen(imgB, ev.logo2);
                 }
             });
 
+            // Auto-focus al primer elemento para manejo con mando de TV
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.log("Error"); }
+
+        } catch (e) { 
+            console.error("Error cargando la agenda");
+            container.innerHTML = '<p style="text-align:center; color:#555;">Error al cargar eventos cifrados.</p>';
+        }
     }
 
+    // Inicio y refresco automático cada 5 minutos
     cargar();
     setInterval(cargar, 300000);
 </script>
