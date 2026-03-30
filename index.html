@@ -2,46 +2,54 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - REPAIR MODE</title>
+    <title>NWAKALO TV - ULTIMATE & SECURE</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { height: 100vh; background: var(--bg); color: #fff; font-family: Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
+        body { height: 100vh; background: var(--bg); color: #fff; font-family: Arial, sans-serif; padding: 10px; display: flex; flex-direction: column; overflow: hidden; }
+        h1 { color: var(--main); text-align: center; font-size: 18px; letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase; }
         
-        /* Pantalla de Bloqueo Mejorada */
-        #auth-screen { 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; height: 100vh; width: 100vw; 
-            position: fixed; top: 0; left: 0; background: var(--bg); z-index: 999;
-        }
+        /* PANTALLA DE BLOQUEO */
+        #auth-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top: 0; left: 0; width: 100%; background: var(--bg); z-index: 9999; text-align: center; }
         .code-box { background: #111; border: 3px dashed var(--main); padding: 30px; border-radius: 20px; margin: 20px 0; }
-        .code-text { font-size: 50px; font-weight: bold; color: var(--main); letter-spacing: 5px; font-family: monospace; }
+        .code-text { font-size: 45px; font-weight: bold; color: var(--main); letter-spacing: 5px; font-family: monospace; }
+
+        /* AGENDA 3x3 */
+        #agenda { display: none; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc(33.33vh - 22px); gap: 10px; width: 100%; flex-grow: 1; }
+        .card { background: var(--card); border-radius: 15px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative; padding: 12px 8px; text-decoration: none; color: inherit; outline: none; transition: 0.1s; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); z-index: 10; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2); }
+        .card.blocked { opacity: 0.4; }
+        .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.1; pointer-events: none; }
         
-        #agenda { display: none; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc(33.33vh - 22px); gap: 10px; padding: 10px; flex-grow: 1; }
-        .card { background: var(--card); border-radius: 15px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12px 8px; text-decoration: none; color: inherit; outline: none; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); }
-        .card.empty { opacity: 0.1; pointer-events: none; border: 2px dashed #333; }
-        .status-btn { width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; border: 1px solid var(--main); text-align: center; color: var(--main); font-weight: bold; }
+        .fecha-badge { position: absolute; top: 8px; left: 8px; background: var(--main); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; flex-grow: 1; }
+        .img-box { background: #fff; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; flex-shrink: 1; }
+        .img-box img { width: 75%; height: 75%; object-fit: contain; }
+        .nombres-box { width: 100%; height: 20px; margin: 5px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .nombres-box h3 { font-size: 12px; color: #fff; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .status-btn { width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; border: 1px solid var(--main); text-transform: uppercase; font-weight: bold; text-align: center; color: var(--main); }
+        .card:focus .status-btn { background: var(--main); color: #000; }
     </style>
 </head>
 <body>
+
+    <h1 id="titulo">NWAKALO TV</h1>
 
     <div id="auth-screen">
         <h1 style="color:var(--main); letter-spacing:5px;">NWAKALO TV</h1>
         <h2 style="margin-top:20px; color:#ff4444;">DISPOSITIVO NO ACTIVADO</h2>
         <p style="margin-top:10px; opacity:0.8;">Facilita este código al administrador:</p>
-        <div class="code-box">
-            <div id="display-code" class="code-text">CARGANDO...</div>
-        </div>
-        <p id="status-msg" style="font-size: 14px; color: var(--main);">Verificando conexión...</p>
+        <div class="code-box"><div id="display-code" class="code-text">Cargando...</div></div>
+        <p id="status-msg" style="font-size: 14px; color: var(--main);">Verificando autorización...</p>
     </div>
 
     <div id="agenda"></div>
 
 <script>
     const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
-    
-    // 1. GENERAR ID INMEDIATAMENTE (Sin esperar a nada)
+    const ASSETS = REPO + 'assets/';
+
+    // 1. GENERAR ID ÚNICO
     let miID = localStorage.getItem('nw_device_id');
     if (!miID) {
         miID = "NW-" + Math.floor(100000 + Math.random() * 900000);
@@ -49,28 +57,30 @@
     }
     document.getElementById('display-code').innerText = miID;
 
-    async function checkAuth() {
+    async function checkSistema() {
+        const agenda = document.getElementById('agenda');
+        const authScreen = document.getElementById('auth-screen');
         try {
-            const res = await fetch(REPO + 'autorizado.json?v=' + Date.now());
-            if (!res.ok) throw new Error("No se pudo leer el archivo");
+            const resAuth = await fetch(REPO + 'autorizado.json?v=' + Date.now());
+            const authData = await resAuth.json();
             
-            const data = await res.json();
-            
-            if (data.usuarios && data.usuarios.includes(miID)) {
-                // EXITO: Usuario autorizado
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('agenda').style.display = 'grid';
-                cargarEventos();
+            if (authData.usuarios.includes(miID)) {
+                authScreen.style.display = 'none';
+                agenda.style.display = 'grid';
+                actualizarEventos();
             } else {
-                document.getElementById('status-msg').innerText = "Esperando activación de " + miID;
+                agenda.style.display = 'none';
+                authScreen.style.display = 'flex';
             }
-        } catch (e) {
-            document.getElementById('status-msg').innerText = "Error de red. Reintentando...";
-            console.log("Error:", e);
-        }
+        } catch (e) { document.getElementById('status-msg').innerText = "Reintentando conexión..."; }
     }
 
-    async function cargarEventos() {
+    function resolverRuta(logo) {
+        if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
+        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
+    }
+
+    async function actualizarEventos() {
         const container = document.getElementById('agenda');
         try {
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
@@ -78,56 +88,63 @@
             const b64 = text.trim().replace(/["\s]/g, '');
             let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
             
+            evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
             container.innerHTML = '';
-            let count = 0;
             const ahora = new Date();
+            let count = 0;
 
-            evs.forEach(ev => {
+            evs.forEach((ev) => {
                 const [h, m] = ev.hora.split(':');
-                const fEv = new Date(ev.fecha); fEv.setHours(h, m);
-                if ((ahora - fEv) / 3600000 > 3) return;
+                const fEv = new Date(ev.fecha); fEv.setHours(h, m, 0);
+                if ((ahora - fEv) / 3600000 > 3) return; 
 
+                const estaBloqueado = (fEv - ahora) / 60000 > 15;
                 count++;
+
                 let linkID = ev.link.toString().replace('acestream://', '').trim();
-                const card = document.createElement('a');
-                card.className = 'card';
-                card.href = "acestream://" + linkID;
+                const card = document.createElement(estaBloqueado ? 'div' : 'a');
+                card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
+                if(!estaBloqueado) card.href = "acestream://" + linkID;
                 card.tabIndex = count;
+
+                const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
                 card.innerHTML = `
-                    <div style="font-size:10px; color:var(--main)">${ev.hora}</div>
-                    <div style="flex-grow:1; display:flex; align-items:center; color:white; font-weight:bold; font-size:12px; text-align:center;">
-                        ${ev.e1} ${ev.e2 ? 'vs ' + ev.e2 : ''}
+                    <div class="fecha-badge">${ev.hora}</div>
+                    <div class="vs-container">
+                        <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
-                    <div class="status-btn">VER AHORA</div>
+                    <div class="nombres-box"><h3>${tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1}</h3></div>
+                    <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER AHORA'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            while(count < 9) {
+            while (count < 9) {
                 count++;
-                container.innerHTML += '<div class="card empty"></div>';
+                container.innerHTML += '<div class="card empty"><span style="color:#222; font-size:9px;">SIN EVENTO</span></div>';
             }
-            if(container.firstChild) container.firstChild.focus();
-        } catch(e) { container.innerHTML = "Error cargando eventos"; }
+            if(container.querySelector('.card:not(.empty)')) container.querySelector('.card:not(.empty)').focus();
+
+        } catch (e) { console.error("Error eventos"); }
     }
 
-    // Navegación Básica
     document.addEventListener('keydown', (e) => {
         const current = document.activeElement;
+        if (!current || !current.classList.contains('card')) return;
         const cards = Array.from(document.querySelectorAll('.card'));
         const index = cards.indexOf(current);
-        if (index === -1) return;
         let next = index;
-        if (e.key === 'ArrowRight') next = index + 1;
-        if (e.key === 'ArrowLeft') next = index - 1;
+        if (e.key === 'ArrowRight' && (index + 1) % 3 !== 0) next = index + 1;
+        if (e.key === 'ArrowLeft' && index % 3 !== 0) next = index - 1;
         if (e.key === 'ArrowDown') next = index + 3;
         if (e.key === 'ArrowUp') next = index - 3;
-        if (cards[next]) cards[next].focus();
+        if (e.key === 'Enter' && !current.classList.contains('blocked')) current.click();
+        if (cards[next] && !cards[next].classList.contains('empty')) cards[next].focus();
     });
 
-    // Bucle de comprobación
-    checkAuth();
-    setInterval(checkAuth, 10000); // Comprueba cada 10 seg si ya lo has autorizado
+    checkSistema();
+    setInterval(checkSistema, 30000); // Comprueba autorización cada 30 seg
 </script>
 </body>
 </html>
