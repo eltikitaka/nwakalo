@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - CLEAN STYLE</title>
+    <title>NWAKALO TV - NOMBRES VISIBLES</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +29,7 @@
             background: var(--card); border-radius: 18px; border: 2px solid #222; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; position: relative; padding: 10px; 
-            text-decoration: none; color: inherit; transition: 0.2s; outline: none;
+            text-decoration: none; color: inherit; transition: 0.15s; outline: none;
         }
 
         .card:focus { 
@@ -57,18 +57,24 @@
         }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
         
+        /* AJUSTE CRÍTICO DE NOMBRES */
         .nombres { 
-            text-align: center; width: 90%; 
-            overflow: hidden; /* Evita que el texto se salga */
+            text-align: center; 
+            width: 100%; 
+            padding: 0 5px;
+            display: flex;
+            justify-content: center;
         }
         
-        /* EQUIPOS EN UNA SOLA LÍNEA */
         .nombres h3 { 
-            font-size: 13px; color: #fff; 
+            font-size: 13px; 
+            color: #ffffff; 
             text-transform: uppercase; 
             white-space: nowrap; 
-            text-overflow: ellipsis; 
-            letter-spacing: 0.5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            width: 100%;
         }
 
         .status-btn { 
@@ -105,7 +111,7 @@
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
             container.innerHTML = '';
             const ahora = new Date();
-            let total = 0;
+            let count = 0;
 
             evs.forEach((ev) => {
                 const [h, m] = ev.hora.split(':');
@@ -114,13 +120,14 @@
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
                 const estaBloqueado = (fEv - ahora) / 60000 > 15;
-                total++;
+                count++;
 
                 const card = document.createElement('a');
                 card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
                 card.href = estaBloqueado ? "#" : "acestream://" + ev.link;
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
+                const textoEquipos = tieneRival ? `${ev.e1} - ${ev.e2}` : ev.e1;
 
                 card.innerHTML = `
                     <div class="fecha-badge">${ev.hora}</div>
@@ -129,31 +136,30 @@
                         ${tieneRival ? `<b style="color:var(--main); font-size: 16px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
-                        <h3>${ev.e1}${tieneRival ? ' - ' + ev.e2 : ''}</h3>
+                        <h3>${textoEquipos}</h3>
                     </div>
                     <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER AHORA'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            while (total < 9) {
-                total++;
+            while (count < 9) {
+                count++;
                 const empty = document.createElement('div');
                 empty.className = 'card empty';
-                empty.innerHTML = '<h4 style="color:#333; font-size:9px;">HUECO LIBRE</h4>';
+                empty.innerHTML = '<h4 style="color:#222; font-size:9px;">SIN EVENTO</h4>';
                 container.appendChild(empty);
             }
 
             const first = container.querySelector('.card:not(.empty)');
             if(first) first.focus();
 
-        } catch (e) { console.log("Error"); }
+        } catch (e) { console.log("Error de datos"); }
     }
 
-    // Navegación por flechas
     document.addEventListener('keydown', (e) => {
         const current = document.activeElement;
-        if (!current.classList.contains('card')) return;
+        if (!current || !current.classList.contains('card')) return;
         const cards = Array.from(document.querySelectorAll('.card'));
         const index = cards.indexOf(current);
         let next = index;
