@@ -2,24 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - SOLUCIÓN RUTAS</title>
+    <title>NWAKALO TV - LÓGICA COMPETICIÓN</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; }
-        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; }
-        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; position: relative; text-decoration: none; color: inherit; min-height: 220px; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; outline: none; transform: scale(1.02); }
+        body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; overflow-y: auto; }
+        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 15px; transition: 0.2s; text-decoration: none; color: inherit; min-height: 220px; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); outline: none; }
         .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
-        .vs-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; gap: 10px; }
         .img-box { background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
-        .single-logo .img-box { width: 95px; height: 95px; }
         .img-box img { width: 85%; height: 85%; object-fit: contain; }
         .nombres { text-align: center; }
-        .nombres h3 { font-size: 16px; margin: 5px 0; color: #fff; }
-        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; }
-        .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 10px; border: 1px solid #333; }
+        .nombres h3 { margin: 5px 0; font-size: 16px; color: #fff; }
+        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 10px; text-align: center; }
         .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
 </head>
@@ -29,40 +28,42 @@
     <div id="agenda"></div>
 
 <script>
-    const ASSETS = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
-    const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
+    const BASE_URL = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+    const ASSETS = BASE_URL + 'assets/';
+    let DB_EQUIPOS = [];
 
-    function intentarCargar(imgElement, ruta) {
-        if (!ruta || ruta === "undefined") {
-            imgElement.src = ASSETS + 'default.png';
-            return;
+    // 1. CARGAR DB PARA RESPALDO
+    async function cargarDB() {
+        try {
+            const r = await fetch(BASE_URL + 'base_datos.json?v=' + Date.now());
+            DB_EQUIPOS = await r.json();
+            cargarApp();
+        } catch (e) { console.error("Error DB"); cargarApp(); }
+    }
+
+    // 2. LÓGICA DE RUTA INTELIGENTE (Prioriza la carpeta del mando)
+    function obtenerRuta(logo) {
+        if (!logo || logo === "undefined" || logo === "null") return ASSETS + 'default.png';
+
+        // Si el mando ya mandó la competición (ej: "champions/madrid.png")
+        if (logo.includes('/')) {
+            return ASSETS + 'equipos/' + logo;
         }
 
-        // Caso 1: Es un equipo (ej: "laliga/madrid.png") -> assets/equipos/laliga/madrid.png
-        // Caso 2: Es un deporte (ej: "f1.png") -> assets/deporte/f1.png
-        
-        let urlEquipos = ASSETS + 'equipos/' + ruta;
-        let urlDeporte = ASSETS + 'deporte/' + ruta;
+        // Si no tiene barra, buscamos en la DB para ver si tiene competición asignada
+        const e = DB_EQUIPOS.find(x => x.logo === logo || x.logo === logo + '.png');
+        if (e && e.categoria) {
+            return ASSETS + 'equipos/' + e.categoria + '/' + logo + (logo.includes('.') ? '' : '.png');
+        }
 
-        // Probamos primero la ruta de equipos
-        imgElement.src = urlEquipos;
-
-        imgElement.onerror = function() {
-            // Si falla y aún no hemos probado la de deporte, probamos
-            if (this.src === urlEquipos) {
-                this.src = urlDeporte;
-            } else {
-                // Si fallan ambas, default
-                this.src = ASSETS + 'default.png';
-                this.onerror = null;
-            }
-        };
+        // Si no hay nada de lo anterior, es un logo de deporte
+        return ASSETS + 'deporte/' + logo + (logo.includes('.') ? '' : '.png');
     }
 
     async function cargarApp() {
         const container = document.getElementById('agenda');
         try {
-            const r = await fetch(URL_JSON + '?v=' + Date.now());
+            const r = await fetch(BASE_URL + 'eventos.json?v=' + Date.now());
             const text = await r.text();
             const raw = text.replace(/["\s]/g, '').trim();
             const evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
@@ -79,15 +80,15 @@
                 const esDuelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined");
 
                 const card = document.createElement(activo ? 'a' : 'div');
-                card.className = `card ${!esDuelo ? 'single-logo' : ''} ${activo ? 'activo' : ''}`;
+                card.className = `card ${activo ? 'activo' : ''}`;
                 if(activo) card.href = `acestream://${ev.link}`;
                 card.tabIndex = i + 1;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img id="img_a_${i}"></div>
-                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="img_b_${i}"></div>` : ''}
+                        <div class="img-box"><img src="${obtenerRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${obtenerRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
@@ -96,17 +97,13 @@
                     <div class="status-btn">${activo ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
-
-                // Disparamos la carga de imágenes con la nueva lógica
-                intentarCargar(document.getElementById(`img_a_${i}`), ev.logo1);
-                if(esDuelo) intentarCargar(document.getElementById(`img_b_${i}`), ev.logo2);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.error("Error cargando eventos"); }
+        } catch (e) { console.error("Error App"); }
     }
 
-    cargarApp();
+    cargarDB();
     setInterval(cargarApp, 60000);
 </script>
 </body>
