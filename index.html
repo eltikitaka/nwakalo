@@ -2,24 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - LÓGICA ESPEJO</title>
+    <title>NWAKALO TV - DATABASE SYNC</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { min-height: 100vh; width: 100vw; background: var(--bg); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; }
-        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px 0; }
-        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 28vh; gap: 15px; width: 100%; }
-        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 15px; transition: 0.2s; text-decoration: none; color: inherit; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); outline: none; }
+        body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; overflow-y: auto; }
+        h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; position: relative; text-decoration: none; color: inherit; min-height: 220px; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; outline: none; transform: scale(1.02); }
         .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
-        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; gap: 10px; }
-        .img-box { background: #fff; width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
-        .single-logo .img-box { width: 85px; height: 85px; }
-        .img-box img { width: 80%; height: 80%; object-fit: contain; }
-        .nombres { text-align: center; width: 100%; }
-        .nombres h3 { margin: 5px 0; font-size: 17px; color: #fff; font-weight: bold; }
-        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .status-btn { width: 80%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 8px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .img-box { background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
+        .single-logo .img-box { width: 95px; height: 95px; }
+        .img-box img { width: 85%; height: 85%; object-fit: contain; }
+        .nombres { text-align: center; }
+        .nombres h3 { font-size: 16px; margin: 5px 0; }
+        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; }
+        .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 10px; border: 1px solid #333; }
         .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
 </head>
@@ -29,48 +29,36 @@
     <div id="agenda"></div>
 
 <script>
-    const BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
-    const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
+    const BASE_URL = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+    const ASSETS = BASE_URL + 'assets/';
+    let BASE_DATOS = {};
 
-    // ESTA ES LA FUNCIÓN QUE COPIA AL MANDO PEPE
-    function cargarFotoMando(imgId, ruta) {
-        const el = document.getElementById(imgId);
-        if (!el || !ruta || ruta === "undefined" || ruta === "null") {
-            if(el) el.src = BASE + 'default.png';
-            return;
-        }
-
-        // El mando pepe hace esto: prueba en equipos, y si falla, prueba en deporte
-        // Pero el mando ya sabe si es "laliga/madrid.png" o "f1.png"
-        
-        let urlInicial = "";
-        if (ruta.includes('/')) {
-            urlInicial = BASE + 'equipos/' + ruta;
-        } else {
-            urlInicial = BASE + 'deporte/' + ruta;
-        }
-
-        el.src = urlInicial;
-
-        el.onerror = () => {
-            // Si falló la primera, intentamos la otra carpeta por si acaso
-            if (el.src.includes('equipos/')) {
-                el.src = BASE + 'deporte/' + ruta;
-            } else {
-                el.src = BASE + 'equipos/' + ruta;
-            }
-            // Si vuelve a fallar, el default.png
-            el.onerror = () => {
-                el.src = BASE + 'default.png';
-                el.onerror = null;
-            };
-        };
+    // 1. CARGAR LA BASE DE DATOS IGUAL QUE EL MANDO
+    async function cargarBaseDatos() {
+        try {
+            const r = await fetch(BASE_URL + 'base_datos.json?v=' + Date.now());
+            BASE_DATOS = await r.json();
+            iniciarApp();
+        } catch (e) { console.error("Error cargando base_datos.json"); }
     }
 
-    async function cargar() {
+    // 2. FUNCIÓN PARA ENCONTRAR LA RUTA REAL (Lógica del Mando)
+    function obtenerRutaReal(logoRecibido) {
+        if (!logoRecibido || logoRecibido === "undefined") return ASSETS + 'default.png';
+        
+        // Si ya viene con carpeta (ej: "laliga/madrid.png"), le ponemos el prefijo equipos
+        if (logoRecibido.includes('/')) {
+            return ASSETS + 'equipos/' + logoRecibido;
+        }
+        
+        // Si es un logo suelto, lo buscamos en la carpeta 'deporte'
+        return ASSETS + 'deporte/' + logoRecibido;
+    }
+
+    async function iniciarApp() {
         const container = document.getElementById('agenda');
         try {
-            const r = await fetch(URL_JSON + '?v=' + Date.now());
+            const r = await fetch(BASE_URL + 'eventos.json?v=' + Date.now());
             const text = await r.text();
             const raw = text.replace(/["\s]/g, '').trim();
             const evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
@@ -83,39 +71,35 @@
                 const fEv = new Date(); fEv.setHours(h, m, 0);
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
-                const ok = (fEv - ahora) / 60000 <= 20; 
-                const duelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined" && ev.e2 !== "null");
+                const activo = (fEv - ahora) / 60000 <= 20;
+                const esDuelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined");
 
-                const card = document.createElement(ok ? 'a' : 'div');
-                card.className = `card ${!duelo ? 'single-logo' : ''} ${ok ? 'activo' : ''}`;
-                if(ok) card.href = `acestream://${ev.link}`;
+                const card = document.createElement(activo ? 'a' : 'div');
+                card.className = `card ${!esDuelo ? 'single-logo' : ''} ${activo ? 'activo' : ''}`;
+                if(activo) card.href = `acestream://${ev.link}`;
                 card.tabIndex = i + 1;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img id="ia_${i}"></div>
-                        ${duelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="ib_${i}"></div>` : ''}
+                        <div class="img-box"><img src="${obtenerRutaReal(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${obtenerRutaReal(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${duelo ? ' vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1}${esDuelo ? ' vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${activo ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
-                
-                // Usamos la lógica del mando
-                cargarFotoMando(`ia_${i}`, ev.logo1);
-                if(duelo) cargarFotoMando(`ib_${i}`, ev.logo2);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.error("Error"); }
+        } catch (e) { console.error("Error en eventos"); }
     }
 
-    cargar();
-    setInterval(cargar, 60000);
+    cargarBaseDatos();
+    setInterval(iniciarApp, 60000);
 </script>
 </body>
 </html>
