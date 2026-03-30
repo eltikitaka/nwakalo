@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO CONTROL PRO</title>
+    <title>NWAKALO CONTROL - MODO RÁPIDO</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
@@ -17,14 +17,14 @@
 
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
         .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; font-size: 11px; }
-        .img-holder, .img-wrap { background: #e0e0e0; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #fff; }
+        .img-holder, .img-wrap { background: #fff; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #333; }
         .btn-cat img, .btn-eq img { width: 80%; height: 80%; object-fit: contain; }
         .btn-cat.active { background: var(--main); color: #000; border-color: #fff; font-weight: bold; }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; }
         .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
-        .btn-eq.sel .img-wrap { border: 2px solid var(--main); background: #fff; }
+        .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
 
         input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
@@ -35,8 +35,6 @@
         
         textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
-        
-        /* CONTADOR DE LINKS */
         .badge-links { background: var(--main); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 10px; float: right; }
     </style>
 </head>
@@ -46,7 +44,7 @@
     <div class="tv-card">
         <h2 style="margin:0;">NWAKALO CONTROL</h2>
         <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">ID REQUERIDO: BUNKER-3VXWL</p>
+        <p style="font-size:11px; color:#555;">ID REQUERIDO: BUNKER-QMPBJ</p>
     </div>
 </div>
 
@@ -54,34 +52,34 @@
     <div class="layout">
         <div>
             <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL</h3>
+                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO LOGO ÚNICO</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Deporte / Canal">
+                    <input type="text" id="esp_tipo" placeholder="Liga / Deporte">
                     <input type="text" id="esp_evento" placeholder="Nombre Evento">
                 </div>
                 <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
-                <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); font-size:12px;">FIJAR DATOS</button>
+                <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); font-size:12px;">FIJAR DATOS ESPECIALES</button>
             </div>
 
             <div class="seccion">
                 <h3>1. Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
                 <div id="box-equipos">
-                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Equipos</h3>
+                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Equipos / Pilotos</h3>
                     <div id="equipos" class="grid"></div>
                 </div>
             </div>
 
             <div class="seccion">
-                <h3>3. Configuración y IDs AceStream</h3>
+                <h3>3. Configuración y IDs Múltiples</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="time" id="h_in" value="21:00">
-                    <input type="text" id="c_in" placeholder="Nombre Canal">
+                    <input type="text" id="c_in" placeholder="Nombre Canal (ej: DAZN 1)">
                 </div>
-                <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:1px solid #333;">
-                    <p style="margin:0 0 10px 0; font-size:12px; color:#777;">Pega el ID AceStream y dale al botón (puedes añadir varios uno a uno):</p>
-                    <input type="text" id="l_in" placeholder="ID AceStream aquí...">
-                    <button onclick="crearEvento()" class="btn-main" style="background:#fff; color:#000;">+ AÑADIR ID A LA LISTA</button>
+                <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:2px solid var(--main);">
+                    <p style="margin:0 0 10px 0; font-size:12px; color:var(--main);">MODO MULTI-ID ACTIVO: Pega ID y dale al botón las veces que quieras.</p>
+                    <input type="text" id="l_in" placeholder="Pega aquí el ID AceStream...">
+                    <button onclick="crearEvento()" class="btn-main" style="background:#fff; color:#000;">+ AÑADIR ESTE ID (Mismo Evento)</button>
                 </div>
             </div>
         </div>
@@ -94,7 +92,7 @@
             </div>
 
             <div class="seccion">
-                <h3>Código Cifrado (GitHub)</h3>
+                <h3>Código GitHub</h3>
                 <textarea id="output" readonly onclick="this.select()"></textarea>
                 <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
             </div>
@@ -105,7 +103,7 @@
 <script>
     const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v5') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v6') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
 
     function chequearAcceso() {
@@ -119,19 +117,18 @@
         }
     }
 
-    function iniciarApp() {
-        fetch('base_datos.json').then(r => r.json()).then(data => {
-            BD = data;
-            const menu = document.getElementById('categorias');
-            Object.keys(BD.ligas).forEach(l => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-cat';
-                btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
-                btn.onclick = () => cargarEquipos(l, btn);
-                menu.appendChild(btn);
-            });
-            updateAgenda();
+    async function iniciarApp() {
+        const r = await fetch('base_datos.json?v=' + Date.now());
+        BD = await r.json();
+        const menu = document.getElementById('categorias');
+        Object.keys(BD.ligas).forEach(l => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-cat';
+            btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
+            btn.onclick = () => cargarEquipos(l, btn);
+            menu.appendChild(btn);
         });
+        updateAgenda();
     }
 
     function cargarEquipos(ligaNom, btn) {
@@ -145,13 +142,13 @@
             espBox.style.display = 'block'; cur.modo = "especial"; return;
         }
         espBox.style.display = 'none';
-        cur.modo = (ligaNom === "FORMULA 1" || ligaNom === "MOTOGP" || ligaNom === "CICLISMO") ? "unico" : "duelo";
+        cur.modo = (BD.ligas[ligaNom].tipo === "unico" || ligaNom === "FORMULA 1" || ligaNom === "MOTOGP") ? "unico" : "duelo";
         cur.e1 = ""; cur.e2 = "";
 
         BD.ligas[ligaNom].equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
-            const imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${BD.ligas[ligaNom].id}/${eq.a}`;
+            let imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${BD.ligas[ligaNom].id}/${eq.a}`;
             b.innerHTML = `<div class="img-wrap"><img src="${imgPath}" onerror="this.src='assets/default.png'"></div><span>${eq.n}</span>`;
             b.onclick = () => {
                 if(cur.modo === "unico") {
@@ -172,19 +169,19 @@
 
     function fijarEspecial() {
         cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
-        cur.l1 = document.getElementById('esp_logo').value || 'especial.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales fijados.");
+        cur.l1 = document.getElementById('esp_logo').value || 'default.png';
+        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales listos. Ahora añade los IDs.");
     }
 
-    // AHORA CREA UN EVENTO INDEPENDIENTE POR CADA CLICK SIN BORRAR LOS DATOS
+    // FUNCIÓN MEJORADA: AÑADE ID SIN BORRAR SELECCIÓN
     function crearEvento() {
-        const link = document.getElementById('l_in').value.trim();
+        const linkInput = document.getElementById('l_in');
+        const link = linkInput.value.trim();
         const hora = document.getElementById('h_in').value;
         const canal = document.getElementById('c_in').value || cur.cat;
 
-        if(!cur.e1) return alert("Primero selecciona los equipos.");
-        if(!link) return alert("Pega el ID AceStream.");
-        if(!hora) return alert("Pon la hora del evento.");
+        if(!cur.e1) return alert("Selecciona equipos primero.");
+        if(!link) return alert("Pega el ID.");
 
         agenda.push({
             id: Date.now() + Math.random(),
@@ -196,38 +193,37 @@
             link: link
         });
 
-        // Limpiamos solo el input del link para el siguiente
-        document.getElementById('l_in').value = "";
-        document.getElementById('l_in').focus();
+        // VACIAR SOLO EL ID Y DAR FOCO PARA EL SIGUIENTE
+        linkInput.value = "";
+        linkInput.focus();
+        
         updateAgenda();
+        console.log("Evento añadido. Selección mantenida para el siguiente ID.");
     }
 
     function updateAgenda() {
-        localStorage.setItem('nw_agenda_v5', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v6', JSON.stringify(agenda));
         document.getElementById('count-agenda').innerText = agenda.length;
-
         const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
-        
-        // CODIFICACIÓN BASE64 (UTF-8 safe)
         const jsonStr = JSON.stringify(filtrados);
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(jsonStr)));
         
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola ${e.visible ? 'active' : ''}">
-                <input type="checkbox" class="check-event" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
+                <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
                 <div style="flex:1">
                     <b>${e.hora}</b> - ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
-                    <span style="font-size:9px; color:var(--main)">ID: ${e.link.substring(0,15)}...</span>
+                    <span style="font-size:9px; color:var(--main)">${e.canal} | ID: ${e.link.substring(0,10)}...</span>
                 </div>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
-        `).reverse().join(''); // Reverse para ver lo último arriba
+        `).reverse().join('');
     }
 
     function copyToClipboard() {
         document.getElementById('output').select();
         document.execCommand('copy');
-        alert("Código copiado. Pégalo en eventos.json");
+        alert("Copiado. Pégalo en GitHub.");
     }
 
     chequearAcceso();
