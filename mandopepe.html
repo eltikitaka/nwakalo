@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO CONTROL - MODO MANUAL</title>
+    <title>NWAKALO CONTROL - SINGLE LINE</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
@@ -26,16 +26,16 @@
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
         .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
 
-        input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
+        input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; color-scheme: dark; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
-        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; display: flex; align-items: center; gap: 10px; position: relative; }
-        .item-cola.active { border-left-color: var(--main); background: rgba(0, 255, 136, 0.05); }
+        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
         
         textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
         .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
         .badge-links { background: var(--main); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 10px; float: right; }
+        .ids-pill { background: #222; color: #00ff88; padding: 2px 5px; border-radius: 4px; font-size: 9px; margin-right: 4px; border: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -54,7 +54,7 @@
             <div class="panel-especial" id="especial-wrapper">
                 <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO LOGO ÚNICO</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Título (UFC, BOXEO...)">
+                    <input type="text" id="esp_tipo" placeholder="Título (F1, BOXEO...)">
                     <input type="text" id="esp_evento" placeholder="Evento (Nombre)">
                 </div>
                 <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
@@ -62,7 +62,7 @@
             </div>
 
             <div class="seccion">
-                <h3>1. Categorías Dinámicas</h3>
+                <h3>1. Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
                 <div id="box-equipos">
                     <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Seleccionar</h3>
@@ -71,29 +71,30 @@
             </div>
 
             <div class="seccion">
-                <h3>3. Configuración y Multi-ID</h3>
+                <h3>3. Configuración y IDs</h3>
                 <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px;">
-                    <input type="text" id="f_in" placeholder="Fecha (Ej: Hoy o 25/10)">
+                    <input type="date" id="f_in">
                     <input type="time" id="h_in" value="21:00">
                 </div>
-                <input type="text" id="c_in" placeholder="Nombre Canal (Escríbelo tú mismo)">
+                <input type="text" id="c_in" placeholder="Nombre Canal (Ej: DAZN 1 / M+...)">
                 
                 <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:2px solid var(--main);">
                     <input type="text" id="l_in" placeholder="Pega el ID AceStream aquí...">
-                    <button onclick="crearEvento()" class="btn-main">+ AÑADIR ID A LA AGENDA</button>
+                    <button onclick="crearOActualizarEvento()" class="btn-main">+ AÑADIR ID A ESTE EVENTO</button>
+                    <p style="font-size:10px; color:#666; margin-top:8px; text-align:center;">Si el evento ya existe, se le sumará la ID sin crear otra fila.</p>
                 </div>
             </div>
         </div>
 
         <div>
             <div class="seccion">
-                <h3>Agenda Activa <span id="count-agenda" class="badge-links">0</span></h3>
+                <h3>Agenda Nwakalo <span id="count-agenda" class="badge-links">0</span></h3>
                 <div id="cola_eventos" style="max-height: 550px; overflow-y: auto;"></div>
                 <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer; margin-top:10px;">Vaciar lista completa</button>
             </div>
 
             <div class="seccion">
-                <h3>Código Cifrado (GitHub)</h3>
+                <h3>Código GitHub</h3>
                 <textarea id="output" readonly onclick="this.select()"></textarea>
                 <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
             </div>
@@ -104,7 +105,7 @@
 <script>
     const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v8') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v9') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
 
     function chequearAcceso() {
@@ -122,6 +123,9 @@
         const r = await fetch('base_datos.json?v=' + Date.now());
         BD = await r.json();
         
+        // Poner fecha de hoy por defecto en el calendario
+        document.getElementById('f_in').valueAsDate = new Date();
+
         const menu = document.getElementById('categorias');
         menu.innerHTML = "";
         Object.keys(BD.ligas).forEach(l => {
@@ -131,7 +135,6 @@
             btn.onclick = () => cargarEquipos(l, btn);
             menu.appendChild(btn);
         });
-
         updateAgenda();
     }
 
@@ -144,7 +147,6 @@
         
         const config = BD.ligas[ligaNom];
         espBox.style.display = (ligaNom === "EVENTOS ESPECIALES") ? 'block' : 'none';
-        
         cur.modo = config.modo || "duelo";
         cur.e1 = ""; cur.e2 = "";
 
@@ -173,60 +175,75 @@
     function fijarEspecial() {
         cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
         cur.l1 = document.getElementById('esp_logo').value || 'default.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Especial fijado.");
+        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales fijados.");
     }
 
-    function crearEvento() {
-        const linkInput = document.getElementById('l_in');
-        const link = linkInput.value.trim();
+    // LOGICA DE UNA FILA POR EVENTO
+    function crearOActualizarEvento() {
+        const linkIn = document.getElementById('l_in');
+        const link = linkIn.value.trim();
         const fecha = document.getElementById('f_in').value;
         const hora = document.getElementById('h_in').value;
-        const canal = document.getElementById('c_in').value;
+        const canal = document.getElementById('c_in').value || "Multicanal";
 
-        if(!cur.e1) return alert("Selecciona equipos.");
-        if(!link) return alert("Pega el ID.");
+        if(!cur.e1 || !link) return alert("Faltan datos (Equipos o ID)");
 
-        agenda.push({
-            id: Date.now() + Math.random(),
-            visible: true,
-            fecha: fecha || "Hoy",
-            hora: hora,
-            canal: canal || "Streaming",
-            e1: cur.e1, logo1: cur.l1,
-            e2: cur.e2, logo2: cur.l2,
-            link: link
-        });
+        // Buscamos si ya existe este evento en la agenda (mismos equipos, misma hora)
+        let index = agenda.findIndex(ev => ev.e1 === cur.e1 && ev.e2 === cur.e2 && ev.hora === hora);
 
-        // Limpiamos solo ID y Canal para el siguiente, mantenemos equipos, fecha y hora.
-        linkInput.value = "";
-        document.getElementById('c_in').value = "";
-        linkInput.focus();
+        if(index !== -1) {
+            // SI EXISTE: Añadimos la ID a la lista de ese evento (separadas por coma)
+            if(!agenda[index].link.includes(link)) {
+                agenda[index].link += ", " + link;
+                // También podemos añadir el canal si es distinto
+                if(!agenda[index].canal.includes(canal)) {
+                    agenda[index].canal += " / " + canal;
+                }
+            }
+        } else {
+            // SI NO EXISTE: Creamos la fila nueva
+            agenda.push({
+                visible: true,
+                fecha: fecha,
+                hora: hora,
+                canal: canal,
+                e1: cur.e1, logo1: cur.l1,
+                e2: cur.e2, logo2: cur.l2,
+                link: link
+            });
+        }
+
+        linkIn.value = "";
+        linkIn.focus();
         updateAgenda();
     }
 
     function updateAgenda() {
-        localStorage.setItem('nw_agenda_v8', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v9', JSON.stringify(agenda));
         document.getElementById('count-agenda').innerText = agenda.length;
-        const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
-        const jsonStr = JSON.stringify(filtrados);
-        document.getElementById('output').value = btoa(unescape(encodeURIComponent(jsonStr)));
         
-        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
-            <div class="item-cola ${e.visible ? 'active' : ''}">
+        const filtrados = agenda.filter(e => e.visible).map(({...r}) => r);
+        document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(filtrados))));
+        
+        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => {
+            const numIds = e.link.split(',').length;
+            return `
+            <div class="item-cola">
                 <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
                 <div style="flex:1">
-                    <b>${e.fecha} - ${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
-                    <span style="font-size:9px; color:var(--main)">${e.canal} | ID: ${e.link.substring(0,10)}...</span>
+                    <b style="color:var(--main)">${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}<br>
+                    <span style="font-size:10px; color:#aaa">${e.canal}</span><br>
+                    <span class="ids-pill">${numIds} ID(s) activas</span>
                 </div>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
-        `).reverse().join('');
+        `}).reverse().join('');
     }
 
     function copyToClipboard() {
         document.getElementById('output').select();
         document.execCommand('copy');
-        alert("¡Copiado para GitHub!");
+        alert("Copiado. Pégalo en GitHub.");
     }
 
     chequearAcceso();
