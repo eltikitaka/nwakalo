@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - V11 FIX</title>
+    <title>NWAKALO TV - V11 FIX ABSOLUTO</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,33 +39,37 @@
     const BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
     const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    /**
-     * NUEVA LÓGICA DE IMAGEN UNIFICADA
-     * Resuelve: "laliga/madrid.png" -> assets/equipos/laliga/madrid.png
-     * Resuelve: "f1.png" -> assets/deporte/f1.png
-     */
-    function cargarImagen(imgElement, ruta) {
-        if (!ruta) {
-            imgElement.src = BASE + 'default.png';
-            return;
-        }
-
-        // Si la ruta contiene carpeta (ej: laliga/madrid.png)
-        if (ruta.includes('/')) {
-            imgElement.src = BASE + 'equipos/' + ruta;
-        } else {
-            // Si es un archivo suelto, probamos en carpeta deporte (F1, Moto...)
-            imgElement.src = BASE + 'deporte/' + ruta;
-        }
-
-        imgElement.onerror = () => {
-            // Último intento: Raíz de equipos si falló deporte
-            if (!ruta.includes('/')) {
-                imgElement.src = BASE + 'equipos/' + ruta;
+    // FUNCIÓN 1: Lógica MandoPepe (Para Partidos - busca en 'equipos/')
+    function logicaMandoPepe(imgElement, nombre) {
+        if (!nombre) return;
+        const file = nombre.includes('.') ? nombre : nombre + '.png';
+        imgElement.src = BASE + 'equipos/' + file;
+        // Si falla en equipos, probamos en raíz de assets por si acaso
+        imgElement.onerror = () => { 
+            if (imgElement.src.includes('equipos/')) {
+                imgElement.src = BASE + file;
                 imgElement.onerror = () => { imgElement.src = BASE + 'default.png'; };
             } else {
-                imgElement.src = BASE + 'default.png';
+                imgElement.src = BASE + 'default.png'; 
             }
+        };
+    }
+
+    // FUNCIÓN 2: Lógica Especial (Para F1, MotoGP, etc. - busca en 'deporte/')
+    function logicaEspecial(imgElement, nombre) {
+        if (!nombre) return;
+        const archivo = nombre.split('/').pop();
+        const intentos = [
+            BASE + 'deporte/' + archivo,
+            BASE + archivo,
+            BASE + 'equipos/' + archivo
+        ];
+        let i = 0;
+        imgElement.src = intentos[i];
+        imgElement.onerror = function() {
+            i++;
+            if (i < intentos.length) { this.src = intentos[i]; }
+            else { this.src = BASE + 'default.png'; this.onerror = null; }
         };
     }
 
@@ -92,6 +96,7 @@
                 count++;
                 // Abrir 15 minutos antes
                 const ok = (fEv - ahora) / 60000 <= 15;
+                // Detección robusta de si es evento individual o duelo
                 const individual = !ev.e2 || ev.e2.trim() === "" || ev.e2 === "undefined" || ev.e2 === "null";
 
                 const card = document.createElement(ok ? 'a' : 'div');
@@ -113,13 +118,12 @@
                 `;
                 container.appendChild(card);
                 
-                // Carga de imágenes con la nueva función corregida
-                const imgA = document.getElementById(`la_${count}`);
-                cargarImagen(imgA, ev.logo1);
-
-                if (!individual) {
-                    const imgB = document.getElementById(`lb_${count}`);
-                    cargarImagen(imgB, ev.logo2);
+                // Carga de imágenes con la DOBLE LÓGICA RESTAURADA
+                if (individual) {
+                    logicaEspecial(document.getElementById(`la_${count}`), ev.logo1);
+                } else {
+                    logicaMandoPepe(document.getElementById(`la_${count}`), ev.logo1);
+                    logicaMandoPepe(document.getElementById(`lb_${count}`), ev.logo2);
                 }
             });
 
