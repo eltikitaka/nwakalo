@@ -2,24 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - REFIX FINAL</title>
+    <title>NWAKALO TV - FINAL FIX</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; width: 100vw; background: var(--bg); color: #fff; font-family: sans-serif; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; }
         h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; }
-        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 28vh; gap: 15px; width: 100%; }
-        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 15px; transition: 0.2s; text-decoration: none; color: inherit; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); outline: none; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 15px; position: relative; text-decoration: none; color: inherit; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; outline: none; transform: scale(1.02); }
         .hora-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #000; padding: 2px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; }
-        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 10px; }
-        .img-box { background: #fff; width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
-        .single-logo .img-box { width: 85px; height: 85px; }
-        .img-box img { width: 80%; height: 80%; object-fit: contain; }
-        .nombres { text-align: center; width: 100%; }
-        .nombres h3 { margin: 5px 0; font-size: 17px; color: #fff; font-weight: bold; }
-        .canal-txt { color: #666; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .status-btn { width: 80%; background: #222; color: var(--main); padding: 8px; border-radius: 10px; font-weight: bold; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 8px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .img-box { background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
+        .single-logo .img-box { width: 90px; height: 90px; }
+        .img-box img { width: 85%; height: 85%; object-fit: contain; display: block; }
+        .nombres { text-align: center; margin-top: 5px; }
+        .nombres h3 { font-size: 16px; margin: 3px 0; }
+        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; }
+        .status-btn { width: 90%; background: #222; color: #666; padding: 8px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 10px; border: 1px solid #333; }
+        .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
 </head>
 <body>
@@ -31,74 +32,87 @@
     const BASE = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
     const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    function ponerFoto(id, ruta, esDuelo) {
-        const el = document.getElementById(id);
-        if(!el || !ruta) return;
-        
-        let link = "";
-        if(ruta.includes('/')) {
-            link = BASE + 'equipos/' + ruta;
-        } else {
-            link = BASE + 'deporte/' + ruta;
+    // Función de carga ultra-compatible
+    function cargarFoto(imgId, ruta) {
+        const img = document.getElementById(imgId);
+        if (!img || !ruta) return;
+
+        // Limpiar la ruta de posibles errores de string
+        let limpia = ruta.trim().replace('undefined', '').replace('null', '');
+        if (limpia === "") {
+            img.src = BASE + 'default.png';
+            return;
         }
 
-        el.src = link;
-        el.onerror = () => { 
-            el.src = BASE + 'default.png';
-            el.onerror = null; 
+        // Lógica de carpetas: si tiene "/" es equipo, si no, es deporte
+        let finalUrl = (limpia.includes('/')) ? BASE + 'equipos/' + limpia : BASE + 'deporte/' + limpia;
+        
+        img.src = finalUrl;
+        img.onerror = () => {
+            // Reintento en la otra carpeta si falla
+            if (img.src.includes('equipos/')) {
+                img.src = BASE + 'deporte/' + limpia;
+            } else {
+                img.src = BASE + 'equipos/' + limpia;
+            }
+            // Si vuelve a fallar, default
+            img.onerror = () => { img.src = BASE + 'default.png'; img.onerror = null; };
         };
     }
 
     async function cargar() {
         const container = document.getElementById('agenda');
         try {
-            const r = await fetch(URL_JSON + '?v=' + Date.now());
-            let raw = await r.text();
-            raw = raw.replace(/["\s]/g, '').trim();
-            let evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
+            const res = await fetch(URL_JSON + '?v=' + Date.now());
+            let data = await res.text();
+            data = data.replace(/["\s]/g, '').trim();
+            const evs = JSON.parse(decodeURIComponent(escape(window.atob(data))));
 
             container.innerHTML = '';
             const ahora = new Date();
-            let count = 0;
 
-            evs.forEach((ev) => {
+            evs.forEach((ev, i) => {
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(); fEv.setHours(h, m, 0);
-                if ((ahora - fEv) / 3600000 > 3) return; 
+                
+                // Filtro 3 horas
+                if ((ahora - fEv) / 3600000 > 3) return;
 
-                count++;
-                const ok = (fEv - ahora) / 60000 <= 20; // 20 min antes
-                const isDuelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined");
+                const estaActivo = (fEv - ahora) / 60000 <= 20; // 20 min antes
+                const esDuelo = (ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined" && ev.e2 !== "null");
 
-                const card = document.createElement(ok ? 'a' : 'div');
-                card.className = `card ${!isDuelo ? 'single-logo' : ''}`;
-                if(ok) card.href = `acestream://${ev.link}`;
-                card.tabIndex = count;
+                const card = document.createElement(estaActivo ? 'a' : 'div');
+                card.className = `card ${!esDuelo ? 'single-logo' : ''} ${estaActivo ? 'activo' : ''}`;
+                if(estaActivo) card.href = `acestream://${ev.link}`;
+                card.tabIndex = i + 1;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img id="la_${count}"></div>
-                        ${isDuelo ? `<b style="color:var(--main); margin:0 10px;">VS</b><div class="img-box"><img id="lb_${count}"></div>` : ''}
+                        <div class="img-box"><img id="img_a_${i}" src=""></div>
+                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="img_b_${i}" src=""></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${isDuelo ? ' vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1}${esDuelo ? ' vs ' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${ok ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${estaActivo ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
-                
-                ponerFoto(`la_${count}`, ev.logo1, isDuelo);
-                if(isDuelo) ponerFoto(`lb_${count}`, ev.logo2, isDuelo);
+
+                // Cargar fotos después de crear el HTML
+                setTimeout(() => {
+                    cargarFoto(`img_a_${i}`, ev.logo1);
+                    if(esDuelo) cargarFoto(`img_b_${i}`, ev.logo2);
+                }, 10);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.log("Error en carga"); }
+        } catch (e) { console.error("Error descifrando", e); }
     }
 
     cargar();
-    setInterval(cargar, 60000); // Recarga cada minuto
+    setInterval(cargar, 60000);
 </script>
 </body>
 </html>
