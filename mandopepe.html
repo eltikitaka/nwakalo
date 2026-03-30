@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO CONTROL - MODO RÁPIDO</title>
+    <title>NWAKALO CONTROL - V7 DINÁMICO</title>
     <style>
         :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
@@ -26,7 +26,7 @@
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
         .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
 
-        input { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
+        input, select { background: #000; color: var(--main); border: 1px solid #333; padding: 12px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; font-size: 14px; }
         .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         
         .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid #444; display: flex; align-items: center; gap: 10px; position: relative; }
@@ -54,45 +54,44 @@
             <div class="panel-especial" id="especial-wrapper">
                 <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO LOGO ÚNICO</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Liga / Deporte">
-                    <input type="text" id="esp_evento" placeholder="Nombre Evento">
+                    <input type="text" id="esp_tipo" placeholder="Título (UFC, BOXEO...)">
+                    <input type="text" id="esp_evento" placeholder="Evento (Nombre)">
                 </div>
                 <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
                 <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial); font-size:12px;">FIJAR DATOS ESPECIALES</button>
             </div>
 
             <div class="seccion">
-                <h3>1. Categorías</h3>
+                <h3>1. Categorías Dinámicas</h3>
                 <div id="categorias" class="contenedor-cats"></div>
                 <div id="box-equipos">
-                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Equipos / Pilotos</h3>
+                    <h3 style="border-top: 1px solid #333; padding-top: 15px;">2. Seleccionar</h3>
                     <div id="equipos" class="grid"></div>
                 </div>
             </div>
 
             <div class="seccion">
-                <h3>3. Configuración y IDs Múltiples</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <h3>3. Configuración y Multi-ID</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:10px;">
                     <input type="time" id="h_in" value="21:00">
-                    <input type="text" id="c_in" placeholder="Nombre Canal (ej: DAZN 1)">
+                    <select id="c_in"><option value="">Cargando canales...</option></select>
                 </div>
                 <div style="margin-top:15px; background:#000; padding:15px; border-radius:10px; border:2px solid var(--main);">
-                    <p style="margin:0 0 10px 0; font-size:12px; color:var(--main);">MODO MULTI-ID ACTIVO: Pega ID y dale al botón las veces que quieras.</p>
-                    <input type="text" id="l_in" placeholder="Pega aquí el ID AceStream...">
-                    <button onclick="crearEvento()" class="btn-main" style="background:#fff; color:#000;">+ AÑADIR ESTE ID (Mismo Evento)</button>
+                    <input type="text" id="l_in" placeholder="Pega el ID AceStream aquí...">
+                    <button onclick="crearEvento()" class="btn-main">+ AÑADIR ID A LA AGENDA</button>
                 </div>
             </div>
         </div>
 
         <div>
             <div class="seccion">
-                <h3>Agenda NWAKALO TV <span id="count-agenda" class="badge-links">0</span></h3>
-                <div id="cola_eventos" style="max-height: 500px; overflow-y: auto;"></div>
+                <h3>Agenda Activa <span id="count-agenda" class="badge-links">0</span></h3>
+                <div id="cola_eventos" style="max-height: 550px; overflow-y: auto;"></div>
                 <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer; margin-top:10px;">Vaciar lista completa</button>
             </div>
 
             <div class="seccion">
-                <h3>Código GitHub</h3>
+                <h3>Código Cifrado (GitHub)</h3>
                 <textarea id="output" readonly onclick="this.select()"></textarea>
                 <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
             </div>
@@ -103,7 +102,7 @@
 <script>
     const AUTORIZADOS = ["BUNKER-QMPBJ"]; 
     let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v6') || "[]");
+    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v7') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
 
     function chequearAcceso() {
@@ -120,7 +119,10 @@
     async function iniciarApp() {
         const r = await fetch('base_datos.json?v=' + Date.now());
         BD = await r.json();
+        
+        // 1. CARGAR CATEGORÍAS
         const menu = document.getElementById('categorias');
+        menu.innerHTML = "";
         Object.keys(BD.ligas).forEach(l => {
             const btn = document.createElement('button');
             btn.className = 'btn-cat';
@@ -128,6 +130,17 @@
             btn.onclick = () => cargarEquipos(l, btn);
             menu.appendChild(btn);
         });
+
+        // 2. CARGAR CANALES EN EL SELECT
+        const selectCanal = document.getElementById('c_in');
+        selectCanal.innerHTML = '<option value="">-- Elige Canal --</option>';
+        Object.keys(BD.canales).forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = BD.canales[c].nombre;
+            opt.innerText = BD.canales[c].nombre;
+            selectCanal.appendChild(opt);
+        });
+
         updateAgenda();
     }
 
@@ -138,17 +151,17 @@
         const espBox = document.getElementById('especial-wrapper');
         cur.cat = ligaNom; grid.innerHTML = "";
         
-        if(ligaNom === "EVENTOS ESPECIALES") {
-            espBox.style.display = 'block'; cur.modo = "especial"; return;
-        }
-        espBox.style.display = 'none';
-        cur.modo = (BD.ligas[ligaNom].tipo === "unico" || ligaNom === "FORMULA 1" || ligaNom === "MOTOGP") ? "unico" : "duelo";
+        const config = BD.ligas[ligaNom];
+        espBox.style.display = (ligaNom === "EVENTOS ESPECIALES") ? 'block' : 'none';
+        
+        // RESPETAMOS TU JSON: Usamos "modo"
+        cur.modo = config.modo || "duelo";
         cur.e1 = ""; cur.e2 = "";
 
-        BD.ligas[ligaNom].equipos.forEach(eq => {
+        config.equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
-            let imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${BD.ligas[ligaNom].id}/${eq.a}`;
+            let imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${config.id}/${eq.a}`;
             b.innerHTML = `<div class="img-wrap"><img src="${imgPath}" onerror="this.src='assets/default.png'"></div><span>${eq.n}</span>`;
             b.onclick = () => {
                 if(cur.modo === "unico") {
@@ -156,10 +169,10 @@
                     document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                 } else {
                     if(!cur.e1 || (cur.e1 && cur.e2)) {
-                        cur.e1 = eq.n; cur.l1 = `${BD.ligas[ligaNom].id}/${eq.a}`; cur.e2 = "";
+                        cur.e1 = eq.n; cur.l1 = `${config.id}/${eq.a}`; cur.e2 = "";
                         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
                     } else {
-                        cur.e2 = eq.n; cur.l2 = `${BD.ligas[ligaNom].id}/${eq.a}`; b.classList.add('sel');
+                        cur.e2 = eq.n; cur.l2 = `${config.id}/${eq.a}`; b.classList.add('sel');
                     }
                 }
             };
@@ -170,39 +183,35 @@
     function fijarEspecial() {
         cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
         cur.l1 = document.getElementById('esp_logo').value || 'default.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales listos. Ahora añade los IDs.");
+        cur.e2 = ""; cur.l2 = ""; alert("Datos fijados.");
     }
 
-    // FUNCIÓN MEJORADA: AÑADE ID SIN BORRAR SELECCIÓN
     function crearEvento() {
         const linkInput = document.getElementById('l_in');
         const link = linkInput.value.trim();
         const hora = document.getElementById('h_in').value;
-        const canal = document.getElementById('c_in').value || cur.cat;
+        const canal = document.getElementById('c_in').value;
 
-        if(!cur.e1) return alert("Selecciona equipos primero.");
+        if(!cur.e1) return alert("Selecciona equipos.");
         if(!link) return alert("Pega el ID.");
 
         agenda.push({
             id: Date.now() + Math.random(),
             visible: true,
             hora: hora,
-            canal: canal,
+            canal: canal || "Streaming",
             e1: cur.e1, logo1: cur.l1,
             e2: cur.e2, logo2: cur.l2,
             link: link
         });
 
-        // VACIAR SOLO EL ID Y DAR FOCO PARA EL SIGUIENTE
         linkInput.value = "";
         linkInput.focus();
-        
         updateAgenda();
-        console.log("Evento añadido. Selección mantenida para el siguiente ID.");
     }
 
     function updateAgenda() {
-        localStorage.setItem('nw_agenda_v6', JSON.stringify(agenda));
+        localStorage.setItem('nw_agenda_v7', JSON.stringify(agenda));
         document.getElementById('count-agenda').innerText = agenda.length;
         const filtrados = agenda.filter(e => e.visible).map(({id, visible, ...r}) => r);
         const jsonStr = JSON.stringify(filtrados);
@@ -223,7 +232,7 @@
     function copyToClipboard() {
         document.getElementById('output').select();
         document.execCommand('copy');
-        alert("Copiado. Pégalo en GitHub.");
+        alert("¡Copiado! Pégalo en GitHub.");
     }
 
     chequearAcceso();
