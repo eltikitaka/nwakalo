@@ -21,7 +21,15 @@
       "logo": "premier.png",
       "modo": "duelo",
       "equipos": [
-        { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Burnley FC", "a": "bur.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Sunderlan FC", "a": "sun.png" }, { "n": "Leeds United", "a": "lee.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
+        { "n": "Arsenal FC", "a": "ars.png" }, { "n": "Aston Villa", "a": "av.png" }, { "n": "Bournemouth", "a": "bou.png" }, { "n": "Brentford FC", "a": "bre.png" }, { "n": "Brighton", "a": "bri.png" }, { "n": "Burnley FC", "a": "bur.png" }, { "n": "Chelsea FC", "a": "che.png" }, { "n": "Crystal Palace", "a": "cri.png" }, { "n": "Everton FC", "a": "eve.png" }, { "n": "Fulham FC", "a": "ful.png" }, { "n": "Sunderland FC", "a": "sun.png" }, { "n": "Leeds United", "a": "lee.png" }, { "n": "Liverpool FC", "a": "liv.png" }, { "n": "Man City", "a": "manc.png" }, { "n": "Man Utd", "a": "manu.png" }, { "n": "Newcastle Utd", "a": "new.png" }, { "n": "Nottingham Forest", "a": "not.png" }, { "n": "Tottenham", "a": "tot.png" }, { "n": "West Ham", "a": "whu.png" }, { "n": "Wolverhampton", "a": "wol.png" }
+      ]
+    },
+    "CHAMPIONS LEAGUE": {
+      "id": "champion",
+      "logo": "champion.png",
+      "modo": "duelo",
+      "equipos": [
+        { "n": "Arsenal FC", "a": "clars.png" }, { "n": "Real Madrid", "a": "clrmad.png" }, { "n": "FC Barcelona", "a": "clfcb.png" }, { "n": "Atletico de Madrid", "a": "clatm.png" }, { "n": "PSG", "a": "clpsg.png" }, { "n": "Liverpool", "a": "clliv.png" }, { "n": "Bayern Munchen", "a": "clbay.png" }, { "n": "Sporting de Lisboa", "a": "clspor.png" }
       ]
     },
     "MOTOGP": {
