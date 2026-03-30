@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - LÓGICA COMPETICIÓN</title>
+    <title>NWAKALO TV - SYNC LOGIC</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,8 +16,8 @@
         .img-box { background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
         .img-box img { width: 85%; height: 85%; object-fit: contain; }
         .nombres { text-align: center; }
-        .nombres h3 { margin: 5px 0; font-size: 16px; color: #fff; }
-        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .nombres h3 { margin: 5px 0; font-size: 16px; color: #fff; line-height: 1.2; }
+        .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
         .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; border: 1px solid #333; text-transform: uppercase; margin-top: 10px; text-align: center; }
         .activo .status-btn { color: var(--main); border-color: var(--main); }
     </style>
@@ -32,46 +32,46 @@
     const ASSETS = REPO + 'assets/';
     let DB_EQUIPOS = [];
 
-    // Lógica 1: Carga de Base de Datos para conocer categorías
-    async function cargarSincronizacion() {
+    // 1. Cargar Base de Datos para conocer categorías/competiciones
+    async function sincronizarDB() {
         try {
             const r = await fetch(REPO + 'base_datos.json?v=' + Date.now());
             DB_EQUIPOS = await r.json();
-            iniciarProcesoTV();
+            actualizarApp();
         } catch (e) { 
-            console.error("Error cargando DB de sincronización"); 
-            iniciarProcesoTV(); 
+            console.error("Error sincronizando DB"); 
+            actualizarApp(); 
         }
     }
 
-    // Lógica 2: Constructor de rutas idéntico al Mando
-    function resolverRuta(logo) {
-        if (!logo || logo === "undefined" || logo === "null") return ASSETS + 'default.png';
+    // 2. Lógica de resolución de rutas (Igual que el Mando)
+    function obtenerRuta(logo) {
+        if (!logo || logo === "undefined" || logo === "null" || logo === "") return ASSETS + 'default.png';
 
-        // Si el mando ya especificó competición (ej: laliga/madrid.png)
-        if (logo.includes('/')) {
-            return ASSETS + 'equipos/' + logo;
+        const limpio = logo.trim();
+        // Prioridad: El mando manda la subcarpeta (ej: laliga/madrid.png)
+        if (limpio.includes('/')) return ASSETS + 'equipos/' + limpio;
+
+        // Respaldo: Buscar competición en la DB
+        const match = DB_EQUIPOS.find(x => x.logo === limpio || x.logo === limpio + '.png');
+        if (match && match.categoria) {
+            const ext = limpio.includes('.') ? '' : '.png';
+            return ASSETS + 'equipos/' + match.categoria + '/' + limpio + ext;
         }
 
-        // Si es solo el nombre, buscamos la categoría en la DB
-        const busca = DB_EQUIPOS.find(x => x.logo === logo || x.logo === logo + '.png');
-        if (busca && busca.categoria) {
-            const ext = logo.includes('.') ? '' : '.png';
-            return ASSETS + 'equipos/' + busca.categoria + '/' + logo + ext;
-        }
-
-        // Caso Evento Único o Deporte
-        const extDef = logo.includes('.') ? '' : '.png';
-        return ASSETS + 'deporte/' + logo + extDef;
+        // Por defecto: Carpeta deporte
+        const extD = limpio.includes('.') ? '' : '.png';
+        return ASSETS + 'deporte/' + limpio + extD;
     }
 
-    async function iniciarProcesoTV() {
+    async function actualizarApp() {
         const container = document.getElementById('agenda');
         try {
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
             const text = await r.text();
-            const b64 = text.replace(/["\s]/g, '').trim();
-            const evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+            // Limpieza estricta de Base64 para evitar que los nombres desaparezcan
+            const base64 = text.replace(/[^A-Za-z0-9+/=]/g, "");
+            const evs = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
 
             container.innerHTML = '';
             const ahora = new Date();
@@ -81,41 +81,42 @@
                 const fEv = new Date(); fEv.setHours(h, m, 0);
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
-                const activo = (fEv - ahora) / 60000 <= 20;
-                const esDuelo = (ev.logo2 && ev.logo2 !== "" && ev.logo2 !== "undefined");
+                const estaActivo = (fEv - ahora) / 60000 <= 20;
+                // Detección estricta de Duelo
+                const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
 
-                const card = document.createElement(activo ? 'a' : 'div');
-                card.className = `card ${activo ? 'activo' : ''}`;
-                if(activo) card.href = `acestream://${ev.link}`;
+                const card = document.createElement(estaActivo ? 'a' : 'div');
+                card.className = `card ${estaActivo ? 'activo' : ''}`;
+                if(estaActivo) card.href = `acestream://${ev.link}`;
                 card.tabIndex = i + 1;
 
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
                         <div class="img-box">
-                            <img src="${resolverRuta(ev.logo1)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
+                            <img src="${obtenerRuta(ev.logo1)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
                         </div>
-                        ${esDuelo ? `
-                        <b style="color:var(--main)">VS</b>
+                        ${tieneRival ? `
+                        <b style="color:var(--main); font-size: 14px;">VS</b>
                         <div class="img-box">
-                            <img src="${resolverRuta(ev.logo2)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
+                            <img src="${obtenerRuta(ev.logo2)}" onerror="this.onerror=null; this.src='${ASSETS}default.png';">
                         </div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
-                        <h3>${ev.e1}${esDuelo ? ' vs ' + ev.e2 : ''}</h3>
+                        <h3>${ev.e1}${tieneRival ? '<br>vs<br>' + ev.e2 : ''}</h3>
                     </div>
-                    <div class="status-btn">${activo ? 'VER AHORA' : 'BLOQUEADO'}</div>
+                    <div class="status-btn">${estaActivo ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.error("Error en procesamiento de eventos"); }
+        } catch (e) { console.error("Error cargando eventos"); }
     }
 
-    cargarSincronizacion();
-    setInterval(iniciarProcesoTV, 60000);
+    sincronizarDB();
+    setInterval(actualizarApp, 60000);
 </script>
 </body>
 </html>
