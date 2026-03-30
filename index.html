@@ -2,28 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - 3x3 ESTRUCTURA TOTAL</title>
+    <title>NWAKALO TV - NAVEGACIÓN OK</title>
     <style>
-        :root { --main: #00ff88; --bg: #050505; --card: #121212; --text-sec: #888; }
+        :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            height: 100vh; background: var(--bg); color: #fff; 
-            font-family: 'Segoe UI', sans-serif; padding: 10px; 
-            display: flex; flex-direction: column; overflow: hidden; 
-        }
-
-        h1 { 
-            color: var(--main); text-align: center; font-size: 20px; 
-            letter-spacing: 12px; margin-bottom: 10px; text-transform: uppercase; 
-        }
+        body { height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 10px; display: flex; flex-direction: column; overflow: hidden; }
+        h1 { color: var(--main); text-align: center; font-size: 20px; letter-spacing: 12px; margin-bottom: 10px; text-transform: uppercase; }
 
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             grid-auto-rows: calc(33.33vh - 22px); 
             gap: 10px; width: 100%; flex-grow: 1;
-            overflow-y: auto; padding-bottom: 10px;
+            overflow-y: auto;
         }
         
         .card { 
@@ -31,42 +22,29 @@
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; position: relative; padding: 8px; 
             text-decoration: none; color: inherit; transition: 0.2s;
+            outline: none; /* Quitamos el outline feo por defecto */
         }
 
-        /* Estado Bloqueado */
-        .card.blocked { opacity: 0.7; cursor: default; pointer-events: none; }
-        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.02); outline: none; }
+        /* EFECTO VISUAL CUANDO SE SELECCIONA */
+        .card:focus { 
+            border-color: var(--main); 
+            background: #1a1a1a; 
+            transform: scale(1.05); 
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            z-index: 10;
+        }
         
-        /* Tarjeta Vacía para rellenar 3x3 */
-        .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.3; }
-        .card.empty h4 { color: #444; font-size: 10px; letter-spacing: 2px; }
+        .card.blocked { opacity: 0.6; }
+        .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.2; pointer-events: none; }
 
-        .fecha-badge { 
-            position: absolute; top: 8px; left: 8px; 
-            background: var(--main); color: #000; 
-            padding: 2px 8px; border-radius: 4px; 
-            font-weight: bold; font-size: 10px; 
-        }
-
+        .fecha-badge { position: absolute; top: 8px; left: 8px; background: var(--main); color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 15px; margin-bottom: 5px; }
-        
-        .img-box { 
-            background: #fff; width: 90px; height: 90px; 
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 3px solid #333; 
-        }
+        .img-box { background: #fff; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid #333; }
         .img-box img { width: 80%; height: 80%; object-fit: contain; }
-        
         .nombres { text-align: center; width: 100%; }
         .nombres h3 { font-size: 11px; color: #eee; text-transform: uppercase; margin: 3px 0; }
-        .canal-txt { color: var(--main); font-size: 10px; font-weight: bold; margin-bottom: 2px; }
-        
-        .status-btn { 
-            width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; 
-            border: 1px solid var(--main); text-transform: uppercase; 
-            font-weight: bold; text-align: center; margin-top: 8px;
-        }
-        .blocked .status-btn { border-color: #444; color: #444; }
+        .canal-txt { color: var(--main); font-size: 10px; font-weight: bold; }
+        .status-btn { width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; border: 1px solid var(--main); text-transform: uppercase; font-weight: bold; text-align: center; margin-top: 8px; }
         .card:focus .status-btn { background: var(--main); color: #000; }
     </style>
 </head>
@@ -97,27 +75,21 @@
 
             container.innerHTML = '';
             const ahora = new Date();
-            let eventosMostrados = 0;
+            let totalCards = 0;
 
             evs.forEach((ev) => {
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(ev.fecha); 
                 fEv.setHours(h, m, 0);
-                
-                const difMinutos = (fEv - ahora) / 60000;
-                const horasDesdeInicio = (ahora - fEv) / 3600000;
+                if ((ahora - fEv) / 3600000 > 3) return; 
 
-                // 1. Regla de las 3 horas para eliminar
-                if (horasDesdeInicio > 3) return; 
+                const estaBloqueado = (fEv - ahora) / 60000 > 15;
+                totalCards++;
 
-                // 2. Regla de los 15 minutos para bloquear
-                const estaBloqueado = difMinutos > 15;
-                eventosMostrados++;
-
-                const card = document.createElement(estaBloqueado ? 'div' : 'a');
-                card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
-                if(!estaBloqueado) card.href = "acestream://" + ev.link;
-                card.tabIndex = eventosMostrados;
+                const card = document.createElement('a');
+                card.className = `card ${estaBloqueado ? 'blocked' : 'active'}`;
+                card.href = estaBloqueado ? "javascript:void(0)" : "acestream://" + ev.link;
+                card.dataset.index = totalCards - 1; // Para la lógica de navegación
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
 
@@ -136,24 +108,45 @@
                 container.appendChild(card);
             });
 
-            // 3. Relleno hasta completar cuadrícula 3x3 (Punto 1 de tu lógica)
-            const minCards = 9;
-            while (eventosMostrados < minCards) {
-                eventosMostrados++;
-                const emptyCard = document.createElement('div');
-                emptyCard.className = 'card empty';
-                emptyCard.innerHTML = '<h4>AGENDA VACÍA</h4>';
-                container.appendChild(emptyCard);
+            // Relleno hasta 9
+            while (totalCards < 9) {
+                totalCards++;
+                const empty = document.createElement('div');
+                empty.className = 'card empty';
+                empty.innerHTML = '<h4>AGENDA VACÍA</h4>';
+                container.appendChild(empty);
             }
 
-            if(container.querySelector('.card:not(.empty)')) {
-                container.querySelector('.card:not(.empty)').focus();
-            }
+            // Forzar el primer foco
+            const first = container.querySelector('.card:not(.empty)');
+            if(first) first.focus();
 
-        } catch (e) { 
-            console.log("Error de carga");
-        }
+        } catch (e) { console.log("Error"); }
     }
+
+    // LÓGICA DE NAVEGACIÓN PARA EL MANDO (FLECHAS)
+    document.addEventListener('keydown', (e) => {
+        const current = document.activeElement;
+        if (!current || !current.classList.contains('card')) return;
+
+        const cards = Array.from(document.querySelectorAll('.card'));
+        const index = cards.indexOf(current);
+        const cols = 3;
+        let nextIndex = index;
+
+        switch(e.key) {
+            case 'ArrowRight': if ((index + 1) % cols !== 0) nextIndex = index + 1; break;
+            case 'ArrowLeft': if (index % cols !== 0) nextIndex = index - 1; break;
+            case 'ArrowDown': nextIndex = index + cols; break;
+            case 'ArrowUp': nextIndex = index - cols; break;
+            case 'Enter': current.click(); break;
+        }
+
+        if (cards[nextIndex] && !cards[nextIndex].classList.contains('empty')) {
+            cards[nextIndex].focus();
+            e.preventDefault();
+        }
+    });
 
     actualizarTV();
     setInterval(actualizarTV, 60000);
