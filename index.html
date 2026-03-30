@@ -2,85 +2,92 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - NOMBRES VISIBLES</title>
+    <title>NWAKALO TV - TV FIX</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
             height: 100vh; background: var(--bg); color: #fff; 
-            font-family: sans-serif; padding: 10px; 
+            font-family: Arial, sans-serif; padding: 10px; 
             display: flex; flex-direction: column; overflow: hidden; 
         }
 
         h1 { 
-            color: var(--main); text-align: center; font-size: 20px; 
-            letter-spacing: 12px; margin-bottom: 15px; text-transform: uppercase; 
+            color: var(--main); text-align: center; font-size: 18px; 
+            letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase; 
         }
 
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            grid-auto-rows: calc(33.33vh - 25px); 
-            gap: 12px; width: 100%; flex-grow: 1;
+            grid-auto-rows: calc(33.33vh - 22px); 
+            gap: 10px; width: 100%; flex-grow: 1;
         }
         
         .card { 
-            background: var(--card); border-radius: 18px; border: 2px solid #222; 
+            background: var(--card); border-radius: 15px; border: 2px solid #222; 
             display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; position: relative; padding: 10px; 
-            text-decoration: none; color: inherit; transition: 0.15s; outline: none;
+            justify-content: space-between; position: relative; padding: 12px 8px; 
+            text-decoration: none; color: inherit; outline: none;
         }
 
         .card:focus { 
-            border-color: var(--main); background: #181818; 
-            transform: scale(1.04); box-shadow: 0 0 20px rgba(0,255,136,0.2);
-            z-index: 10;
+            border-color: var(--main); background: #1a1a1a; 
+            transform: scale(1.02); z-index: 10;
         }
         
-        .card.blocked { opacity: 0.5; pointer-events: none; }
-        .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.15; }
+        .card.blocked { opacity: 0.5; }
+        .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.1; }
 
         .fecha-badge { 
-            position: absolute; top: 10px; left: 10px; 
+            position: absolute; top: 8px; left: 8px; 
             background: var(--main); color: #000; 
-            padding: 2px 10px; border-radius: 5px; 
-            font-weight: bold; font-size: 11px; 
+            padding: 1px 6px; border-radius: 4px; 
+            font-weight: bold; font-size: 10px; 
         }
 
-        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 15px; margin-bottom: 10px; }
+        .vs-container { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100%; gap: 10px; flex-grow: 1;
+        }
         
         .img-box { 
-            background: #fff; width: 95px; height: 95px; 
+            background: #fff; width: 85px; height: 85px; 
             border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 3px solid #333; 
+            justify-content: center; overflow: hidden; border: 2px solid #333;
+            flex-shrink: 1; /* Permite que el logo se ajuste si falta espacio */
         }
-        .img-box img { width: 80%; height: 80%; object-fit: contain; }
+        .img-box img { width: 75%; height: 75%; object-fit: contain; }
         
-        /* AJUSTE CRÍTICO DE NOMBRES */
-        .nombres { 
-            text-align: center; 
+        /* CONTENEDOR DE NOMBRES OPTIMIZADO PARA TV */
+        .nombres-box { 
             width: 100%; 
-            padding: 0 5px;
+            height: 20px; /* Altura fija para que la TV no lo ignore */
+            margin: 5px 0;
             display: flex;
+            align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         
-        .nombres h3 { 
-            font-size: 13px; 
+        .nombres-box h3 { 
+            font-size: 12px; 
             color: #ffffff; 
             text-transform: uppercase; 
             white-space: nowrap; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
+            text-align: center;
             width: 100%;
+            display: block;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         .status-btn { 
-            width: 80%; padding: 6px; border-radius: 10px; font-size: 10px; 
+            width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; 
             border: 1px solid var(--main); text-transform: uppercase; 
-            font-weight: bold; text-align: center; margin-top: 12px; color: var(--main);
+            font-weight: bold; text-align: center; color: var(--main);
+            flex-shrink: 0;
         }
         .card:focus .status-btn { background: var(--main); color: #000; }
     </style>
@@ -96,8 +103,7 @@
 
     function resolverRuta(logo) {
         if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
-        if (logo.includes('/')) return ASSETS + 'equipos/' + logo.trim();
-        return ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
+        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
     }
 
     async function actualizarTV() {
@@ -122,21 +128,22 @@
                 const estaBloqueado = (fEv - ahora) / 60000 > 15;
                 count++;
 
-                const card = document.createElement('a');
+                const card = document.createElement(estaBloqueado ? 'div' : 'a');
                 card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
-                card.href = estaBloqueado ? "#" : "acestream://" + ev.link;
+                if(!estaBloqueado) card.href = "acestream://" + ev.link;
+                card.tabIndex = count;
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
-                const textoEquipos = tieneRival ? `${ev.e1} - ${ev.e2}` : ev.e1;
+                const textoFinal = tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1;
 
                 card.innerHTML = `
                     <div class="fecha-badge">${ev.hora}</div>
                     <div class="vs-container">
                         <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
-                        ${tieneRival ? `<b style="color:var(--main); font-size: 16px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
-                    <div class="nombres">
-                        <h3>${textoEquipos}</h3>
+                    <div class="nombres-box">
+                        <h3>${textoFinal}</h3>
                     </div>
                     <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER AHORA'}</div>
                 `;
@@ -147,16 +154,17 @@
                 count++;
                 const empty = document.createElement('div');
                 empty.className = 'card empty';
-                empty.innerHTML = '<h4 style="color:#222; font-size:9px;">SIN EVENTO</h4>';
+                empty.innerHTML = '<span style="color:#222; font-size:9px;">VACÍO</span>';
                 container.appendChild(empty);
             }
 
             const first = container.querySelector('.card:not(.empty)');
             if(first) first.focus();
 
-        } catch (e) { console.log("Error de datos"); }
+        } catch (e) { console.log("Error"); }
     }
 
+    // Navegación TV Mando
     document.addEventListener('keydown', (e) => {
         const current = document.activeElement;
         if (!current || !current.classList.contains('card')) return;
@@ -167,6 +175,7 @@
         if (e.key === 'ArrowLeft' && index % 3 !== 0) next = index - 1;
         if (e.key === 'ArrowDown') next = index + 3;
         if (e.key === 'ArrowUp') next = index - 3;
+        if (e.key === 'Enter') current.click();
         if (cards[next] && !cards[next].classList.contains('empty')) {
             cards[next].focus();
             e.preventDefault();
