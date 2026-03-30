@@ -2,100 +2,89 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - ULTIMATE EDITION</title>
+    <title>NWAKALO TV - AUTH SYSTEM</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { height: 100vh; background: var(--bg); color: #fff; font-family: Arial, sans-serif; padding: 10px; display: flex; flex-direction: column; overflow: hidden; }
+        h1 { color: var(--main); text-align: center; font-size: 18px; letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase; }
         
-        body { 
-            height: 100vh; background: var(--bg); color: #fff; 
-            font-family: Arial, sans-serif; padding: 10px; 
-            display: flex; flex-direction: column; overflow: hidden; 
-        }
+        /* Pantalla de Bloqueo / Autorización */
+        #auth-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+        .code-box { background: #111; border: 2px dashed var(--main); padding: 20px; border-radius: 15px; margin: 20px 0; }
+        .code-text { font-size: 40px; font-weight: bold; color: var(--main); letter-spacing: 5px; }
 
-        h1 { 
-            color: var(--main); text-align: center; font-size: 18px; 
-            letter-spacing: 10px; margin-bottom: 10px; text-transform: uppercase; 
-        }
-
-        #agenda { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            grid-auto-rows: calc(33.33vh - 22px); 
-            gap: 10px; width: 100%; flex-grow: 1;
-        }
-        
-        .card { 
-            background: var(--card); border-radius: 15px; border: 2px solid #222; 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: space-between; position: relative; padding: 12px 8px; 
-            text-decoration: none; color: inherit; outline: none; transition: 0.1s;
-        }
-
-        .card:focus { 
-            border-color: var(--main); background: #1a1a1a; 
-            transform: scale(1.03); z-index: 10;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-        }
-        
-        .card.blocked { opacity: 0.4; cursor: default; }
+        /* Agenda Principal */
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc(33.33vh - 22px); gap: 10px; width: 100%; flex-grow: 1; }
+        .card { background: var(--card); border-radius: 15px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative; padding: 12px 8px; text-decoration: none; color: inherit; outline: none; }
+        .card:focus { border-color: var(--main); background: #1a1a1a; transform: scale(1.03); z-index: 10; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2); }
+        .card.blocked { opacity: 0.4; }
         .card.empty { border: 2px dashed #222; background: transparent; opacity: 0.1; pointer-events: none; }
-
-        .fecha-badge { 
-            position: absolute; top: 8px; left: 8px; 
-            background: var(--main); color: #000; 
-            padding: 1px 6px; border-radius: 4px; 
-            font-weight: bold; font-size: 10px; 
-        }
-
-        .vs-container { 
-            display: flex; align-items: center; justify-content: center; 
-            width: 100%; gap: 10px; flex-grow: 1;
-        }
         
-        .img-box { 
-            background: #fff; width: 85px; height: 85px; 
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 2px solid #333;
-            flex-shrink: 1;
-        }
+        .fecha-badge { position: absolute; top: 8px; left: 8px; background: var(--main); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; flex-grow: 1; }
+        .img-box { background: #fff; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #333; }
         .img-box img { width: 75%; height: 75%; object-fit: contain; }
-        
-        .nombres-box { 
-            width: 100%; height: 20px; margin: 5px 0;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        
-        .nombres-box h3 { 
-            font-size: 12px; color: #ffffff; text-transform: uppercase; 
-            white-space: nowrap; text-align: center; width: 100%;
-            display: block; text-overflow: ellipsis; overflow: hidden;
-        }
-
-        .status-btn { 
-            width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; 
-            border: 1px solid var(--main); text-transform: uppercase; 
-            font-weight: bold; text-align: center; color: var(--main);
-        }
+        .nombres-box { width: 100%; height: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 5px; }
+        .nombres-box h3 { font-size: 11px; color: #fff; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .status-btn { width: 85%; padding: 5px; border-radius: 8px; font-size: 9px; border: 1px solid var(--main); text-transform: uppercase; font-weight: bold; text-align: center; color: var(--main); }
         .card:focus .status-btn { background: var(--main); color: #000; }
     </style>
 </head>
 <body>
 
-    <h1>NWAKALO TV</h1>
+    <h1 id="titulo">NWAKALO TV</h1>
+    
+    <div id="auth-screen">
+        <h2 style="color: #ff4444;">DISPOSITIVO NO AUTORIZADO</h2>
+        <p style="margin-top:10px;">Para activar esta App, envía este código al administrador:</p>
+        <div class="code-box">
+            <div id="display-code" class="code-text">000000</div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.6;">Esperando autorización...</p>
+    </div>
+
     <div id="agenda"></div>
 
 <script>
     const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
     const ASSETS = REPO + 'assets/';
 
-    function resolverRuta(logo) {
-        if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
-        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
+    // GENERAR ID ÚNICO (Si no existe en el almacenamiento local de la TV)
+    let miID = localStorage.getItem('nw_device_id');
+    if (!miID) {
+        // Crea un código aleatorio de 6 cifras la primera vez
+        miID = "NW-" + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('nw_device_id', miID);
     }
 
-    async function actualizarTV() {
-        const container = document.getElementById('agenda');
+    async function iniciar() {
+        const agenda = document.getElementById('agenda');
+        const authScreen = document.getElementById('auth-screen');
+        const displayCode = document.getElementById('display-code');
+
+        try {
+            // 1. Verificar autorizado.json
+            const resAuth = await fetch(REPO + 'autorizado.json?v=' + Date.now());
+            const authData = await resAuth.json();
+            
+            if (!authData.usuarios.includes(miID)) {
+                // NO AUTORIZADO: Mostrar pantalla de código
+                agenda.style.display = 'none';
+                authScreen.style.display = 'flex';
+                displayCode.innerText = miID;
+                return;
+            }
+
+            // AUTORIZADO: Cargar eventos
+            authScreen.style.display = 'none';
+            agenda.style.display = 'grid';
+            cargarEventos();
+
+        } catch (e) { console.error("Error de conexión"); }
+    }
+
+    async function cargarEventos() {
         try {
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
             const text = await r.text();
@@ -103,6 +92,7 @@
             let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
             
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+            const container = document.getElementById('agenda');
             container.innerHTML = '';
             const ahora = new Date();
             let count = 0;
@@ -111,79 +101,57 @@
                 const [h, m] = ev.hora.split(':');
                 const fEv = new Date(ev.fecha); 
                 fEv.setHours(h, m, 0);
-                
-                // Borrar a las 3 horas de empezar
                 if ((ahora - fEv) / 3600000 > 3) return; 
 
-                // Bloquear si faltan más de 15 min
                 const estaBloqueado = (fEv - ahora) / 60000 > 15;
                 count++;
 
-                // LIMPIEZA DE ENLACE (Pegue lo que pegue el usuario)
                 let linkID = ev.link.toString().replace('acestream://', '').trim();
-
                 const card = document.createElement(estaBloqueado ? 'div' : 'a');
                 card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
                 if(!estaBloqueado) card.href = "acestream://" + linkID;
                 card.tabIndex = count;
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
-                const textoFinal = tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1;
-
                 card.innerHTML = `
                     <div class="fecha-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
-                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                        <div class="img-box"><img src="${ASSETS}${ev.logo1.includes('/') ? 'equipos/' + ev.logo1 : 'deporte/' + ev.logo1 + '.png'}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${ASSETS}${ev.logo2.includes('/') ? 'equipos/' + ev.logo2 : 'deporte/' + ev.logo2 + '.png'}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
                     </div>
-                    <div class="nombres-box">
-                        <h3>${textoFinal}</h3>
-                    </div>
+                    <div class="nombres-box"><h3>${tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1}</h3></div>
                     <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER AHORA'}</div>
                 `;
                 container.appendChild(card);
             });
 
-            // Relleno 3x3
             while (count < 9) {
                 count++;
-                const empty = document.createElement('div');
-                empty.className = 'card empty';
-                empty.innerHTML = '<span style="color:#222; font-size:9px;">SIN EVENTO</span>';
-                container.appendChild(empty);
+                container.innerHTML += '<div class="card empty"><span style="color:#222; font-size:9px;">SIN EVENTO</span></div>';
             }
-
-            // Auto-foco al cargar
             const first = container.querySelector('.card:not(.empty)');
             if(first) first.focus();
 
-        } catch (e) { console.error("Error cargando JSON"); }
+        } catch (e) { console.error("Error eventos"); }
     }
 
-    // Navegación con Mando TV
+    // Navegación con mando
     document.addEventListener('keydown', (e) => {
         const current = document.activeElement;
         if (!current || !current.classList.contains('card')) return;
         const cards = Array.from(document.querySelectorAll('.card'));
         const index = cards.indexOf(current);
         let next = index;
-        
-        switch(e.key) {
-            case 'ArrowRight': if ((index + 1) % 3 !== 0) next = index + 1; break;
-            case 'ArrowLeft': if (index % 3 !== 0) next = index - 1; break;
-            case 'ArrowDown': next = index + 3; break;
-            case 'ArrowUp': next = index - 3; break;
-            case 'Enter': current.click(); break;
-        }
-        
-        if (cards[next] && !cards[next].classList.contains('empty')) {
-            cards[next].focus();
-            e.preventDefault();
-        }
+        if (e.key === 'ArrowRight' && (index + 1) % 3 !== 0) next = index + 1;
+        if (e.key === 'ArrowLeft' && index % 3 !== 0) next = index - 1;
+        if (e.key === 'ArrowDown') next = index + 3;
+        if (e.key === 'ArrowUp') next = index - 3;
+        if (e.key === 'Enter' && !current.classList.contains('blocked')) current.click();
+        if (cards[next] && !cards[next].classList.contains('empty')) cards[next].focus();
     });
 
-    actualizarTV();
-    setInterval(actualizarTV, 60000); // Refresco cada minuto
+    iniciar();
+    setInterval(iniciar, 60000);
 </script>
 </body>
 </html>
