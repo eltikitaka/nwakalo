@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO TV - DATABASE SYNC</title>
+    <title>NWAKALO TV - SOLUCIÓN RUTAS</title>
     <style>
         :root { --main: #00ff88; --bg: #050505; --card: #121212; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; overflow-y: auto; }
+        body { min-height: 100vh; background: var(--bg); color: #fff; font-family: sans-serif; padding: 15px; }
         h1 { color: var(--main); text-align: center; font-size: 28px; letter-spacing: 12px; margin-bottom: 20px; text-transform: uppercase; }
         #agenda { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .card { background: var(--card); border-radius: 20px; border: 2px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; position: relative; text-decoration: none; color: inherit; min-height: 220px; }
@@ -17,7 +17,7 @@
         .single-logo .img-box { width: 95px; height: 95px; }
         .img-box img { width: 85%; height: 85%; object-fit: contain; }
         .nombres { text-align: center; }
-        .nombres h3 { font-size: 16px; margin: 5px 0; }
+        .nombres h3 { font-size: 16px; margin: 5px 0; color: #fff; }
         .canal-txt { color: var(--main); font-size: 11px; font-weight: bold; }
         .status-btn { width: 90%; background: #222; color: #555; padding: 8px; border-radius: 10px; font-size: 11px; text-align: center; margin-top: 10px; border: 1px solid #333; }
         .activo .status-btn { color: var(--main); border-color: var(--main); }
@@ -29,36 +29,40 @@
     <div id="agenda"></div>
 
 <script>
-    const BASE_URL = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
-    const ASSETS = BASE_URL + 'assets/';
-    let BASE_DATOS = {};
+    const ASSETS = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/assets/';
+    const URL_JSON = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/eventos.json';
 
-    // 1. CARGAR LA BASE DE DATOS IGUAL QUE EL MANDO
-    async function cargarBaseDatos() {
-        try {
-            const r = await fetch(BASE_URL + 'base_datos.json?v=' + Date.now());
-            BASE_DATOS = await r.json();
-            iniciarApp();
-        } catch (e) { console.error("Error cargando base_datos.json"); }
-    }
-
-    // 2. FUNCIÓN PARA ENCONTRAR LA RUTA REAL (Lógica del Mando)
-    function obtenerRutaReal(logoRecibido) {
-        if (!logoRecibido || logoRecibido === "undefined") return ASSETS + 'default.png';
-        
-        // Si ya viene con carpeta (ej: "laliga/madrid.png"), le ponemos el prefijo equipos
-        if (logoRecibido.includes('/')) {
-            return ASSETS + 'equipos/' + logoRecibido;
+    function intentarCargar(imgElement, ruta) {
+        if (!ruta || ruta === "undefined") {
+            imgElement.src = ASSETS + 'default.png';
+            return;
         }
+
+        // Caso 1: Es un equipo (ej: "laliga/madrid.png") -> assets/equipos/laliga/madrid.png
+        // Caso 2: Es un deporte (ej: "f1.png") -> assets/deporte/f1.png
         
-        // Si es un logo suelto, lo buscamos en la carpeta 'deporte'
-        return ASSETS + 'deporte/' + logoRecibido;
+        let urlEquipos = ASSETS + 'equipos/' + ruta;
+        let urlDeporte = ASSETS + 'deporte/' + ruta;
+
+        // Probamos primero la ruta de equipos
+        imgElement.src = urlEquipos;
+
+        imgElement.onerror = function() {
+            // Si falla y aún no hemos probado la de deporte, probamos
+            if (this.src === urlEquipos) {
+                this.src = urlDeporte;
+            } else {
+                // Si fallan ambas, default
+                this.src = ASSETS + 'default.png';
+                this.onerror = null;
+            }
+        };
     }
 
-    async function iniciarApp() {
+    async function cargarApp() {
         const container = document.getElementById('agenda');
         try {
-            const r = await fetch(BASE_URL + 'eventos.json?v=' + Date.now());
+            const r = await fetch(URL_JSON + '?v=' + Date.now());
             const text = await r.text();
             const raw = text.replace(/["\s]/g, '').trim();
             const evs = JSON.parse(decodeURIComponent(escape(window.atob(raw))));
@@ -82,8 +86,8 @@
                 card.innerHTML = `
                     <div class="hora-badge">${ev.hora}</div>
                     <div class="vs-container">
-                        <div class="img-box"><img src="${obtenerRutaReal(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
-                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img src="${obtenerRutaReal(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                        <div class="img-box"><img id="img_a_${i}"></div>
+                        ${esDuelo ? `<b style="color:var(--main)">VS</b><div class="img-box"><img id="img_b_${i}"></div>` : ''}
                     </div>
                     <div class="nombres">
                         <div class="canal-txt">${ev.canal}</div>
@@ -92,14 +96,18 @@
                     <div class="status-btn">${activo ? 'VER AHORA' : 'BLOQUEADO'}</div>
                 `;
                 container.appendChild(card);
+
+                // Disparamos la carga de imágenes con la nueva lógica
+                intentarCargar(document.getElementById(`img_a_${i}`), ev.logo1);
+                if(esDuelo) intentarCargar(document.getElementById(`img_b_${i}`), ev.logo2);
             });
 
             if(container.firstChild) container.firstChild.focus();
-        } catch (e) { console.error("Error en eventos"); }
+        } catch (e) { console.error("Error cargando eventos"); }
     }
 
-    cargarBaseDatos();
-    setInterval(iniciarApp, 60000);
+    cargarApp();
+    setInterval(cargarApp, 60000);
 </script>
 </body>
 </html>
