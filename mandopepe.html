@@ -37,7 +37,7 @@
     <div class="tv-card">
         <h2 style="margin:0;">NWAKALO CONTROL</h2>
         <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">ID REQUERIDO: BUNKER-QMPBJ</p>
+        <p style="font-size:11px; color:#555;">ID REQUERIDO: ADM-ACCESS</p>
     </div>
 </div>
 
@@ -190,8 +190,27 @@
         updateAgenda();
     }
 
+    // --- FUNCIÓN PARA CARGAR EVENTO EXISTENTE Y EDITARLO ---
+    function cargarParaEditar(i) {
+        const ev = agenda[i];
+        document.getElementById('f_in').value = ev.fecha;
+        document.getElementById('h_in').value = ev.hora;
+        cur.e1 = ev.e1; cur.l1 = ev.logo1;
+        cur.e2 = ev.e2; cur.l2 = ev.logo2;
+        const cont = document.getElementById('contenedor-ids');
+        cont.innerHTML = "";
+        ev.links.forEach(lk => {
+            const div = document.createElement('div');
+            div.className = 'fila-id';
+            div.innerHTML = `<input type="text" class="c_multi" value="${lk.ch}"><input type="text" class="l_multi" value="${lk.id}"><button class="btn-del-id" onclick="this.parentElement.remove()">×</button>`;
+            cont.appendChild(div);
+        });
+        agenda.splice(i, 1);
+        updateAgenda();
+        alert("Evento cargado en el panel. Modifica y pulsa GUARDAR.");
+    }
+
     function updateAgenda() {
-        // Ordenamos por fecha y hora antes de guardar
         agenda.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
         localStorage.setItem('nw_agenda_v12', JSON.stringify(agenda));
         let paraTV = [];
@@ -208,6 +227,7 @@
             <div class="item-cola">
                 <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
                 <div style="flex:1"><b>${e.fecha} | ${e.hora}</b><br>${e.e1} ${e.e2?'vs '+e.e2:''}</div>
+                <span style="cursor:pointer; margin-right:15px; color:var(--main); font-size:16px;" onclick="cargarParaEditar(${i})">✏️</span>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
         `).reverse().join('');
