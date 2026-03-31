@@ -2,204 +2,321 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANDO PEPE - WHITE EDITION</title>
+    <title>NWAKALO TV - WHITE EDITION</title>
     <style>
+        /* PALETA DE COLORES CLARA */
         :root { 
-            --main: #00cc6a; --bg: #f0f2f5; --card: #ffffff; 
-            --text: #1a1a1a; --border: #e0e0e0; 
+            --main: #00cc6a; /* Verde sólido para que resalte en blanco */
+            --bg: #f0f2f5;   /* Fondo gris muy claro (tipo Facebook/iOS) */
+            --card: #ffffff; /* Tarjetas blanco puro */
+            --text: #1a1a1a; /* Texto negro suave */
+            --border: #e0e0e0;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Segoe UI', sans-serif; background: var(--bg); 
-            color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; 
-        }
-        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; color: var(--text); font-weight: 900; }
         
-        label { display: block; font-size: 11px; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; opacity: 0.6; }
-        input, select { 
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); 
-            background: #f9f9f9; color: var(--text); font-size: 14px; outline: none;
+        body { 
+            height: 100vh; background: var(--bg); color: var(--text); 
+            font-family: 'Segoe UI', Arial, sans-serif; padding: 15px; 
+            display: flex; flex-direction: column; overflow: hidden; 
         }
-        input:focus, select:focus { border-color: var(--main); background: #fff; }
 
-        .row { display: flex; gap: 10px; }
-        .btn { 
-            width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; 
-            cursor: pointer; text-transform: uppercase; transition: 0.2s; margin-top: 15px;
+        h1 { 
+            color: var(--text); text-align: center; font-size: 20px; 
+            letter-spacing: 8px; margin-bottom: 15px; text-transform: uppercase;
+            font-weight: 900;
         }
-        .btn-add { background: var(--main); color: white; }
-        .btn-save { background: #1a1a1a; color: white; margin-top: 25px; font-size: 16px; letter-spacing: 1px; }
-        .btn:active { transform: scale(0.98); }
 
-        .item-evento { 
-            background: #f8f9fa; padding: 15px; border-radius: 12px; margin-top: 10px; 
-            border-left: 5px solid var(--main); position: relative; font-size: 13px;
+        #agenda { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-auto-rows: calc(33.33vh - 25px); 
+            gap: 15px; width: 100%; flex-grow: 1;
         }
-        .actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
-        .btn-mini { padding: 5px 8px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        
+        .card { 
+            background: var(--card); border-radius: 20px; border: 1px solid var(--border); 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: space-between; position: relative; padding: 15px; 
+            text-decoration: none; color: inherit; outline: none; transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card:focus { 
+            border-color: var(--main);
+            transform: scale(1.04); z-index: 10;
+            box-shadow: 0 10px 25px rgba(0, 204, 106, 0.2);
+        }
+        
+        .card.blocked { opacity: 0.5; background: #fafafa; }
+        .card.empty { border: 2px dashed #ccc; background: transparent; opacity: 0.3; pointer-events: none; }
+
+        .fecha-badge { 
+            position: absolute; top: 12px; left: 12px; 
+            background: var(--main); color: #fff; 
+            padding: 3px 10px; border-radius: 6px; 
+            font-weight: bold; font-size: 11px; 
+        }
+
+        .vs-container { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100%; gap: 15px; flex-grow: 1; margin-top: 10px;
+        }
+        
+        .img-box { 
+            background: #fff; width: 90px; height: 90px; 
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; overflow: hidden; border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .img-box img { width: 80%; height: 80%; object-fit: contain; }
+        
+        .nombres-box { 
+            width: 100%; margin: 10px 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .nombres-box h3 { 
+            font-size: 14px; color: var(--text); text-transform: uppercase; 
+            font-weight: 800; text-align: center;
+        }
+
+        .status-btn { 
+            width: 90%; padding: 8px; border-radius: 10px; font-size: 10px; 
+            border: 2px solid var(--main); text-transform: uppercase; 
+            font-weight: 900; text-align: center; color: var(--main);
+        }
+        .card:focus .status-btn { background: var(--main); color: #fff; }
+
+        /* --- VENTANA FLOTANTE (MODAL) --- */
+        #modal-opciones {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9); /* Blanco translúcido */
+            display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+
+        .modal-content {
+            background: #fff; width: 450px; padding: 30px; border-radius: 25px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15); border: 1px solid #eee; text-align: center;
+        }
+
+        .btn-opcion {
+            display: block; width: 100%; padding: 18px; margin: 12px 0;
+            background: #f8f9fa; border-radius: 15px; font-size: 18px;
+            font-weight: 800; color: var(--text); border: 3px solid transparent; outline: none;
+        }
+
+        .btn-opcion.focus {
+            border-color: var(--main); background: var(--main); color: #fff;
+        }
+
+        #bloqueo {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 99999;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>MANDO PEPE 3.0</h2>
-    
-    <label>Competición</label>
-    <select id="liga" onchange="cambiarLiga()">
-        <option value="">-- SELECCIONA LIGA --</option>
-        <option value="LALIGA">LALIGA EA SPORTS</option>
-        <option value="CHAMPIONS">CHAMPIONS LEAGUE</option>
-        <option value="PREMIER">PREMIER LEAGUE</option>
-        <option value="F1">FÓRMULA 1</option>
-        <option value="MOTOGP">MOTOGP</option>
-        <option value="VARIOS">OTROS DEPORTES</option>
-    </select>
-
-    <div class="row">
-        <div style="flex:1">
-            <label>Equipo 1</label>
-            <select id="e1" onchange="ponLogo(1)"></select>
-            <input type="hidden" id="l1">
+    <div id="bloqueo">
+        <h1 style="font-size: 24px; color:#000; letter-spacing: 2px;">ACCESO RESTRINGIDO</h1>
+        <p style="margin: 20px 0; opacity: 0.6; color:#000;">ID de Dispositivo:</p>
+        <div style="border: 2px solid var(--main); padding: 20px; border-radius: 15px; background: #f9f9f9;">
+            <span id="display-code" style="font-size: 36px; font-weight: 900; color: var(--main); letter-spacing: 5px;"></span>
         </div>
-        <div style="flex:1">
-            <label>Equipo 2</label>
-            <select id="e2" onchange="ponLogo(2)"></select>
-            <input type="hidden" id="l2">
-        </div>
+        <p style="margin-top: 30px; font-size: 12px; font-weight: bold; color: var(--main);">SISTEMA NWAKALO CONTROL</p>
     </div>
 
-    <div class="row">
-        <div style="flex:1"><label>Fecha</label><input type="date" id="f"></div>
-        <div style="flex:1"><label>Hora</label><input type="time" id="h"></div>
+    <h1>NWAKALO TV</h1>
+    <div id="agenda"></div>
+
+    <div id="modal-opciones">
+        <div class="modal-content">
+            <h2 id="modal-titulo" style="margin-bottom:20px; font-size:18px;">SELECCIONA OPCIÓN</h2>
+            <div id="lista-links"></div>
+        </div>
     </div>
-
-    <label>Nombre Opción (Ej: Opción 1, M+ Liga...)</label>
-    <input type="text" id="canal" placeholder="¿Cómo se llamará el botón en la TV?">
-
-    <label>ID AceStream</label>
-    <input type="text" id="link" placeholder="Pega el ID o link aquí">
-
-    <button class="btn btn-add" id="btn-main" onclick="addAgenda()">+ AÑADIR A LA LISTA</button>
-    <button class="btn btn-save" onclick="enviarGitHub()">🚀 SUBIR A GITHUB</button>
-
-    <div id="lista" style="margin-top:20px;"></div>
-</div>
 
 <script>
-    // --- TUS DATOS DE EQUIPOS (Mantenlos aquí) ---
-    const equipos = {
-        "LALIGA": [
-            {n:"Real Madrid", l:"madrid.png"}, {n:"FC Barcelona", l:"barca.png"}, {n:"Atlético Madrid", l:"atletico.png"}
-        ],
-        "CHAMPIONS": [
-            {n:"Manchester City", l:"city.png"}, {n:"Bayern Munich", l:"bayern.png"}
-        ],
-        "F1": [{n:"F1 - Carrera", l:"f1.png"}],
-        "MOTOGP": [{n:"MotoGP - Carrera", l:"motogp.png"}],
-        "VARIOS": [{n:"Evento Especial", l:"default.png"}]
-    };
+    const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+    const ASSETS = REPO + 'assets/';
+    let modoMenu = false; // Controla si el mando mueve la parrilla o el modal
 
-    const TOKEN = "TU_TOKEN_AQUI"; // <--- PON TU TOKEN AQUÍ
-    const URL = "https://api.github.com/repos/eltikitaka/nwakalo/contents/eventos.json";
-    let agenda = [];
-    let editIdx = null;
-
-    function cambiarLiga() {
-        const L = document.getElementById('liga').value;
-        const s1 = document.getElementById('e1');
-        const s2 = document.getElementById('e2');
-        s1.innerHTML = s2.innerHTML = '<option value="">-- Elige --</option>';
-        if(equipos[L]) {
-            equipos[L].forEach(eq => {
-                const opt = `<option value="${eq.n}" data-logo="${eq.l}">${eq.n}</option>`;
-                s1.innerHTML += opt; s2.innerHTML += opt;
-            });
-        }
+    // --- SEGURIDAD ---
+    let miID = localStorage.getItem('nw_device_id');
+    if (!miID) {
+        miID = "NW-" + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('nw_device_id', miID);
     }
+    document.getElementById('display-code').innerText = miID;
 
-    function ponLogo(n) {
-        const s = document.getElementById('e'+n);
-        const log = s.options[s.selectedIndex].getAttribute('data-logo');
-        document.getElementById('l'+n).value = log || "";
-    }
-
-    async function cargar() {
+    async function validarAcceso() {
         try {
-            const r = await fetch(URL + '?v=' + Date.now());
-            const d = await r.json();
-            agenda = JSON.parse(decodeURIComponent(escape(window.atob(d.content.replace(/\s/g, '')))));
-            render();
-        } catch(e) { console.log("Limpio"); }
+            const res = await fetch(REPO + 'autorizado.json?v=' + Date.now());
+            const data = await res.json();
+            if (data.usuarios.includes(miID)) {
+                document.getElementById('bloqueo').style.display = 'none';
+                if(!modoMenu) actualizarTV();
+            } else {
+                document.getElementById('bloqueo').style.display = 'flex';
+            }
+        } catch (e) { console.error("Error seguridad"); }
     }
 
-    function addAgenda() {
-        const ev = {
-            e1: document.getElementById('e1').value,
-            e2: document.getElementById('e2').value,
-            fecha: document.getElementById('f').value,
-            hora: document.getElementById('h').value,
-            logo1: document.getElementById('l1').value,
-            logo2: document.getElementById('l2').value,
-            canal: document.getElementById('canal').value.trim() || "Opción 1",
-            link: document.getElementById('link').value.trim()
-        };
-
-        if(!ev.e1 || !ev.fecha || !ev.hora || !ev.link) return alert("Faltan datos");
-        ev.link = ev.link.includes('acestream://') ? ev.link : "acestream://" + ev.link;
-
-        if(editIdx !== null) { agenda[editIdx] = ev; editIdx = null; document.getElementById('btn-main').innerText = "+ AÑADIR A LA LISTA"; }
-        else { agenda.push(ev); }
-
-        document.getElementById('canal').value = ""; document.getElementById('link').value = "";
-        render();
+    function resolverRuta(logo) {
+        if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
+        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
     }
 
-    function render() {
-        const box = document.getElementById('lista');
-        box.innerHTML = "";
-        agenda.sort((a,b) => (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
-        agenda.forEach((ev, i) => {
-            box.innerHTML += `<div class="item-evento">
-                <b>${ev.hora}</b> | ${ev.e1} ${ev.e2 ? 'vs '+ev.e2 : ''}<br>
-                <small>Canal: ${ev.canal}</small>
-                <div class="actions">
-                    <button class="btn-mini" style="background:#ffcc00" onclick="edit(${i})">✏️</button>
-                    <button class="btn-mini" style="background:#ff4444; color:white" onclick="del(${i})">🗑️</button>
-                </div>
-            </div>`;
-        });
+    async function actualizarTV() {
+        if(modoMenu) return;
+        const container = document.getElementById('agenda');
+        try {
+            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+            const text = await r.text();
+            const b64 = text.trim().replace(/["\s]/g, '');
+            let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+            
+            evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+            container.innerHTML = '';
+            const ahora = new Date();
+            let count = 0;
+
+            // Agrupamos por partido para que solo salga una tarjeta
+            let partidosUnicos = [];
+            let procesados = [];
+
+            evs.forEach(ev => {
+                let idPartido = ev.e1 + ev.hora;
+                if(!procesados.includes(idPartido)){
+                    let linksDelPartido = evs.filter(x => x.e1 + x.hora === idPartido);
+                    ev.todosLosLinks = linksDelPartido;
+                    partidosUnicos.push(ev);
+                    procesados.push(idPartido);
+                }
+            });
+
+            partidosUnicos.forEach((ev) => {
+                const [h, m] = ev.hora.split(':');
+                const fEv = new Date(ev.fecha); 
+                fEv.setHours(h, m, 0);
+                if ((ahora - fEv) / 3600000 > 3) return; 
+
+                const estaBloqueado = (fEv - ahora) / 60000 > 15;
+                count++;
+
+                const card = document.createElement('div');
+                card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
+                card.tabIndex = count;
+
+                // Evento al pulsar OK
+                card.onclick = () => {
+                    if(!estaBloqueado) abrirMenu(ev);
+                };
+
+                const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
+                card.innerHTML = `
+                    <div class="fecha-badge">${ev.hora}</div>
+                    <div class="vs-container">
+                        <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${tieneRival ? `<b style="color:var(--main); font-size: 16px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                    </div>
+                    <div class="nombres-box">
+                        <h3>${tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1}</h3>
+                    </div>
+                    <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'OPCIONES DE CANAL'}</div>
+                `;
+                container.appendChild(card);
+            });
+
+            while (count < 9) {
+                count++;
+                const empty = document.createElement('div');
+                empty.className = 'card empty';
+                empty.innerHTML = '<span style="color:#ccc; font-size:10px; font-weight:bold;">SIN EVENTO</span>';
+                container.appendChild(empty);
+            }
+
+            if(!document.activeElement || !document.activeElement.classList.contains('card')) {
+                const first = container.querySelector('.card:not(.empty)');
+                if(first) first.focus();
+            }
+
+        } catch (e) { console.error("Error cargando JSON"); }
     }
 
-    function del(i) { if(confirm("¿Borrar?")) { agenda.splice(i,1); render(); } }
-    
-    function edit(i) {
-        const ev = agenda[i];
-        document.getElementById('f').value = ev.fecha;
-        document.getElementById('h').value = ev.hora;
-        document.getElementById('canal').value = ev.canal;
-        document.getElementById('link').value = ev.link;
-        editIdx = i;
-        document.getElementById('btn-main').innerText = "✅ ACTUALIZAR";
-        window.scrollTo(0,0);
-    }
-
-    async function enviarGitHub() {
-        if(!confirm("¿Subir cambios?")) return;
-        const res = await fetch(URL);
-        const data = await res.json();
-        const b64 = window.btoa(unescape(encodeURIComponent(JSON.stringify(agenda, null, 2))));
+    // --- LÓGICA DEL MENÚ FLOTANTE ---
+    function abrirMenu(evento) {
+        modoMenu = true;
+        const modal = document.getElementById('modal-opciones');
+        const lista = document.getElementById('lista-links');
+        document.getElementById('modal-titulo').innerText = evento.e1 + (evento.e2 ? " vs " + evento.e2 : "");
         
-        const r = await fetch(URL, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update", content: b64, sha: data.sha })
+        lista.innerHTML = "";
+        evento.todosLosLinks.forEach(item => {
+            const btn = document.createElement('div');
+            btn.className = "btn-opcion";
+            btn.innerText = item.canal || "Ver Canal";
+            btn.onclick = () => {
+                let idLimpia = item.link.replace('acestream://', '').trim();
+                window.location.href = "acestream://" + idLimpia;
+            };
+            lista.appendChild(btn);
         });
-        if(r.ok) alert("✅ ÉXITO"); else alert("❌ ERROR");
+
+        const btnCerrar = document.createElement('div');
+        btnCerrar.className = "btn-opcion";
+        btnCerrar.innerText = "❌ VOLVER";
+        btnCerrar.style.color = "#ff4444";
+        btnCerrar.onclick = cerrarMenu;
+        lista.appendChild(btnCerrar);
+
+        modal.style.display = "flex";
+        lista.querySelector('.btn-opcion').classList.add('focus');
     }
 
-    cargar();
+    function cerrarMenu() {
+        modoMenu = false;
+        document.getElementById('modal-opciones').style.display = "none";
+        const cards = document.querySelectorAll('.card');
+        cards[0].focus(); // Devuelve foco a la parrilla
+    }
+
+    // --- CONTROL DEL MANDO (Gestiòn de Focos) ---
+    document.addEventListener('keydown', (e) => {
+        if (!modoMenu) {
+            // Moverse por la parrilla
+            const current = document.activeElement;
+            const cards = Array.from(document.querySelectorAll('.card'));
+            const index = cards.indexOf(current);
+            let next = index;
+            switch(e.key) {
+                case 'ArrowRight': if ((index + 1) % 3 !== 0) next = index + 1; break;
+                case 'ArrowLeft': if (index % 3 !== 0) next = index - 1; break;
+                case 'ArrowDown': next = index + 3; break;
+                case 'ArrowUp': next = index - 3; break;
+                case 'Enter': current.click(); break;
+            }
+            if (cards[next] && !cards[next].classList.contains('empty')) {
+                cards[next].focus();
+                e.preventDefault();
+            }
+        } else {
+            // Moverse por el Menú Flotante
+            const btns = Array.from(document.querySelectorAll('.btn-opcion'));
+            let act = btns.findIndex(b => b.classList.contains('focus'));
+            btns[act].classList.remove('focus');
+            if(e.key === 'ArrowDown') act = (act + 1) % btns.length;
+            if(e.key === 'ArrowUp') act = (act - 1 + btns.length) % btns.length;
+            if(e.key === 'Enter') btns[act].click();
+            if(e.key === 'Backspace' || e.key === 'Escape') cerrarMenu();
+            btns[act].classList.add('focus');
+            e.preventDefault();
+        }
+    });
+
+    validarAcceso();
+    setInterval(validarAcceso, 30000);
 </script>
 </body>
 </html>
