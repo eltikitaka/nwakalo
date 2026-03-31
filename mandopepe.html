@@ -3,26 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANDO PEPE - EL ORIGINAL (WHITE)</title>
+    <title>MANDO PEPE - WHITE EDITION</title>
     <style>
-        :root { --main: #00cc6a; --bg: #f0f2f5; --card: #ffffff; --text: #1a1a1a; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 500px; background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h2 { text-align: center; color: var(--main); margin-bottom: 15px; }
+        :root { 
+            --main: #00cc6a; --bg: #f0f2f5; --card: #ffffff; 
+            --text: #1a1a1a; --border: #e0e0e0; 
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; background: var(--bg); 
+            color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; 
+        }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; color: var(--text); font-weight: 900; }
         
-        label { display: block; font-size: 11px; font-weight: bold; margin: 10px 0 5px; text-transform: uppercase; opacity: 0.7; }
-        select, input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e0e0e0; background: #f9f9f9; font-size: 14px; outline: none; }
-        select:focus, input:focus { border-color: var(--main); background: #fff; }
+        label { display: block; font-size: 11px; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; opacity: 0.6; }
+        input, select { 
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); 
+            background: #f9f9f9; color: var(--text); font-size: 14px; outline: none;
+        }
+        input:focus, select:focus { border-color: var(--main); background: #fff; }
 
         .row { display: flex; gap: 10px; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 15px; transition: 0.2s; }
+        .btn { 
+            width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; transition: 0.2s; margin-top: 15px;
+        }
         .btn-add { background: var(--main); color: white; }
-        .btn-save { background: #1a1a1a; color: white; margin-top: 20px; }
-        
-        .lista-eventos { margin-top: 20px; }
-        .item-evento { background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 5px solid var(--main); position: relative; font-size: 12px; }
-        .actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; }
-        .btn-mini { padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; }
+        .btn-save { background: #1a1a1a; color: white; margin-top: 25px; font-size: 16px; letter-spacing: 1px; }
+        .btn:active { transform: scale(0.98); }
+
+        .item-evento { 
+            background: #f8f9fa; padding: 15px; border-radius: 12px; margin-top: 10px; 
+            border-left: 5px solid var(--main); position: relative; font-size: 13px;
+        }
+        .actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .btn-mini { padding: 5px 8px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -30,153 +46,160 @@
 <div class="container">
     <h2>MANDO PEPE 3.0</h2>
     
-    <label>1. Selecciona Competición</label>
-    <select id="select-liga" onchange="cargarEquipos()">
-        <option value="">-- Elige Liga --</option>
-        <option value="laliga">LaLiga</option>
-        <option value="champions">Champions League</option>
-        <option value="premier">Premier League</option>
-        <option value="f1">Fórmula 1</option>
-        <option value="motogp">MotoGP</option>
-        <option value="otros">Otros / Varios</option>
+    <label>Competición</label>
+    <select id="liga" onchange="cambiarLiga()">
+        <option value="">-- SELECCIONA LIGA --</option>
+        <option value="LALIGA">LALIGA EA SPORTS</option>
+        <option value="CHAMPIONS">CHAMPIONS LEAGUE</option>
+        <option value="PREMIER">PREMIER LEAGUE</option>
+        <option value="F1">FÓRMULA 1</option>
+        <option value="MOTOGP">MOTOGP</option>
+        <option value="VARIOS">OTROS DEPORTES</option>
     </select>
 
     <div class="row">
         <div style="flex:1">
             <label>Equipo 1</label>
-            <select id="e1" onchange="actualizarLogo(1)"></select>
+            <select id="e1" onchange="ponLogo(1)"></select>
             <input type="hidden" id="l1">
         </div>
         <div style="flex:1">
             <label>Equipo 2</label>
-            <select id="e2" onchange="actualizarLogo(2)"></select>
+            <select id="e2" onchange="ponLogo(2)"></select>
             <input type="hidden" id="l2">
         </div>
     </div>
 
     <div class="row">
-        <div style="flex:1">
-            <label>Fecha</label>
-            <input type="date" id="fecha">
-        </div>
-        <div style="flex:1">
-            <label>Hora</label>
-            <input type="time" id="hora">
-        </div>
+        <div style="flex:1"><label>Fecha</label><input type="date" id="f"></div>
+        <div style="flex:1"><label>Hora</label><input type="time" id="h"></div>
     </div>
 
-    <label>Nombre del Canal (Ej: Opción 1, M+ Liga...)</label>
-    <input type="text" id="canal" placeholder="Escribe aquí el nombre para el botón">
+    <label>Nombre Opción (Ej: Opción 1, M+ Liga...)</label>
+    <input type="text" id="canal" placeholder="¿Cómo se llamará el botón en la TV?">
 
-    <label>ID AceStream / Link</label>
-    <input type="text" id="link" placeholder="Pega el ID aquí">
+    <label>ID AceStream</label>
+    <input type="text" id="link" placeholder="Pega el ID o link aquí">
 
-    <button class="btn btn-add" id="btn-accion" onclick="agregarEvento()">+ Añadir a la Lista</button>
-    <button class="btn btn-save" onclick="subirAGitHub()">🚀 Subir Todo a GitHub</button>
+    <button class="btn btn-add" id="btn-main" onclick="addAgenda()">+ AÑADIR A LA LISTA</button>
+    <button class="btn btn-save" onclick="enviarGitHub()">🚀 SUBIR A GITHUB</button>
 
-    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-    <div class="lista-eventos" id="lista-eventos"></div>
+    <div id="lista" style="margin-top:20px;"></div>
 </div>
 
 <script>
-    // BASE DE DATOS DE EQUIPOS (Aquí puedes añadir todos los que tenías)
-    const datos = {
-        laliga: [
-            {n: "Real Madrid", l: "madrid.png"},
-            {n: "FC Barcelona", l: "barca.png"},
-            {n: "Atlético Madrid", l: "atletico.png"}
+    // --- TUS DATOS DE EQUIPOS (Mantenlos aquí) ---
+    const equipos = {
+        "LALIGA": [
+            {n:"Real Madrid", l:"madrid.png"}, {n:"FC Barcelona", l:"barca.png"}, {n:"Atlético Madrid", l:"atletico.png"}
         ],
-        champions: [
-            {n: "Manchester City", l: "city.png"},
-            {n: "Bayern Munich", l: "bayern.png"}
+        "CHAMPIONS": [
+            {n:"Manchester City", l:"city.png"}, {n:"Bayern Munich", l:"bayern.png"}
         ],
-        f1: [
-            {n: "Fórmula 1", l: "f1.png"}
-        ]
+        "F1": [{n:"F1 - Carrera", l:"f1.png"}],
+        "MOTOGP": [{n:"MotoGP - Carrera", l:"motogp.png"}],
+        "VARIOS": [{n:"Evento Especial", l:"default.png"}]
     };
 
-    const TOKEN = "TU_TOKEN_AQUI"; 
-    const URL_API = "https://api.github.com/repos/eltikitaka/nwakalo/contents/eventos.json";
+    const TOKEN = "TU_TOKEN_AQUI"; // <--- PON TU TOKEN AQUÍ
+    const URL = "https://api.github.com/repos/eltikitaka/nwakalo/contents/eventos.json";
     let agenda = [];
-    let editandoID = null;
+    let editIdx = null;
 
-    function cargarEquipos() {
-        const liga = document.getElementById('select-liga').value;
+    function cambiarLiga() {
+        const L = document.getElementById('liga').value;
         const s1 = document.getElementById('e1');
         const s2 = document.getElementById('e2');
-        s1.innerHTML = s2.innerHTML = '<option value="">-- Selecciona --</option>';
-        
-        if(datos[liga]) {
-            datos[liga].forEach(eq => {
-                s1.innerHTML += `<option value="${eq.n}" data-logo="${eq.l}">${eq.n}</option>`;
-                s2.innerHTML += `<option value="${eq.n}" data-logo="${eq.l}">${eq.n}</option>`;
+        s1.innerHTML = s2.innerHTML = '<option value="">-- Elige --</option>';
+        if(equipos[L]) {
+            equipos[L].forEach(eq => {
+                const opt = `<option value="${eq.n}" data-logo="${eq.l}">${eq.n}</option>`;
+                s1.innerHTML += opt; s2.innerHTML += opt;
             });
         }
     }
 
-    function actualizarLogo(num) {
-        const sel = document.getElementById('e' + num);
-        const logo = sel.options[sel.selectedIndex].getAttribute('data-logo');
-        document.getElementById('l' + num).value = logo || "";
+    function ponLogo(n) {
+        const s = document.getElementById('e'+n);
+        const log = s.options[s.selectedIndex].getAttribute('data-logo');
+        document.getElementById('l'+n).value = log || "";
     }
 
-    // CARGAR ACTUALES, AGREGAR, RENDERIZAR Y SUBIR (Igual que antes pero respetando tus campos)
-    async function cargarActuales() {
+    async function cargar() {
         try {
-            const r = await fetch(URL_API + '?v=' + Date.now());
+            const r = await fetch(URL + '?v=' + Date.now());
             const d = await r.json();
-            const b64 = d.content.replace(/\n/g, '');
-            agenda = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
-            renderizar();
-        } catch (e) { console.log("Agenda vacía"); }
+            agenda = JSON.parse(decodeURIComponent(escape(window.atob(d.content.replace(/\s/g, '')))));
+            render();
+        } catch(e) { console.log("Limpio"); }
     }
 
-    function agregarEvento() {
+    function addAgenda() {
         const ev = {
             e1: document.getElementById('e1').value,
             e2: document.getElementById('e2').value,
-            fecha: document.getElementById('fecha').value,
-            hora: document.getElementById('hora').value,
+            fecha: document.getElementById('f').value,
+            hora: document.getElementById('h').value,
             logo1: document.getElementById('l1').value,
             logo2: document.getElementById('l2').value,
             canal: document.getElementById('canal').value.trim() || "Opción 1",
-            link: document.getElementById('link').value.trim().replace('acestream://', '')
+            link: document.getElementById('link').value.trim()
         };
-        
-        if(!ev.e1 || !ev.fecha || !ev.hora || !ev.link) return alert("Faltan datos");
-        ev.link = "acestream://" + ev.link;
 
-        if(editandoID !== null) { agenda[editandoID] = ev; editandoID = null; }
+        if(!ev.e1 || !ev.fecha || !ev.hora || !ev.link) return alert("Faltan datos");
+        ev.link = ev.link.includes('acestream://') ? ev.link : "acestream://" + ev.link;
+
+        if(editIdx !== null) { agenda[editIdx] = ev; editIdx = null; document.getElementById('btn-main').innerText = "+ AÑADIR A LA LISTA"; }
         else { agenda.push(ev); }
-        
-        renderizar();
-        document.getElementById('canal').value = "";
-        document.getElementById('link').value = "";
+
+        document.getElementById('canal').value = ""; document.getElementById('link').value = "";
+        render();
     }
 
-    function renderizar() {
-        const div = document.getElementById('lista-eventos');
-        div.innerHTML = "";
+    function render() {
+        const box = document.getElementById('lista');
+        box.innerHTML = "";
+        agenda.sort((a,b) => (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
         agenda.forEach((ev, i) => {
-            div.innerHTML += `<div class="item-evento">
-                <b>${ev.hora}</b> | ${ev.e1} vs ${ev.e2} (${ev.canal})
+            box.innerHTML += `<div class="item-evento">
+                <b>${ev.hora}</b> | ${ev.e1} ${ev.e2 ? 'vs '+ev.e2 : ''}<br>
+                <small>Canal: ${ev.canal}</small>
                 <div class="actions">
-                    <button class="btn-mini" style="background:#ffcc00" onclick="editar(${i})">✏️</button>
-                    <button class="btn-mini" style="background:#ff4444; color:white" onclick="borrar(${i})">🗑️</button>
+                    <button class="btn-mini" style="background:#ffcc00" onclick="edit(${i})">✏️</button>
+                    <button class="btn-mini" style="background:#ff4444; color:white" onclick="del(${i})">🗑️</button>
                 </div>
             </div>`;
         });
     }
 
-    function borrar(i) { agenda.splice(i, 1); renderizar(); }
-
-    async function subirAGitHub() {
-        // Tu lógica de siempre para subir a GitHub con el Token
-        alert("¡Subiendo cambios!");
-        // (Aquí va tu función de fetch PUT que ya conoces)
+    function del(i) { if(confirm("¿Borrar?")) { agenda.splice(i,1); render(); } }
+    
+    function edit(i) {
+        const ev = agenda[i];
+        document.getElementById('f').value = ev.fecha;
+        document.getElementById('h').value = ev.hora;
+        document.getElementById('canal').value = ev.canal;
+        document.getElementById('link').value = ev.link;
+        editIdx = i;
+        document.getElementById('btn-main').innerText = "✅ ACTUALIZAR";
+        window.scrollTo(0,0);
     }
 
-    cargarActuales();
+    async function enviarGitHub() {
+        if(!confirm("¿Subir cambios?")) return;
+        const res = await fetch(URL);
+        const data = await res.json();
+        const b64 = window.btoa(unescape(encodeURIComponent(JSON.stringify(agenda, null, 2))));
+        
+        const r = await fetch(URL, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: "Update", content: b64, sha: data.sha })
+        });
+        if(r.ok) alert("✅ ÉXITO"); else alert("❌ ERROR");
+    }
+
+    cargar();
 </script>
 </body>
 </html>
