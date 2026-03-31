@@ -2,243 +2,238 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE - V12 SYNC OK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANDO PEPE - WHITE CONTROL</title>
     <style>
-        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
-        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .tv-card { background: #111; padding: 50px; border-radius: 30px; border: 2px solid #333; max-width: 400px; }
-        .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
-        #mando-root { display: none; max-width: 1200px; margin: auto; }
-        .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
-        .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
-        .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; font-size: 11px; transition: 0.2s; }
-        .img-holder, .img-wrap { background: #fff; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #333; }
-        .btn-cat img, .btn-eq img { width: 80%; height: 80%; object-fit: contain; }
-        .btn-cat.active { background: var(--main); color: #000; border-color: #fff; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; }
-        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
-        .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
-        .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
-        input { background: #000; color: var(--main); border: 1px solid #333; padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; color-scheme: dark; }
-        .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .fila-id { display: grid; grid-template-columns: 1fr 2fr 40px; gap: 8px; margin-top: 8px; align-items: center; background: #000; padding: 8px; border-radius: 8px; border: 1px solid #222; }
-        .btn-del-id { color: #ff4444; background: none; border: none; font-size: 20px; cursor: pointer; }
-        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
-        .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
-        textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
-        .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
+        :root {
+            --main: #00cc6a;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --border: #e0e0e0;
+        }
+        body { 
+            font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); 
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; 
+        }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; color: var(--main); }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; opacity: 0.7; }
+        input, select { 
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); 
+            background: #f9f9f9; color: var(--text); font-size: 14px; outline: none;
+        }
+        input:focus { border-color: var(--main); background: #fff; }
+
+        .row { display: flex; gap: 10px; }
+        .btn { 
+            width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; transition: 0.2s; margin-top: 10px;
+        }
+        .btn-add { background: var(--main); color: white; }
+        .btn-save { background: #1a1a1a; color: white; margin-top: 20px; font-size: 16px; }
+        .btn:active { transform: scale(0.98); }
+
+        hr { border: 0; border-top: 1px solid var(--border); margin: 25px 0; }
+
+        .lista-eventos { margin-top: 20px; }
+        .item-evento { 
+            background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 10px; 
+            border-left: 5px solid var(--main); position: relative; font-size: 13px;
+        }
+        .item-evento b { color: var(--main); }
+        .actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
+        .btn-mini { padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .btn-edit { background: #ffcc00; color: #000; }
+        .btn-del { background: #ff4444; color: white; }
     </style>
 </head>
 <body>
 
-<div id="bloqueo">
-    <div class="tv-card">
-        <h2 style="margin:0;">NWAKALO CONTROL</h2>
-        <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">ID REQUERIDO: ADM-ACCESS</p>
-    </div>
-</div>
-
-<div id="mando-root">
-    <div class="layout">
-        <div>
-            <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Título">
-                    <input type="text" id="esp_evento" placeholder="Evento">
-                </div>
-                <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
-                <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial);">FIJAR DATOS</button>
+<div class="container">
+    <h2>MANDO PEPE 3.0</h2>
+    
+    <div id="formulario">
+        <div class="row">
+            <div class="form-group" style="flex:2">
+                <label>Equipo 1 / Evento</label>
+                <input type="text" id="e1" placeholder="Ej: Real Madrid">
             </div>
-
-            <div class="seccion">
-                <h3>1. Categorías</h3>
-                <div id="categorias" class="contenedor-cats"></div>
-                <div id="box-equipos">
-                    <h3>2. Seleccionar Equipos</h3>
-                    <div id="equipos" class="grid"></div>
-                </div>
-            </div>
-
-            <div class="seccion" style="border: 2px solid var(--main);">
-                <h3>3. Configuración del Evento</h3>
-                <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:10px;">
-                    <input type="date" id="f_in">
-                    <input type="time" id="h_in" value="21:00">
-                </div>
-                <div id="contenedor-ids"></div>
-                <button onclick="nuevaFilaID()" style="background:#222; color:var(--main); border:1px dashed var(--main); width:100%; padding:8px; margin-top:10px; cursor:pointer; border-radius:5px;">+ AÑADIR OTRA ID</button>
-                <button onclick="guardarEventoCompleto()" class="btn-main" style="background: #fff; margin-top: 20px;">💾 GUARDAR EVENTO EN AGENDA</button>
+            <div class="form-group" style="flex:1">
+                <label>Logo 1</label>
+                <input type="text" id="l1" placeholder="madrid.png">
             </div>
         </div>
 
-        <div>
-            <div class="seccion">
-                <h3>Agenda Nwakalo TV <span id="count-agenda" style="float:right; background:var(--main); color:#000; padding:2px 8px; border-radius:5px; font-size:11px;">0</span></h3>
-                <div id="cola_eventos" style="max-height: 550px; overflow-y: auto;"></div>
-                <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer; margin-top:10px;">Vaciar lista completa</button>
+        <div class="row">
+            <div class="form-group" style="flex:2">
+                <label>Equipo 2 (Opcional)</label>
+                <input type="text" id="e2" placeholder="Ej: FC Barcelona">
             </div>
-            <div class="seccion">
-                <h3>Código GitHub</h3>
-                <textarea id="output" readonly onclick="this.select()"></textarea>
-                <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
+            <div class="form-group" style="flex:1">
+                <label>Logo 2</label>
+                <input type="text" id="l2" placeholder="barca.png">
             </div>
         </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Fecha</label>
+                <input type="date" id="fecha">
+            </div>
+            <div class="form-group">
+                <label>Hora</label>
+                <input type="time" id="hora">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Nombre del Canal (Opciones TV)</label>
+            <input type="text" id="canal" placeholder="Ej: Opción 1, M+ La Liga, DAZN...">
+        </div>
+
+        <div class="form-group">
+            <label>ID AceStream / Link</label>
+            <input type="text" id="link" placeholder="Solo el ID o acestream://...">
+        </div>
+
+        <button class="btn btn-add" id="btn-accion" onclick="agregarEvento()">+ Añadir a la Lista</button>
+        <button class="btn btn-save" onclick="subirAGitHub()">🚀 Subir Todo a GitHub</button>
     </div>
+
+    <hr>
+    <div class="lista-eventos" id="lista-eventos">
+        </div>
 </div>
 
 <script>
-    const AUTORIZADOS = ["BUNKER-QMPBJ", "BUNKER-D1P1E"]; 
-    let BD = {};
-    let agenda = JSON.parse(localStorage.getItem('nw_agenda_v12') || "[]");
-    let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
+    // CONFIGURACIÓN (Pon tus datos aquí)
+    const TOKEN = "TU_TOKEN_GITHUB_AQUI"; 
+    const URL_API = "https://api.github.com/repos/eltikitaka/nwakalo/contents/eventos.json";
+    
+    let agenda = [];
+    let editandoID = null;
 
-    function chequearAcceso() {
-        let id = localStorage.getItem('bunker_id') || "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
-        localStorage.setItem('bunker_id', id);
-        document.getElementById('mi_id').innerText = id;
-        if(AUTORIZADOS.includes(id)) {
-            document.getElementById('bloqueo').style.display = 'none';
-            document.getElementById('mando-root').style.display = 'block';
-            iniciarApp();
+    // Cargar datos actuales al abrir
+    async function cargarActuales() {
+        try {
+            const r = await fetch(URL_API + '?v=' + Date.now());
+            const d = await r.json();
+            const b64 = d.content.replace(/\n/g, '');
+            agenda = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+            renderizar();
+        } catch (e) { console.log("Iniciando agenda vacía"); }
+    }
+
+    function agregarEvento() {
+        const ev = {
+            e1: document.getElementById('e1').value.trim(),
+            e2: document.getElementById('e2').value.trim(),
+            fecha: document.getElementById('fecha').value,
+            hora: document.getElementById('hora').value,
+            logo1: document.getElementById('l1').value.trim(),
+            logo2: document.getElementById('l2').value.trim(),
+            canal: document.getElementById('canal').value.trim() || "Opción 1",
+            link: document.getElementById('link').value.trim()
+        };
+
+        if(!ev.e1 || !ev.fecha || !ev.hora || !ev.link) return alert("Rellena lo básico");
+
+        // Limpiar link
+        ev.link = ev.link.replace('acestream://', '').trim();
+        if(!ev.link.includes('http')) ev.link = "acestream://" + ev.link;
+
+        if(editandoID !== null) {
+            agenda[editandoID] = ev;
+            editandoID = null;
+            document.getElementById('btn-accion').innerText = "+ Añadir a la Lista";
+        } else {
+            agenda.push(ev);
         }
+
+        renderizar();
+        limpiar();
     }
 
-    async function iniciarApp() {
-        const r = await fetch('base_datos.json?v=' + Date.now());
-        BD = await r.json();
-        document.getElementById('f_in').valueAsDate = new Date();
-        nuevaFilaID();
-        const menu = document.getElementById('categorias');
-        menu.innerHTML = "";
-        Object.keys(BD.ligas).forEach(l => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-cat';
-            const logoLiga = BD.ligas[l].logo;
-            btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${logoLiga}" onerror="this.src='assets/deporte/${logoLiga}';"></div><span>${l}</span>`;
-            btn.onclick = () => cargarEquipos(l, btn);
-            menu.appendChild(btn);
-        });
-        updateAgenda();
-    }
-
-    function nuevaFilaID() {
-        const cont = document.getElementById('contenedor-ids');
-        const div = document.createElement('div');
-        div.className = 'fila-id';
-        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal"><input type="text" class="l_multi" placeholder="ID AceStream"><button class="btn-del-id" onclick="this.parentElement.remove()">×</button>`;
-        cont.appendChild(div);
-    }
-
-    function cargarEquipos(ligaNom, btn) {
-        document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const grid = document.getElementById('equipos');
-        const config = BD.ligas[ligaNom];
-        document.getElementById('especial-wrapper').style.display = (ligaNom === "EVENTOS ESPECIALES") ? 'block' : 'none';
-        cur.cat = ligaNom; grid.innerHTML = "";
-        cur.modo = config.modo || "duelo";
-        cur.e1 = ""; cur.e2 = ""; cur.l1 = ""; cur.l2 = "";
-
-        config.equipos.forEach(eq => {
-            const b = document.createElement('button');
-            b.className = 'btn-eq';
-            const imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${config.id}/${eq.a}`;
-            b.innerHTML = `<div class="img-wrap"><img src="${imgPath}" onerror="this.src='assets/default.png'"></div><span>${eq.n}</span>`;
-            b.onclick = () => {
-                const logoConRuta = (cur.modo === "unico") ? eq.a : `${config.id}/${eq.a}`;
-                if(cur.modo === "unico") {
-                    cur.e1 = eq.n; cur.l1 = logoConRuta; cur.e2 = ""; cur.l2 = "";
-                    document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                } else {
-                    if(!cur.e1 || (cur.e1 && cur.e2)) {
-                        cur.e1 = eq.n; cur.l1 = logoConRuta; cur.e2 = ""; cur.l2 = "";
-                        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                    } else {
-                        cur.e2 = eq.n; cur.l2 = logoConRuta; b.classList.add('sel');
-                    }
-                }
-            };
-            grid.appendChild(b);
+    function renderizar() {
+        const div = document.getElementById('lista-eventos');
+        div.innerHTML = "";
+        agenda.sort((a,b) => (a.fecha+a.hora).localeCompare(b.fecha+b.hora));
+        
+        agenda.forEach((ev, i) => {
+            const item = document.createElement('div');
+            item.className = "item-evento";
+            item.innerHTML = `
+                <b>${ev.hora}</b> | ${ev.e1} ${ev.e2 ? 'vs '+ev.e2 : ''}<br>
+                <small>Canal: ${ev.canal}</small>
+                <div class="actions">
+                    <button class="btn-mini btn-edit" onclick="editar(${i})">✏️</button>
+                    <button class="btn-mini btn-del" onclick="borrar(${i})">🗑️</button>
+                </div>
+            `;
+            div.appendChild(item);
         });
     }
 
-    function fijarEspecial() {
-        cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
-        cur.l1 = document.getElementById('esp_logo').value || 'default.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales fijados.");
-    }
-
-    function guardarEventoCompleto() {
-        const fecha = document.getElementById('f_in').value;
-        const hora = document.getElementById('h_in').value;
-        const canales = document.querySelectorAll('.c_multi');
-        const links = document.querySelectorAll('.l_multi');
-        let misLinks = [];
-        for(let i=0; i<links.length; i++) {
-            if(links[i].value.trim() !== "") {
-                misLinks.push({ ch: canales[i].value || "Streaming", id: links[i].value.trim() });
-            }
+    function borrar(i) {
+        if(confirm("¿Borrar evento?")) {
+            agenda.splice(i, 1);
+            renderizar();
         }
-        if(!cur.e1 || misLinks.length === 0) return alert("Selecciona equipos e ID.");
-        agenda.push({ visible: true, fecha, hora, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks });
-        document.getElementById('contenedor-ids').innerHTML = "";
-        nuevaFilaID();
-        updateAgenda();
     }
 
-    // --- FUNCIÓN PARA CARGAR EVENTO EXISTENTE Y EDITARLO ---
-    function cargarParaEditar(i) {
+    function editar(i) {
         const ev = agenda[i];
-        document.getElementById('f_in').value = ev.fecha;
-        document.getElementById('h_in').value = ev.hora;
-        cur.e1 = ev.e1; cur.l1 = ev.logo1;
-        cur.e2 = ev.e2; cur.l2 = ev.logo2;
-        const cont = document.getElementById('contenedor-ids');
-        cont.innerHTML = "";
-        ev.links.forEach(lk => {
-            const div = document.createElement('div');
-            div.className = 'fila-id';
-            div.innerHTML = `<input type="text" class="c_multi" value="${lk.ch}"><input type="text" class="l_multi" value="${lk.id}"><button class="btn-del-id" onclick="this.parentElement.remove()">×</button>`;
-            cont.appendChild(div);
-        });
-        agenda.splice(i, 1);
-        updateAgenda();
-        alert("Evento cargado en el panel. Modifica y pulsa GUARDAR.");
+        document.getElementById('e1').value = ev.e1;
+        document.getElementById('e2').value = ev.e2;
+        document.getElementById('fecha').value = ev.fecha;
+        document.getElementById('hora').value = ev.hora;
+        document.getElementById('l1').value = ev.logo1;
+        document.getElementById('l2').value = ev.logo2;
+        document.getElementById('canal').value = ev.canal;
+        document.getElementById('link').value = ev.link;
+        editandoID = i;
+        document.getElementById('btn-accion').innerText = "✅ Actualizar Evento";
+        window.scrollTo(0,0);
     }
 
-    function updateAgenda() {
-        agenda.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
-        localStorage.setItem('nw_agenda_v12', JSON.stringify(agenda));
-        let paraTV = [];
-        agenda.forEach(ev => {
-            if(ev.visible) {
-                ev.links.forEach(item => {
-                    paraTV.push({ fecha: ev.fecha, hora: ev.hora, canal: item.ch, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, link: item.id });
-                });
-            }
-        });
-        document.getElementById('count-agenda').innerText = paraTV.length;
-        document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(paraTV))));
-        document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
-            <div class="item-cola">
-                <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
-                <div style="flex:1"><b>${e.fecha} | ${e.hora}</b><br>${e.e1} ${e.e2?'vs '+e.e2:''}</div>
-                <span style="cursor:pointer; margin-right:15px; color:var(--main); font-size:16px;" onclick="cargarParaEditar(${i})">✏️</span>
-                <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
-            </div>
-        `).reverse().join('');
+    function limpiar() {
+        document.getElementById('e1').value = "";
+        document.getElementById('e2').value = "";
+        document.getElementById('canal').value = "";
+        document.getElementById('link').value = "";
     }
 
-    function copyToClipboard() {
-        document.getElementById('output').select();
-        document.execCommand('copy');
-        alert("¡Copiado! Todo listo para GitHub.");
+    async function subirAGitHub() {
+        if(!confirm("¿Subir cambios a GitHub?")) return;
+        
+        try {
+            const rGet = await fetch(URL_API);
+            const dGet = await rGet.json();
+            const sha = dGet.sha;
+
+            const jsonString = JSON.stringify(agenda, null, 2);
+            const b64 = window.btoa(unescape(encodeURIComponent(jsonString)));
+
+            const rPut = await fetch(URL_API, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: "Actualización Mando Pepe",
+                    content: b64,
+                    sha: sha
+                })
+            });
+
+            if(rPut.ok) alert("✅ ¡GitHub Actualizado!");
+            else alert("❌ Error al subir");
+        } catch (e) { alert("Error de conexión"); }
     }
-    chequearAcceso();
+
+    cargarActuales();
 </script>
+
 </body>
 </html>
