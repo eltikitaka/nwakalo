@@ -2,58 +2,45 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE - V12 SYNC OK</title>
+    <title>MANDO PEPE - SYNC WHITE V12</title>
     <style>
-        :root { --main: #00ff88; --bg: #0a0a0a; --panel: #161616; --especial: #ff9f43; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
-        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .tv-card { background: #111; padding: 50px; border-radius: 30px; border: 2px solid #333; max-width: 400px; }
-        .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #000; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
+        :root { --main: #00cc6a; --bg: #f0f2f5; --panel: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; user-select: none; }
+        #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .tv-card { background: #fff; padding: 50px; border-radius: 30px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        .codigo-tv { font-size: 32px; font-weight: 900; color: var(--main); letter-spacing: 5px; background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
         #mando-root { display: none; max-width: 1200px; margin: auto; }
         .layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
-        .seccion { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid #222; margin-bottom: 20px; }
+        .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .contenedor-cats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-        .btn-cat { background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; font-size: 11px; transition: 0.2s; }
-        .img-holder, .img-wrap { background: #fff; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 2px solid #333; }
+        .btn-cat { background: #f8f9fa; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 110px; font-size: 11px; }
+        .img-holder, .img-wrap { background: #fff; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; border: 1px solid #eee; }
         .btn-cat img, .btn-eq img { width: 80%; height: 80%; object-fit: contain; }
-        .btn-cat.active { background: var(--main); color: #000; border-color: #fff; font-weight: bold; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; }
-        .btn-eq { background: #1a1a1a; border: 1px solid #333; color: #eee; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
-        .btn-eq.sel { border-color: var(--main); background: rgba(0, 255, 136, 0.1); }
-        .btn-eq.sel .img-wrap { border: 2px solid var(--main); }
-        input { background: #000; color: var(--main); border: 1px solid #333; padding: 10px; border-radius: 5px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; color-scheme: dark; }
-        .btn-main { width: 100%; background: var(--main); color: #000; padding: 15px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
-        .fila-id { display: grid; grid-template-columns: 1fr 2fr 40px; gap: 8px; margin-top: 8px; align-items: center; background: #000; padding: 8px; border-radius: 8px; border: 1px solid #222; }
-        .btn-del-id { color: #ff4444; background: none; border: none; font-size: 20px; cursor: pointer; }
-        .item-cola { background: #000; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; border-left: 4px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
+        .btn-cat.active { background: var(--main); color: #fff; border-color: var(--main); font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; background: #fdfdfd; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+        .btn-eq { background: #fff; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 10px; display: flex; flex-direction: column; align-items: center; }
+        .btn-eq.sel { border-color: var(--main); background: rgba(0, 204, 106, 0.05); }
+        input { background: #fff; color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
+        .btn-main { width: 100%; background: var(--main); color: #fff; padding: 15px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        .fila-id { display: grid; grid-template-columns: 1fr 2fr 40px; gap: 8px; margin-top: 8px; align-items: center; background: #f8f9fa; padding: 8px; border-radius: 10px; border: 1px solid var(--border); }
+        .item-cola { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 5px solid var(--main); border-right: 1px solid var(--border); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; position: relative; }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 16px; }
-        textarea { height: 120px; font-size: 10px; background: #000; color: #00ff88; border: 1px solid #333; width: 100%; padding: 10px; box-sizing: border-box; font-family: monospace; word-break: break-all; }
-        .panel-especial { border: 2px dashed var(--especial); padding: 15px; border-radius: 12px; background: rgba(255,159,67,0.05); margin-bottom: 20px; display: none; }
+        textarea { height: 60px; font-size: 10px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div id="bloqueo">
     <div class="tv-card">
-        <h2 style="margin:0;">NWAKALO CONTROL</h2>
+        <h2 style="margin:0;">MANDO PEPE CONTROL</h2>
         <div class="codigo-tv" id="mi_id">----</div>
-        <p style="font-size:11px; color:#555;">ID REQUERIDO: ADM-ACCESS</p>
+        <p style="font-size:11px; color:#999;">ID REQUERIDO: ADM-ACCESS</p>
     </div>
 </div>
 
 <div id="mando-root">
     <div class="layout">
         <div>
-            <div class="panel-especial" id="especial-wrapper">
-                <h3 style="color:var(--especial); margin-top:0;">✨ EVENTO ESPECIAL</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="esp_tipo" placeholder="Título">
-                    <input type="text" id="esp_evento" placeholder="Evento">
-                </div>
-                <input type="text" id="esp_logo" placeholder="Logo (ej: ufc.png)" style="margin-top:10px;">
-                <button onclick="fijarEspecial()" class="btn-main" style="background:var(--especial);">FIJAR DATOS</button>
-            </div>
-
             <div class="seccion">
                 <h3>1. Categorías</h3>
                 <div id="categorias" class="contenedor-cats"></div>
@@ -70,28 +57,28 @@
                     <input type="time" id="h_in" value="21:00">
                 </div>
                 <div id="contenedor-ids"></div>
-                <button onclick="nuevaFilaID()" style="background:#222; color:var(--main); border:1px dashed var(--main); width:100%; padding:8px; margin-top:10px; cursor:pointer; border-radius:5px;">+ AÑADIR OTRA ID</button>
-                <button onclick="guardarEventoCompleto()" class="btn-main" style="background: #fff; margin-top: 20px;">💾 GUARDAR EVENTO EN AGENDA</button>
+                <button onclick="nuevaFilaID()" style="background:#fff; color:var(--main); border:1px dashed var(--main); width:100%; padding:8px; margin-top:10px; cursor:pointer; border-radius:8px; font-weight:bold;">+ AÑADIR OTRO CANAL AL MISMO PARTIDO</button>
+                <button onclick="guardarEventoCompleto()" class="btn-main">💾 GUARDAR EN LISTA LOCAL</button>
             </div>
         </div>
 
         <div>
             <div class="seccion">
-                <h3>Agenda Nwakalo TV <span id="count-agenda" style="float:right; background:var(--main); color:#000; padding:2px 8px; border-radius:5px; font-size:11px;">0</span></h3>
-                <div id="cola_eventos" style="max-height: 550px; overflow-y: auto;"></div>
-                <button onclick="if(confirm('¿Borrar todo?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#555; font-size:10px; cursor:pointer; margin-top:10px;">Vaciar lista completa</button>
-            </div>
-            <div class="seccion">
-                <h3>Código GitHub</h3>
-                <textarea id="output" readonly onclick="this.select()"></textarea>
-                <button onclick="copyToClipboard()" class="btn-main">COPIAR CÓDIGO</button>
+                <h3>Agenda App TV <span id="count-agenda" style="float:right; background:var(--main); color:#fff; padding:2px 8px; border-radius:8px; font-size:11px;">0</span></h3>
+                <div id="cola_eventos" style="max-height: 450px; overflow-y: auto;"></div>
+                <button onclick="subirAGitHub()" class="btn-main" style="background:#1a1a1a;">🚀 ACTUALIZAR APP TV (GITHUB)</button>
+                <textarea id="output" readonly></textarea>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const AUTORIZADOS = ["BUNKER-QMPBJ", "BUNKER-D1P1E", "NW-608745"]; 
+    // CONFIGURACIÓN (RELLENA TU TOKEN)
+    const TOKEN = "TU_TOKEN_AQUI"; 
+    const REPO_URL = "https://api.github.com/repos/eltikitaka/nwakalo/contents/eventos.json";
+    const AUTORIZADOS = ["BUNKER-QMPBJ", "BUNKER-D1P1E"]; 
+
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('nw_agenda_v12') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
@@ -129,7 +116,7 @@
         const cont = document.getElementById('contenedor-ids');
         const div = document.createElement('div');
         div.className = 'fila-id';
-        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal"><input type="text" class="l_multi" placeholder="ID AceStream"><button class="btn-del-id" onclick="this.parentElement.remove()">×</button>`;
+        div.innerHTML = `<input type="text" class="c_multi" placeholder="Nombre Canal"><input type="text" class="l_multi" placeholder="ID AceStream"><button style="color:red; background:none; border:none; cursor:pointer;" onclick="this.parentElement.remove()">×</button>`;
         cont.appendChild(div);
     }
 
@@ -138,7 +125,6 @@
         btn.classList.add('active');
         const grid = document.getElementById('equipos');
         const config = BD.ligas[ligaNom];
-        document.getElementById('especial-wrapper').style.display = (ligaNom === "EVENTOS ESPECIALES") ? 'block' : 'none';
         cur.cat = ligaNom; grid.innerHTML = "";
         cur.modo = config.modo || "duelo";
         cur.e1 = ""; cur.e2 = ""; cur.l1 = ""; cur.l2 = "";
@@ -157,19 +143,11 @@
                     if(!cur.e1 || (cur.e1 && cur.e2)) {
                         cur.e1 = eq.n; cur.l1 = logoConRuta; cur.e2 = ""; cur.l2 = "";
                         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                    } else {
-                        cur.e2 = eq.n; cur.l2 = logoConRuta; b.classList.add('sel');
-                    }
+                    } else { cur.e2 = eq.n; cur.l2 = logoConRuta; b.classList.add('sel'); }
                 }
             };
             grid.appendChild(b);
         });
-    }
-
-    function fijarEspecial() {
-        cur.e1 = document.getElementById('esp_tipo').value + ": " + document.getElementById('esp_evento').value;
-        cur.l1 = document.getElementById('esp_logo').value || 'default.png';
-        cur.e2 = ""; cur.l2 = ""; alert("Datos especiales fijados.");
     }
 
     function guardarEventoCompleto() {
@@ -179,35 +157,16 @@
         const links = document.querySelectorAll('.l_multi');
         let misLinks = [];
         for(let i=0; i<links.length; i++) {
-            if(links[i].value.trim() !== "") {
-                misLinks.push({ ch: canales[i].value || "Streaming", id: links[i].value.trim() });
+            let idLimpia = links[i].value.trim().replace('acestream://', '');
+            if(idLimpia !== "") {
+                misLinks.push({ ch: canales[i].value || "Opción " + (i+1), id: idLimpia });
             }
         }
-        if(!cur.e1 || misLinks.length === 0) return alert("Selecciona equipos e ID.");
+        if(!cur.e1 || misLinks.length === 0) return alert("Faltan datos");
         agenda.push({ visible: true, fecha, hora, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks });
         document.getElementById('contenedor-ids').innerHTML = "";
         nuevaFilaID();
         updateAgenda();
-    }
-
-    // --- FUNCIÓN PARA CARGAR EVENTO EXISTENTE Y EDITARLO ---
-    function cargarParaEditar(i) {
-        const ev = agenda[i];
-        document.getElementById('f_in').value = ev.fecha;
-        document.getElementById('h_in').value = ev.hora;
-        cur.e1 = ev.e1; cur.l1 = ev.logo1;
-        cur.e2 = ev.e2; cur.l2 = ev.logo2;
-        const cont = document.getElementById('contenedor-ids');
-        cont.innerHTML = "";
-        ev.links.forEach(lk => {
-            const div = document.createElement('div');
-            div.className = 'fila-id';
-            div.innerHTML = `<input type="text" class="c_multi" value="${lk.ch}"><input type="text" class="l_multi" value="${lk.id}"><button class="btn-del-id" onclick="this.parentElement.remove()">×</button>`;
-            cont.appendChild(div);
-        });
-        agenda.splice(i, 1);
-        updateAgenda();
-        alert("Evento cargado en el panel. Modifica y pulsa GUARDAR.");
     }
 
     function updateAgenda() {
@@ -216,8 +175,18 @@
         let paraTV = [];
         agenda.forEach(ev => {
             if(ev.visible) {
-                ev.links.forEach(item => {
-                    paraTV.push({ fecha: ev.fecha, hora: ev.hora, canal: item.ch, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, link: item.id });
+                ev.links.forEach(linkObj => {
+                    // AQUÍ ESTÁ EL CAMBIO VITAL: enviamos el campo 'canal' que espera la TV
+                    paraTV.push({ 
+                        fecha: ev.fecha, 
+                        hora: ev.hora, 
+                        e1: ev.e1, 
+                        logo1: ev.logo1, 
+                        e2: ev.e2, 
+                        logo2: ev.logo2, 
+                        canal: linkObj.ch, 
+                        link: linkObj.id 
+                    });
                 });
             }
         });
@@ -225,19 +194,28 @@
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(paraTV))));
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola">
-                <input type="checkbox" ${e.visible ? 'checked' : ''} onchange="agenda[${i}].visible=!agenda[${i}].visible; updateAgenda();">
-                <div style="flex:1"><b>${e.fecha} | ${e.hora}</b><br>${e.e1} ${e.e2?'vs '+e.e2:''}</div>
-                <span style="cursor:pointer; margin-right:15px; color:var(--main); font-size:16px;" onclick="cargarParaEditar(${i})">✏️</span>
+                <div style="flex:1"><b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''} (${e.links.length} can.)</div>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
         `).reverse().join('');
     }
 
-    function copyToClipboard() {
-        document.getElementById('output').select();
-        document.execCommand('copy');
-        alert("¡Copiado! Todo listo para GitHub.");
+    async function subirAGitHub() {
+        if(!confirm("¿Actualizar App TV ahora?")) return;
+        try {
+            const res = await fetch(REPO_URL);
+            const data = await res.json();
+            const content = document.getElementById('output').value;
+            const putRes = await fetch(REPO_URL, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: "Update TV Sync", content: content, sha: data.sha })
+            });
+            if(putRes.ok) alert("✅ APP TV ACTUALIZADA");
+            else alert("❌ ERROR GITHUB");
+        } catch(e) { alert("Error de conexión"); }
     }
+
     chequearAcceso();
 </script>
 </body>
