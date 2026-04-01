@@ -64,6 +64,7 @@
             background: var(--main); color: #fff; 
             padding: 2px 8px; border-radius: 5px; 
             font-weight: bold; font-size: 10px; 
+            text-transform: uppercase;
         }
 
         .vs-container { 
@@ -170,6 +171,16 @@
         return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
     }
 
+    // --- FUNCIÓN PARA FORMATEAR FECHA Y DÍA ---
+    function formatFullFecha(strFecha, strHora) {
+        const dias = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
+        const f = new Date(strFecha + 'T' + strHora);
+        const dNom = dias[f.getDay()];
+        const dNum = String(f.getDate()).padStart(2, '0');
+        const mNum = String(f.getMonth() + 1).padStart(2, '0');
+        return `${dNom} ${dNum}/${mNum} | ${strHora}`;
+    }
+
     async function actualizarTV() {
         if(modoMenu) return;
         const container = document.getElementById('agenda');
@@ -213,7 +224,7 @@
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
                 card.innerHTML = `
-                    <div class="fecha-badge">${ev.hora}</div>
+                    <div class="fecha-badge">${formatFullFecha(ev.fecha, ev.hora)}</div>
                     <div class="vs-container">
                         <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
                         ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
