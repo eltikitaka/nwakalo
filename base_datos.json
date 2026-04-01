@@ -51,8 +51,11 @@
     "EVENTOS ESPECIALES": {
       "id": "especial",
       "logo": "especial.png",
-      "modo": "manual",
-      "equipos": []
+      "modo": "unico",
+      "equipos": [
+        { "n": "Futbol", "a": "futbol.png" }, { "n": "Baloncesto", "a": "basket.png" }, { "n": "Ciclismo", "a": "ciclismo.png" }, { "n": "Especial", "a": "especial.png" }
+      ]
+      ]
     }
   }
 }
