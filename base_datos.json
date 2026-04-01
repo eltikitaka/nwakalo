@@ -55,7 +55,6 @@
       "equipos": [
         { "n": "Futbol", "a": "futbol.png" }, { "n": "Baloncesto", "a": "basket.png" }, { "n": "Ciclismo", "a": "ciclismo.png" }, { "n": "Especial", "a": "especial.png" }
       ]
-      ]
     }
   }
 }
