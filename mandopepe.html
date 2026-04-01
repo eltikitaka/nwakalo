@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE - V12 WHITE SYNC</title>
+    <title>MANDO PEPE - V12 FULL CONTROL</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --main: #00cc6a; --bg: #f0f2f5; --panel: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
@@ -24,10 +24,12 @@
         input { background: #fff; color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
         .btn-main { width: 100%; background: var(--main); color: #fff; padding: 15px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .fila-id { display: grid; grid-template-columns: 1fr 1fr 30px; gap: 5px; margin-top: 8px; align-items: center; background: #f8f9fa; padding: 8px; border-radius: 10px; border: 1px solid var(--border); }
-        .item-cola { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; border: 1px solid var(--border); border-left: 5px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
-        .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 18px; }
+        .item-cola { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; border: 1px solid var(--border); border-left: 5px solid var(--main); display: flex; align-items: center; gap: 8px; position: relative; }
+        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; font-size: 18px; margin-left: 5px;}
+        .action-btn { cursor: pointer; font-size: 16px; background: #f0f2f5; padding: 5px 8px; border-radius: 6px; border: 1px solid #ddd; }
         textarea { height: 80px; font-size: 10px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; padding: 10px; box-sizing: border-box; font-family: monospace; }
         .btn-negro { background: #1a1a1a; color: white; margin-top: 15px; }
+        .edit-mode { border: 2px solid #ff9f43 !important; background: #fffcf0 !important; }
     </style>
 </head>
 <body>
@@ -35,7 +37,7 @@
 <div id="bloqueo">
     <div class="tv-card">
         <h2 style="margin:0;">MANDO PEPE CONTROL</h2>
-        <div class="codigo-tv" id="mi_id">----</div>
+        <div class="mi_id" id="mi_id">----</div>
         <p style="font-size:11px; color:#999;">ID REQUERIDO: ADM-ACCESS</p>
     </div>
 </div>
@@ -48,37 +50,39 @@
             <div id="equipos" class="grid"></div>
         </div>
 
-        <div class="seccion" style="border: 2px solid var(--main);">
-            <h3>2. Configuración del Evento</h3>
+        <div class="seccion" id="form-evento" style="border: 2px solid var(--main);">
+            <h3 id="titulo-form">2. Configuración del Evento</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <input type="date" id="f_in">
                 <input type="time" id="h_in" value="21:00">
             </div>
             <div id="contenedor-ids"></div>
             <button onclick="nuevaFilaID()" style="background:#fff; color:var(--main); border:1px dashed var(--main); width:100%; padding:10px; margin-top:10px; cursor:pointer; border-radius:8px; font-weight:bold; font-size:11px;">+ AÑADIR OTRO CANAL AL MISMO PARTIDO</button>
-            <button onclick="guardarEventoCompleto()" class="btn-main">💾 GUARDAR EN LISTA LOCAL</button>
+            <button id="btn-save" onclick="guardarEventoCompleto()" class="btn-main">💾 GUARDAR EN LISTA LOCAL</button>
+            <button id="btn-cancel" onclick="limpiarFormulario()" style="display:none; width:100%; background:#999; color:#fff; border:none; padding:10px; border-radius:12px; margin-top:5px; font-weight:bold; cursor:pointer;">CANCELAR EDICIÓN</button>
         </div>
 
         <div class="seccion">
             <h3>3. Agenda App TV <span id="count-agenda" style="float:right; background:var(--main); color:#fff; padding:2px 8px; border-radius:8px; font-size:11px;">0</span></h3>
             <div id="cola_eventos" style="max-height: 400px; overflow-y: auto;"></div>
             <button onclick="copiarCodigo()" class="btn-main btn-negro">📋 COPIAR CÓDIGO GITHUB</button>
-            <textarea id="output" readonly placeholder="Aquí aparecerá el código..."></textarea>
+            <textarea id="output" readonly></textarea>
         </div>
 
         <div class="seccion" style="background: #fff8e1; border: 1px solid #ffe082;">
             <h3>📥 Sincronizar desde otro Mando</h3>
-            <textarea id="input_import" placeholder="Pega aquí el código base64 de otro mando..."></textarea>
+            <textarea id="input_import" placeholder="Pega aquí el código base64..."></textarea>
             <button onclick="importarCodigo()" class="btn-main" style="background: #ff9f43;">⚡ CARGAR ESTA AGENDA</button>
         </div>
     </div>
 </div>
 
 <script>
-    const AUTORIZADOS = ["BUNKER-QMPBJ", "BUNKER-0HLYT"]; 
+    const AUTORIZADOS = ["BUNKER-QMPBJ", "BUNKER-D1P1E"]; 
     let BD = {};
     let agenda = JSON.parse(localStorage.getItem('nw_agenda_v12') || "[]");
     let cur = { cat:"", e1:"", l1:"", e2:"", l2:"", modo:"duelo" };
+    let editIndex = -1;
 
     function chequearAcceso() {
         let id = localStorage.getItem('bunker_id') || "BUNKER-" + Math.random().toString(36).substr(2, 5).toUpperCase();
@@ -92,30 +96,26 @@
     }
 
     async function iniciarApp() {
-        try {
-            const r = await fetch('base_datos.json?v=' + Date.now());
-            BD = await r.json();
-            document.getElementById('f_in').valueAsDate = new Date();
-            nuevaFilaID();
-            const menu = document.getElementById('categorias');
-            menu.innerHTML = "";
-            Object.keys(BD.ligas).forEach(l => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-cat';
-                const logoLiga = BD.ligas[l].logo;
-                btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${logoLiga}" onerror="this.src='assets/deporte/${logoLiga}';"></div><span>${l}</span>`;
-                btn.onclick = () => cargarEquipos(l, btn);
-                menu.appendChild(btn);
-            });
-            updateAgenda();
-        } catch(e) { console.error("Error BD"); }
+        const r = await fetch('base_datos.json?v=' + Date.now());
+        BD = await r.json();
+        document.getElementById('f_in').valueAsDate = new Date();
+        nuevaFilaID();
+        const menu = document.getElementById('categorias');
+        Object.keys(BD.ligas).forEach(l => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-cat';
+            btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
+            btn.onclick = () => cargarEquipos(l, btn);
+            menu.appendChild(btn);
+        });
+        updateAgenda();
     }
 
-    function nuevaFilaID() {
+    function nuevaFilaID(canal = "", id = "") {
         const cont = document.getElementById('contenedor-ids');
         const div = document.createElement('div');
         div.className = 'fila-id';
-        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal"><input type="text" class="l_multi" placeholder="ID Ace"><button style="color:red; background:none; border:none;" onclick="this.parentElement.remove()">×</button>`;
+        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal" value="${canal}"><input type="text" class="l_multi" placeholder="ID Ace" value="${id}"><button style="color:red; background:none; border:none;" onclick="this.parentElement.remove()">×</button>`;
         cont.appendChild(div);
     }
 
@@ -124,29 +124,27 @@
         btn.classList.add('active');
         const grid = document.getElementById('equipos');
         const config = BD.ligas[ligaNom];
-        cur.cat = ligaNom; grid.innerHTML = "";
-        cur.modo = config.modo || "duelo";
-        cur.e1 = ""; cur.e2 = ""; cur.l1 = ""; cur.l2 = "";
-
+        cur.cat = ligaNom; grid.innerHTML = ""; cur.modo = config.modo || "duelo";
         config.equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
             const imgPath = (cur.modo === "unico") ? `assets/deporte/${eq.a}` : `assets/equipos/${config.id}/${eq.a}`;
             b.innerHTML = `<div class="img-wrap"><img src="${imgPath}" onerror="this.src='assets/default.png'"></div><span>${eq.n}</span>`;
-            b.onclick = () => {
-                const logoConRuta = (cur.modo === "unico") ? eq.a : `${config.id}/${eq.a}`;
-                if(cur.modo === "unico") {
-                    cur.e1 = eq.n; cur.l1 = logoConRuta; cur.e2 = ""; cur.l2 = "";
-                    document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                } else {
-                    if(!cur.e1 || (cur.e1 && cur.e2)) {
-                        cur.e1 = eq.n; cur.l1 = logoConRuta; cur.e2 = ""; cur.l2 = "";
-                        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); b.classList.add('sel');
-                    } else { cur.e2 = eq.n; cur.l2 = logoConRuta; b.classList.add('sel'); }
-                }
-            };
+            b.onclick = () => seleccionarEquipo(eq.n, (cur.modo === "unico" ? eq.a : `${config.id}/${eq.a}`), b);
             grid.appendChild(b);
         });
+    }
+
+    function seleccionarEquipo(nombre, logo, elemento) {
+        if(cur.modo === "unico") {
+            cur.e1 = nombre; cur.l1 = logo; cur.e2 = ""; cur.l2 = "";
+            document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); elemento.classList.add('sel');
+        } else {
+            if(!cur.e1 || (cur.e1 && cur.e2)) {
+                cur.e1 = nombre; cur.l1 = logo; cur.e2 = ""; cur.l2 = "";
+                document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel')); elemento.classList.add('sel');
+            } else { cur.e2 = nombre; cur.l2 = logo; elemento.classList.add('sel'); }
+        }
     }
 
     function guardarEventoCompleto() {
@@ -157,15 +155,50 @@
         let misLinks = [];
         for(let i=0; i<links.length; i++) {
             let idLimpia = links[i].value.trim().replace('acestream://', '');
-            if(idLimpia !== "") {
-                misLinks.push({ ch: canales[i].value || "Opción " + (i+1), id: idLimpia });
-            }
+            if(idLimpia !== "") misLinks.push({ ch: canales[i].value || "Opción " + (i+1), id: idLimpia });
         }
         if(!cur.e1 || misLinks.length === 0) return alert("Faltan datos");
-        agenda.push({ visible: true, fecha, hora, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks });
+
+        const nuevoEv = { visible: true, fecha, hora, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks };
+
+        if(editIndex > -1) {
+            agenda[editIndex] = nuevoEv;
+        } else {
+            agenda.push(nuevoEv);
+        }
+        
+        limpiarFormulario();
+        updateAgenda();
+    }
+
+    function limpiarFormulario() {
+        editIndex = -1;
+        document.getElementById('form-evento').classList.remove('edit-mode');
+        document.getElementById('titulo-form').innerText = "2. Configuración del Evento";
+        document.getElementById('btn-save').innerText = "💾 GUARDAR EN LISTA LOCAL";
+        document.getElementById('btn-cancel').style.display = "none";
         document.getElementById('contenedor-ids').innerHTML = "";
         nuevaFilaID();
-        updateAgenda();
+        cur.e1 = ""; cur.e2 = ""; 
+        document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
+    }
+
+    function cargarParaEditar(index, modo) {
+        const ev = agenda[index];
+        document.getElementById('contenedor-ids').innerHTML = "";
+        ev.links.forEach(l => nuevaFilaID(l.ch, l.id));
+        cur.e1 = ev.e1; cur.l1 = ev.logo1; cur.e2 = ev.e2; cur.l2 = ev.logo2;
+        document.getElementById('f_in').value = ev.fecha;
+        document.getElementById('h_in').value = ev.hora;
+        
+        if(modo === 'edit') {
+            editIndex = index;
+            document.getElementById('form-evento').classList.add('edit-mode');
+            document.getElementById('titulo-form').innerText = "✏️ EDITANDO EVENTO";
+            document.getElementById('btn-save').innerText = "✅ ACTUALIZAR CAMBIOS";
+            document.getElementById('btn-cancel').style.display = "block";
+        }
+        document.getElementById('form-evento').scrollIntoView({ behavior: 'smooth' });
     }
 
     function updateAgenda() {
@@ -173,17 +206,15 @@
         localStorage.setItem('nw_agenda_v12', JSON.stringify(agenda));
         let paraTV = [];
         agenda.forEach(ev => {
-            if(ev.visible) {
-                ev.links.forEach(linkObj => {
-                    paraTV.push({ fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, canal: linkObj.ch, link: linkObj.id });
-                });
-            }
+            ev.links.forEach(l => paraTV.push({ fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, canal: l.ch, link: l.id }));
         });
         document.getElementById('count-agenda').innerText = paraTV.length;
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(paraTV))));
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola">
                 <div style="flex:1"><b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}</div>
+                <span class="action-btn" onclick="cargarParaEditar(${i}, 'edit')">✏️</span>
+                <span class="action-btn" onclick="cargarParaEditar(${i}, 'clone')">👯</span>
                 <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
             </div>
         `).reverse().join('');
@@ -204,18 +235,15 @@
             let agrupados = {};
             raw.forEach(item => {
                 let key = item.fecha + item.hora + item.e1 + (item.e2 || "");
-                if(!agrupados[key]) {
-                    agrupados[key] = { visible: true, fecha: item.fecha, hora: item.hora, e1: item.e1, logo1: item.logo1 || item.logo, e2: item.e2 || "", logo2: item.logo2 || "", links: [] };
-                }
+                if(!agrupados[key]) agrupados[key] = { visible: true, fecha: item.fecha, hora: item.hora, e1: item.e1, logo1: item.logo1 || item.logo, e2: item.e2 || "", logo2: item.logo2 || "", links: [] };
                 agrupados[key].links.push({ ch: item.canal, id: item.link });
             });
             agenda = Object.values(agrupados);
             updateAgenda();
             document.getElementById('input_import').value = "";
-            alert("✅ Agenda sincronizada.");
+            alert("✅ Agenda cargada.");
         } catch(e) { alert("❌ Código no válido."); }
     }
-
     chequearAcceso();
 </script>
 </body>
