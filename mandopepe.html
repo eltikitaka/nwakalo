@@ -2,44 +2,32 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE - WHITE MOBILE V12</title>
+    <title>MANDO PEPE - V12 WHITE SYNC</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --main: #00cc6a; --bg: #f0f2f5; --panel: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; user-select: none; }
-        
         #bloqueo { position: fixed; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .tv-card { background: #fff; padding: 30px; border-radius: 30px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; width: 80%; }
+        .tv-card { background: #fff; padding: 30px; border-radius: 30px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
         .codigo-tv { font-size: 28px; font-weight: 900; color: var(--main); letter-spacing: 3px; background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px dashed var(--main); }
-
         #mando-root { display: none; max-width: 600px; margin: auto; }
-        
-        /* DISEÑO EN UNA SOLA COLUMNA */
         .layout { display: flex; flex-direction: column; gap: 20px; }
-
         .seccion { background: var(--panel); padding: 20px; border-radius: 15px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-
         .contenedor-cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .btn-cat { background: #f8f9fa; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 10px; }
         .img-holder, .img-wrap { background: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; overflow: hidden; border: 1px solid #eee; }
         .btn-cat img, .btn-eq img { width: 75%; height: 75%; object-fit: contain; }
         .btn-cat.active { background: var(--main); color: #fff; border-color: var(--main); font-weight: bold; }
-
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: 350px; overflow-y: auto; background: #fdfdfd; padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
         .btn-eq { background: #fff; border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 10px; cursor: pointer; font-size: 9px; display: flex; flex-direction: column; align-items: center; }
         .btn-eq.sel { border-color: var(--main); background: rgba(0, 204, 106, 0.05); }
-
-        input { background: #fff; color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; font-size: 14px; }
-        .btn-main { width: 100%; background: var(--main); color: #fff; padding: 15px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; font-size: 14px; }
-        
+        input { background: #fff; color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; font-weight: bold; }
+        .btn-main { width: 100%; background: var(--main); color: #fff; padding: 15px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .fila-id { display: grid; grid-template-columns: 1fr 1fr 30px; gap: 5px; margin-top: 8px; align-items: center; background: #f8f9fa; padding: 8px; border-radius: 10px; border: 1px solid var(--border); }
-        
-        .item-cola { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; border-left: 5px solid var(--main); border: 1px solid var(--border); border-left: 5px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
+        .item-cola { background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 12px; border: 1px solid var(--border); border-left: 5px solid var(--main); display: flex; align-items: center; gap: 10px; position: relative; }
         .del-btn { position: absolute; right: 10px; top: 12px; color: #ff4444; cursor: pointer; font-weight: bold; font-size: 18px; }
-        
-        textarea { height: 80px; font-size: 10px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; padding: 10px; box-sizing: border-box; background: #fafafa; font-family: monospace; }
-        .btn-copy { background: #1a1a1a; color: white; margin-top: 15px; }
+        textarea { height: 80px; font-size: 10px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; padding: 10px; box-sizing: border-box; font-family: monospace; }
+        .btn-negro { background: #1a1a1a; color: white; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -74,13 +62,14 @@
         <div class="seccion">
             <h3>3. Agenda App TV <span id="count-agenda" style="float:right; background:var(--main); color:#fff; padding:2px 8px; border-radius:8px; font-size:11px;">0</span></h3>
             <div id="cola_eventos" style="max-height: 400px; overflow-y: auto;"></div>
-            
-            <button onclick="copiarCodigoGitHub()" class="btn-main btn-copy">📋 COPIAR CÓDIGO PARA EVENTOS.JSON</button>
-            
-            <p style="font-size: 10px; color: #999; margin-top: 10px; text-align: center;">El código se genera abajo automáticamente</p>
-            <textarea id="output" readonly></textarea>
-            
-            <button onclick="if(confirm('¿Borrar toda la lista?')){agenda=[];updateAgenda();}" style="background:none; border:none; color:#bbb; font-size:10px; cursor:pointer; width:100%; margin-top:15px;">Borrar lista completa</button>
+            <button onclick="copiarCodigo()" class="btn-main btn-negro">📋 COPIAR CÓDIGO GITHUB</button>
+            <textarea id="output" readonly placeholder="Aquí aparecerá el código..."></textarea>
+        </div>
+
+        <div class="seccion" style="background: #fff8e1; border: 1px solid #ffe082;">
+            <h3>📥 Sincronizar desde otro Mando</h3>
+            <textarea id="input_import" placeholder="Pega aquí el código base64 de otro mando..."></textarea>
+            <button onclick="importarCodigo()" class="btn-main" style="background: #ff9f43;">⚡ CARGAR ESTA AGENDA</button>
         </div>
     </div>
 </div>
@@ -119,14 +108,14 @@
                 menu.appendChild(btn);
             });
             updateAgenda();
-        } catch(e) { console.error("Error cargando BD"); }
+        } catch(e) { console.error("Error BD"); }
     }
 
     function nuevaFilaID() {
         const cont = document.getElementById('contenedor-ids');
         const div = document.createElement('div');
         div.className = 'fila-id';
-        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal"><input type="text" class="l_multi" placeholder="ID Ace"><button style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;" onclick="this.parentElement.remove()">×</button>`;
+        div.innerHTML = `<input type="text" class="c_multi" placeholder="Canal"><input type="text" class="l_multi" placeholder="ID Ace"><button style="color:red; background:none; border:none;" onclick="this.parentElement.remove()">×</button>`;
         cont.appendChild(div);
     }
 
@@ -186,17 +175,12 @@
         agenda.forEach(ev => {
             if(ev.visible) {
                 ev.links.forEach(linkObj => {
-                    paraTV.push({ 
-                        fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, 
-                        e2: ev.e2, logo2: ev.logo2, canal: linkObj.ch, link: linkObj.id 
-                    });
+                    paraTV.push({ fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, canal: linkObj.ch, link: linkObj.id });
                 });
             }
         });
         document.getElementById('count-agenda').innerText = paraTV.length;
-        // Generamos el base64 que espera eventos.json
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(paraTV))));
-        
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola">
                 <div style="flex:1"><b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}</div>
@@ -205,12 +189,31 @@
         `).reverse().join('');
     }
 
-    function copiarCodigoGitHub() {
+    function copiarCodigo() {
         const text = document.getElementById('output');
         text.select();
-        text.setSelectionRange(0, 99999); 
         document.execCommand("copy");
-        alert("✅ Código copiado. Pégalo en tu archivo eventos.json de GitHub.");
+        alert("✅ Código copiado.");
+    }
+
+    function importarCodigo() {
+        const input = document.getElementById('input_import').value.trim();
+        if(!input) return;
+        try {
+            const raw = JSON.parse(decodeURIComponent(escape(atob(input))));
+            let agrupados = {};
+            raw.forEach(item => {
+                let key = item.fecha + item.hora + item.e1 + (item.e2 || "");
+                if(!agrupados[key]) {
+                    agrupados[key] = { visible: true, fecha: item.fecha, hora: item.hora, e1: item.e1, logo1: item.logo1 || item.logo, e2: item.e2 || "", logo2: item.logo2 || "", links: [] };
+                }
+                agrupados[key].links.push({ ch: item.canal, id: item.link });
+            });
+            agenda = Object.values(agrupados);
+            updateAgenda();
+            document.getElementById('input_import').value = "";
+            alert("✅ Agenda sincronizada.");
+        } catch(e) { alert("❌ Código no válido."); }
     }
 
     chequearAcceso();
