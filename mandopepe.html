@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>MANDO PEPE - V12 FULL CONTROL</title>
+    <title>MANDO PEPE - V12 ORDER SYNC</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --main: #00cc6a; --bg: #f0f2f5; --panel: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
@@ -37,7 +37,7 @@
 <div id="bloqueo">
     <div class="tv-card">
         <h2 style="margin:0;">MANDO PEPE CONTROL</h2>
-        <div class="mi_id" id="mi_id">----</div>
+        <div class="codigo-tv" id="mi_id">----</div>
         <p style="font-size:11px; color:#999;">ID REQUERIDO: ADM-ACCESS</p>
     </div>
 </div>
@@ -66,12 +66,12 @@
             <h3>3. Agenda App TV <span id="count-agenda" style="float:right; background:var(--main); color:#fff; padding:2px 8px; border-radius:8px; font-size:11px;">0</span></h3>
             <div id="cola_eventos" style="max-height: 400px; overflow-y: auto;"></div>
             <button onclick="copiarCodigo()" class="btn-main btn-negro">📋 COPIAR CÓDIGO GITHUB</button>
-            <textarea id="output" readonly></textarea>
+            <textarea id="output" readonly placeholder="Código para GitHub..."></textarea>
         </div>
 
         <div class="seccion" style="background: #fff8e1; border: 1px solid #ffe082;">
             <h3>📥 Sincronizar desde otro Mando</h3>
-            <textarea id="input_import" placeholder="Pega aquí el código base64..."></textarea>
+            <textarea id="input_import" placeholder="Pega aquí el código base64 de otro mando..."></textarea>
             <button onclick="importarCodigo()" class="btn-main" style="background: #ff9f43;">⚡ CARGAR ESTA AGENDA</button>
         </div>
     </div>
@@ -96,19 +96,22 @@
     }
 
     async function iniciarApp() {
-        const r = await fetch('base_datos.json?v=' + Date.now());
-        BD = await r.json();
-        document.getElementById('f_in').valueAsDate = new Date();
-        nuevaFilaID();
-        const menu = document.getElementById('categorias');
-        Object.keys(BD.ligas).forEach(l => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-cat';
-            btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
-            btn.onclick = () => cargarEquipos(l, btn);
-            menu.appendChild(btn);
-        });
-        updateAgenda();
+        try {
+            const r = await fetch('base_datos.json?v=' + Date.now());
+            BD = await r.json();
+            document.getElementById('f_in').valueAsDate = new Date();
+            nuevaFilaID();
+            const menu = document.getElementById('categorias');
+            menu.innerHTML = "";
+            Object.keys(BD.ligas).forEach(l => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-cat';
+                btn.innerHTML = `<div class="img-holder"><img src="assets/equipos/${BD.ligas[l].logo}" onerror="this.src='assets/deporte/${BD.ligas[l].logo}';"></div><span>${l}</span>`;
+                btn.onclick = () => cargarEquipos(l, btn);
+                menu.appendChild(btn);
+            });
+            updateAgenda();
+        } catch(e) { console.error("Error BD"); }
     }
 
     function nuevaFilaID(canal = "", id = "") {
@@ -183,7 +186,7 @@
         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
     }
 
-    function cargarParaEditar(index, modo) {
+    function cargarParaAccion(index, accion) {
         const ev = agenda[index];
         document.getElementById('contenedor-ids').innerHTML = "";
         ev.links.forEach(l => nuevaFilaID(l.ch, l.id));
@@ -191,7 +194,7 @@
         document.getElementById('f_in').value = ev.fecha;
         document.getElementById('h_in').value = ev.hora;
         
-        if(modo === 'edit') {
+        if(accion === 'edit') {
             editIndex = index;
             document.getElementById('form-evento').classList.add('edit-mode');
             document.getElementById('titulo-form').innerText = "✏️ EDITANDO EVENTO";
@@ -202,22 +205,37 @@
     }
 
     function updateAgenda() {
-        agenda.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+        // ORDENAR POR FECHA Y LUEGO POR HORA
+        agenda.sort((a, b) => {
+            const dateA = a.fecha + " " + a.hora;
+            const dateB = b.fecha + " " + b.hora;
+            return dateA.localeCompare(dateB);
+        });
+
         localStorage.setItem('nw_agenda_v12', JSON.stringify(agenda));
+        
         let paraTV = [];
         agenda.forEach(ev => {
-            ev.links.forEach(l => paraTV.push({ fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, e2: ev.e2, logo2: ev.logo2, canal: l.ch, link: l.id }));
+            ev.links.forEach(l => paraTV.push({ 
+                fecha: ev.fecha, hora: ev.hora, e1: ev.e1, logo1: ev.logo1, 
+                e2: ev.e2, logo2: ev.logo2, canal: l.ch, link: l.id 
+            }));
         });
+
         document.getElementById('count-agenda').innerText = paraTV.length;
         document.getElementById('output').value = btoa(unescape(encodeURIComponent(JSON.stringify(paraTV))));
+        
         document.getElementById('cola_eventos').innerHTML = agenda.map((e, i) => `
             <div class="item-cola">
-                <div style="flex:1"><b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}</div>
-                <span class="action-btn" onclick="cargarParaEditar(${i}, 'edit')">✏️</span>
-                <span class="action-btn" onclick="cargarParaEditar(${i}, 'clone')">👯</span>
-                <span class="del-btn" onclick="agenda.splice(${i},1);updateAgenda();">×</span>
+                <div style="flex:1; font-size:11px;">
+                    <span style="color:var(--main); font-weight:bold;">${e.fecha.split('-').reverse().join('/')}</span><br>
+                    <b>${e.hora}</b> | ${e.e1} ${e.e2?'vs '+e.e2:''}
+                </div>
+                <span class="action-btn" onclick="cargarParaAccion(${i}, 'edit')" title="Editar">✏️</span>
+                <span class="action-btn" onclick="cargarParaAccion(${i}, 'clone')" title="Duplicar">👯</span>
+                <span class="del-btn" onclick="if(confirm('¿Borrar?')){agenda.splice(${i},1);updateAgenda();}">×</span>
             </div>
-        `).reverse().join('');
+        `).join(''); // Quitamos .reverse() para que el primero de la lista sea el más cercano en el tiempo
     }
 
     function copiarCodigo() {
@@ -241,9 +259,10 @@
             agenda = Object.values(agrupados);
             updateAgenda();
             document.getElementById('input_import').value = "";
-            alert("✅ Agenda cargada.");
+            alert("✅ Agenda cargada y ordenada.");
         } catch(e) { alert("❌ Código no válido."); }
     }
+
     chequearAcceso();
 </script>
 </body>
