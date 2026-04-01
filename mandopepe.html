@@ -30,6 +30,10 @@
         textarea { height: 80px; font-size: 10px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; padding: 10px; box-sizing: border-box; font-family: monospace; }
         .btn-negro { background: #1a1a1a; color: white; margin-top: 15px; }
         .edit-mode { border: 2px solid #ff9f43 !important; background: #fffcf0 !important; }
+        
+        /* Ajuste para el nuevo campo */
+        #campo-detalle { margin-bottom: 10px; display: none; }
+        #campo-detalle label { font-size: 10px; font-weight: 900; color: var(--main); text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -52,6 +56,12 @@
 
         <div class="seccion" id="form-evento" style="border: 2px solid var(--main);">
             <h3 id="titulo-form">2. Configuración del Evento</h3>
+            
+            <div id="campo-detalle">
+                <label>Detalle del Evento (Ej: Etapa 6 / Sprint):</label>
+                <input type="text" id="det_evento" placeholder="Escribe el detalle aquí...">
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <input type="date" id="f_in">
                 <input type="time" id="h_in" value="21:00">
@@ -128,6 +138,10 @@
         const grid = document.getElementById('equipos');
         const config = BD.ligas[ligaNom];
         cur.cat = ligaNom; grid.innerHTML = ""; cur.modo = config.modo || "duelo";
+        
+        // MOSTRAR O OCULTAR CAMPO DETALLE
+        document.getElementById('campo-detalle').style.display = (cur.modo === "unico") ? "block" : "none";
+
         config.equipos.forEach(eq => {
             const b = document.createElement('button');
             b.className = 'btn-eq';
@@ -153,6 +167,7 @@
     function guardarEventoCompleto() {
         const fecha = document.getElementById('f_in').value;
         const hora = document.getElementById('h_in').value;
+        const detalle = document.getElementById('det_evento').value.trim();
         const canales = document.querySelectorAll('.c_multi');
         const links = document.querySelectorAll('.l_multi');
         let misLinks = [];
@@ -162,7 +177,10 @@
         }
         if(!cur.e1 || misLinks.length === 0) return alert("Faltan datos");
 
-        const nuevoEv = { visible: true, fecha, hora, e1: cur.e1, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks };
+        // Unir nombre con detalle si existe
+        let nombreFinal = (cur.modo === "unico" && detalle !== "") ? cur.e1 + ": " + detalle : cur.e1;
+
+        const nuevoEv = { visible: true, fecha, hora, e1: nombreFinal, logo1: cur.l1, e2: cur.e2, logo2: cur.l2, links: misLinks };
 
         if(editIndex > -1) {
             agenda[editIndex] = nuevoEv;
@@ -181,6 +199,7 @@
         document.getElementById('btn-save').innerText = "💾 GUARDAR EN LISTA LOCAL";
         document.getElementById('btn-cancel').style.display = "none";
         document.getElementById('contenedor-ids').innerHTML = "";
+        document.getElementById('det_evento').value = "";
         nuevaFilaID();
         cur.e1 = ""; cur.e2 = ""; 
         document.querySelectorAll('.btn-eq').forEach(v => v.classList.remove('sel'));
@@ -190,7 +209,18 @@
         const ev = agenda[index];
         document.getElementById('contenedor-ids').innerHTML = "";
         ev.links.forEach(l => nuevaFilaID(l.ch, l.id));
-        cur.e1 = ev.e1; cur.l1 = ev.logo1; cur.e2 = ev.e2; cur.l2 = ev.logo2;
+        
+        // Si el nombre contiene ": ", separamos para rellenar el campo detalle
+        if(ev.e1.includes(": ")) {
+            let partes = ev.e1.split(": ");
+            cur.e1 = partes[0];
+            document.getElementById('det_evento').value = partes[1];
+        } else {
+            cur.e1 = ev.e1;
+            document.getElementById('det_evento').value = "";
+        }
+
+        cur.l1 = ev.logo1; cur.e2 = ev.e2; cur.l2 = ev.logo2;
         document.getElementById('f_in').value = ev.fecha;
         document.getElementById('h_in').value = ev.hora;
         
@@ -205,7 +235,6 @@
     }
 
     function updateAgenda() {
-        // ORDENAR POR FECHA Y LUEGO POR HORA
         agenda.sort((a, b) => {
             const dateA = a.fecha + " " + a.hora;
             const dateB = b.fecha + " " + b.hora;
@@ -235,7 +264,7 @@
                 <span class="action-btn" onclick="cargarParaAccion(${i}, 'clone')" title="Duplicar">👯</span>
                 <span class="del-btn" onclick="if(confirm('¿Borrar?')){agenda.splice(${i},1);updateAgenda();}">×</span>
             </div>
-        `).join(''); // Quitamos .reverse() para que el primero de la lista sea el más cercano en el tiempo
+        `).join('');
     }
 
     function copiarCodigo() {
