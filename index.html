@@ -153,6 +153,7 @@
     const ASSETS = REPO + 'assets/';
     let modoMenu = false;
 
+    // --- CONFIGURACIÓN ADMIN ---
     const misIDsAdmin = ['NW-828277']; 
 
     let miID = localStorage.getItem('nw_device_id');
@@ -198,8 +199,10 @@
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
             const text = await r.text();
             
-            // Reparación del Base64 (limpia comillas y espacios antes de decodificar)
-            const b64 = text.trim().replace(/["\s]/g, '');
+            // LIMPIEZA CLAVE: Eliminamos comillas, espacios y saltos de línea del Base64
+            const b64 = text.trim().replace(/["\s\n\r]/g, '');
+            
+            // Decodificamos y parseamos el JSON
             let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
             
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
@@ -262,7 +265,10 @@
                 if(first) first.focus();
             }
 
-        } catch (e) { console.error("Error cargando JSON"); }
+        } catch (e) { 
+            console.error("Error cargando JSON:", e);
+            container.innerHTML = `<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">Error de datos en eventos.json</p>`;
+        }
     }
 
     function abrirMenu(evento) {
