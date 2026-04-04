@@ -2,173 +2,359 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NWAKALO TV</title>
+    <title>NWAKALO TV - WHITE EDITION</title>
     <style>
-        :root { --main: #00cc6a; --bg: #f0f2f5; --text: #1a1a1a; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 10px; overflow: hidden; height: 100vh; }
-        h1 { text-align: center; font-size: 18px; letter-spacing: 5px; margin: 10px 0; text-transform: uppercase; }
+        :root { 
+            --main: #00cc6a;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            height: 100vh; background: var(--bg); color: var(--text); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            display: flex; flex-direction: column; 
+            overflow: hidden; 
+            padding: 10px 15px;
+        }
+
+        h1 { 
+            color: var(--text); text-align: center; font-size: 18px; 
+            letter-spacing: 8px; text-transform: uppercase;
+            font-weight: 900;
+            padding: 15px 0;
+            background: var(--bg);
+            position: sticky; top: 0; z-index: 1000;
+            outline: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        /* Efecto visual al seleccionar el título con el mando */
+        h1:focus {
+            color: var(--main);
+            transform: scale(1.1);
+        }
+
         #agenda { 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            grid-gap: 10px; height: calc(100vh - 80px); overflow-y: auto;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-auto-rows: calc((100vh - 100px) / 3); 
+            gap: 12px; 
+            width: 100%; 
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 10px;
         }
+        
         .card { 
-            background: #fff; border-radius: 10px; border: 2px solid #ddd;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 10px; text-align: center; min-height: 150px; outline: none;
+            background: var(--card); border-radius: 15px; border: 1px solid var(--border); 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: space-between; position: relative; padding: 12px; 
+            text-decoration: none; color: inherit; outline: none; transition: 0.15s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.03);
         }
-        .card:focus { border-color: var(--main); background: #eaffe5; }
-        .card img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
-        .card h3 { font-size: 12px; margin: 5px 0; text-transform: uppercase; }
-        .badge { background: var(--main); color: #fff; padding: 2px 5px; font-size: 10px; border-radius: 4px; }
+
+        .card:focus { 
+            border-color: var(--main);
+            transform: scale(1.03); z-index: 10;
+            box-shadow: 0 8px 20px rgba(0, 204, 106, 0.15);
+        }
         
-        /* Modal */
-        #modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.95); display: none; 
-            flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
+        .card.blocked { opacity: 0.5; background: #fafafa; }
+        .card.empty { border: 2px dashed #ccc; background: transparent; opacity: 0.2; pointer-events: none; }
+
+        .fecha-badge { 
+            position: absolute; top: 10px; left: 10px; 
+            background: var(--main); color: #fff; 
+            padding: 2px 8px; border-radius: 5px; 
+            font-weight: bold; font-size: 10px; 
+            text-transform: uppercase;
         }
-        .btn { 
-            width: 80%; padding: 15px; margin: 5px; background: #eee; 
-            border-radius: 10px; font-weight: bold; cursor: pointer; outline: none; border: 2px solid transparent;
+
+        .vs-container { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100%; gap: 10px; flex-grow: 1; margin-top: 15px;
         }
-        .btn:focus { border-color: var(--main); background: var(--main); color: #fff; }
         
-        /* Bloqueo */
-        #bloqueo { 
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background:#fff; display:none; flex-direction:column; align-items:center; justify-content:center; z-index: 9999;
+        .img-box { 
+            background: #fff; width: 70px; height: 70px;
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; overflow: hidden; border: 1px solid #eee;
+        }
+        .img-box img { width: 75%; height: 75%; object-fit: contain; }
+        
+        .nombres-box { 
+            width: 100%; margin: 5px 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .nombres-box h3 { 
+            font-size: 12px; color: var(--text); text-transform: uppercase; 
+            font-weight: 800; text-align: center;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        .status-btn { 
+            width: 100%; padding: 6px; border-radius: 8px; font-size: 9px; 
+            border: 1.5px solid var(--main); text-transform: uppercase; 
+            font-weight: 900; text-align: center; color: var(--main);
+        }
+        .card:focus .status-btn { background: var(--main); color: #fff; }
+
+        #modal-opciones {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none; align-items: center; justify-content: center; z-index: 10000;
+        }
+        .modal-content {
+            background: #fff; width: 400px; padding: 25px; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; text-align: center;
+        }
+        .btn-opcion {
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            background: #f8f9fa; border-radius: 12px; font-size: 16px;
+            font-weight: 800; color: var(--text); border: 3px solid transparent; outline: none;
+        }
+        .btn-opcion.focus { border-color: var(--main); background: var(--main); color: #fff; }
+
+        #bloqueo {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 99999;
         }
     </style>
 </head>
 <body>
 
     <div id="bloqueo">
-        <h2 style="color:red">ACCESO RESTRINGIDO</h2>
-        <p>Tu ID de dispositivo es:</p>
-        <h1 id="my-id-display" style="color:var(--main); letter-spacing: 2px;"></h1>
-        <p>Pide acceso al administrador.</p>
+        <h1 style="font-size: 22px; letter-spacing: 2px;">ACCESO RESTRINGIDO</h1>
+        <div style="border: 2px solid var(--main); padding: 15px; border-radius: 15px; background: #f9f9f9; margin: 15px 0;">
+            <span id="display-code" style="font-size: 30px; font-weight: 900; color: var(--main); letter-spacing: 4px;"></span>
+        </div>
+        <p style="font-size: 10px; font-weight: bold; color: var(--main);">SISTEMA NWAKALO CONTROL</p>
     </div>
 
-    <h1 onclick="location.reload()">NWAKALO TV</h1>
-    <div id="agenda">Cargando eventos...</div>
+    <h1 id="btn-refresh" tabindex="1" onclick="window.location.reload(true)">NWAKALO TV</h1>
+    
+    <div id="agenda"></div>
 
-    <div id="modal">
-        <h2 id="m-title"></h2>
-        <div id="m-links" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
-        <div class="btn" onclick="cerrarMenu()" style="color:red; margin-top:20px;">CERRAR</div>
+    <div id="modal-opciones">
+        <div class="modal-content">
+            <h2 id="modal-titulo" style="margin-bottom:15px; font-size:16px;">SELECCIONA OPCIÓN</h2>
+            <div id="lista-links"></div>
+        </div>
     </div>
 
 <script>
-    // Configuración
-    var REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
-    var ASSETS = REPO + 'assets/';
-    var adminIDs = ['NW-828277'];
-    
-    // Generar ID
-    var miID = localStorage.getItem('nw_id') || ('NW-' + Math.floor(Math.random()*900000 + 100000));
-    localStorage.setItem('nw_id', miID);
-    document.getElementById('my-id-display').innerText = miID;
+    const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
+    const ASSETS = REPO + 'assets/';
+    let modoMenu = false;
 
-    // Función para decodificar Base64 con tildes (Forma infalible)
-    function b64ToUtf8(str) {
-        try {
-            var s = window.atob(str.trim().replace(/["\s]/g, ''));
-            return decodeURIComponent(Array.prototype.map.call(s, function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-        } catch(e) { return null; }
+    // --- CONFIGURACIÓN ADMIN ---
+    // Pon aquí tu ID (la que sale en el bloqueo) para que nunca se te bloqueen los canales
+    const misIDsAdmin = ['NW-828277']; 
+
+    let miID = localStorage.getItem('nw_device_id');
+    if (!miID) {
+        miID = "NW-" + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('nw_device_id', miID);
     }
+    document.getElementById('display-code').innerText = miID;
 
-    async function cargarTodo() {
-        var container = document.getElementById('agenda');
-        
+    async function validarAcceso() {
         try {
-            // 1. Cargar Autorizados
-            var resAuth = await fetch(REPO + 'autorizado.json?v=' + Date.now());
-            var authData = await resAuth.json();
-            
-            if (authData.usuarios.indexOf(miID) === -1 && adminIDs.indexOf(miID) === -1) {
+            const res = await fetch(REPO + 'autorizado.json?v=' + Date.now());
+            const data = await res.json();
+            if (data.usuarios.includes(miID)) {
+                document.getElementById('bloqueo').style.display = 'none';
+                if(!modoMenu) actualizarTV();
+            } else {
                 document.getElementById('bloqueo').style.display = 'flex';
-                return;
             }
+        } catch (e) { console.error("Error seguridad"); }
+    }
 
-            // 2. Cargar Eventos
-            var resEv = await fetch(REPO + 'eventos.json?v=' + Date.now());
-            var bText = await resEv.text();
-            var jsonStr = b64ToUtf8(bText);
+    function resolverRuta(logo) {
+        if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
+        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
+    }
+
+    function formatFullFecha(strFecha, strHora) {
+        const dias = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
+        const f = new Date(strFecha + 'T' + strHora);
+        const dNom = dias[f.getDay()];
+        const dNum = String(f.getDate()).padStart(2, '0');
+        const mNum = String(f.getMonth() + 1).padStart(2, '0');
+        return `${dNom} ${dNum}/${mNum} | ${strHora}`;
+    }
+
+    async function actualizarTV() {
+        if(modoMenu) return;
+        const container = document.getElementById('agenda');
+        const soyAdmin = misIDsAdmin.includes(miID);
+
+        try {
+            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+            const text = await r.text();
+            const b64 = text.trim().replace(/["\s]/g, '');
+            let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
             
-            if (!jsonStr) {
-                container.innerHTML = "Error decodificando Base64";
-                return;
-            }
+            evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+            container.innerHTML = '';
+            const ahora = new Date();
+            let count = 0;
 
-            var evs = JSON.parse(jsonStr);
-            container.innerHTML = ""; // Limpiar "Cargando..."
+            let partidosUnicos = [];
+            let procesados = [];
 
-            // 3. Renderizar
-            var procesados = [];
-            for (var i = 0; i < evs.length; i++) {
-                var ev = evs[i];
-                var idUnico = ev.e1 + ev.hora;
-
-                if (procesados.indexOf(idUnico) === -1) {
-                    var links = evs.filter(function(x){ return (x.e1 + x.hora) === idUnico; });
-                    crearCard(ev, links);
-                    procesados.push(idUnico);
+            evs.forEach(ev => {
+                let idPartido = ev.e1 + ev.hora;
+                if(!procesados.includes(idPartido)){
+                    let linksDelPartido = evs.filter(x => x.e1 + x.hora === idPartido);
+                    ev.todosLosLinks = linksDelPartido;
+                    partidosUnicos.push(ev);
+                    procesados.push(idPartido);
                 }
+            });
+
+            partidosUnicos.forEach((ev) => {
+                const fEv = new Date(ev.fecha + 'T' + ev.hora); 
+                if (!soyAdmin && (ahora - fEv) / 3600000 > 3) return; 
+
+                // Lógica de bloqueo: Admin siempre false, otros 15 minutos antes.
+                const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
+                count++;
+
+                const card = document.createElement('div');
+                card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
+                card.tabIndex = count + 1; // +1 porque el h1 es el 1
+
+                card.onclick = () => { if(!estaBloqueado) abrirMenu(ev); };
+
+                const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
+                card.innerHTML = `
+                    <div class="fecha-badge">${formatFullFecha(ev.fecha, ev.hora)}</div>
+                    <div class="vs-container">
+                        <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
+                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
+                    </div>
+                    <div class="nombres-box">
+                        <h3>${tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1}</h3>
+                    </div>
+                    <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER CANALES'}</div>
+                `;
+                container.appendChild(card);
+            });
+
+            while (count < 9) {
+                count++;
+                const empty = document.createElement('div');
+                empty.className = 'card empty';
+                container.appendChild(empty);
             }
-        } catch(e) {
-            container.innerHTML = "Error de conexión con GitHub: " + e.message;
-        }
+
+            if(!document.activeElement || document.activeElement.tagName === 'BODY') {
+                const first = container.querySelector('.card:not(.empty)');
+                if(first) first.focus();
+            }
+
+        } catch (e) { console.error("Error cargando JSON"); }
     }
 
-    function crearCard(ev, links) {
-        var card = document.createElement('div');
-        card.className = 'card';
-        card.tabIndex = 0;
+    function abrirMenu(evento) {
+        modoMenu = true;
+        const modal = document.getElementById('modal-opciones');
+        const lista = document.getElementById('lista-links');
+        document.getElementById('modal-titulo').innerText = evento.e1 + (evento.e2 ? " vs " + evento.e2 : "");
         
-        var logo1 = ev.logo1.indexOf('/') !== -1 ? ASSETS + 'equipos/' + ev.logo1 : ASSETS + 'deporte/' + ev.logo1;
-        
-        card.innerHTML = 
-            '<div class="badge">' + ev.hora + '</div>' +
-            '<div style="display:flex; align-items:center; gap:10px; margin:10px 0;">' +
-                '<img src="' + logo1 + '" onerror="this.src=\''+ASSETS+'default.png\'">' +
-            '</div>' +
-            '<h3>' + ev.e1 + (ev.e2 ? ' vs ' + ev.e2 : '') + '</h3>' +
-            '<div style="color:var(--main); font-weight:bold; font-size:10px;">VER CANALES</div>';
+        lista.innerHTML = "";
+        evento.todosLosLinks.forEach(item => {
+            const btn = document.createElement('div');
+            btn.className = "btn-opcion";
+            btn.innerText = item.canal || "Ver Canal";
+            btn.onclick = () => {
+                let idLimpia = item.link.replace('acestream://', '').trim();
+                window.location.href = "acestream://" + idLimpia;
+            };
+            lista.appendChild(btn);
+        });
 
-        card.onclick = function() { abrirMenu(ev, links); };
-        card.onkeydown = function(e) { if(e.keyCode === 13) abrirMenu(ev, links); };
-        
-        document.getElementById('agenda').appendChild(card);
-    }
+        const btnCerrar = document.createElement('div');
+        btnCerrar.className = "btn-opcion";
+        btnCerrar.innerText = "❌ VOLVER";
+        btnCerrar.style.color = "#ff4444";
+        btnCerrar.onclick = cerrarMenu;
+        lista.appendChild(btnCerrar);
 
-    function abrirMenu(ev, links) {
-        document.getElementById('m-title').innerText = ev.e1;
-        var list = document.getElementById('m-links');
-        list.innerHTML = "";
-        
-        for (var j = 0; j < links.length; j++) {
-            var b = document.createElement('div');
-            b.className = "btn";
-            b.tabIndex = 0;
-            b.innerText = links[j].canal;
-            (function(link){
-                b.onclick = function() { window.location.href = "acestream://" + link; };
-            })(links[j].link);
-            list.appendChild(b);
-        }
-        document.getElementById('modal').style.display = "flex";
-        list.firstChild.focus();
+        modal.style.display = "flex";
+        lista.querySelector('.btn-opcion').classList.add('focus');
     }
 
     function cerrarMenu() {
-        document.getElementById('modal').style.display = "none";
+        modoMenu = false;
+        document.getElementById('modal-opciones').style.display = "none";
+        actualizarTV(); 
     }
 
-    // Iniciar
-    cargarTodo();
+    document.addEventListener('keydown', (e) => {
+        // Gestión del botón Atrás para cerrar menús
+        if (e.keyCode === 27 || e.keyCode === 461 || e.keyCode === 10009) {
+            if(modoMenu) { cerrarMenu(); e.preventDefault(); }
+            return;
+        }
+
+        const current = document.activeElement;
+
+        if (!modoMenu) {
+            const h1 = document.getElementById('btn-refresh');
+            const cards = Array.from(document.querySelectorAll('.card'));
+            const totalElements = [h1, ...cards];
+            const index = totalElements.indexOf(current);
+            let next = index;
+
+            switch(e.key) {
+                case 'ArrowRight': 
+                    if (index > 0 && (index) % 3 !== 0) next = index + 1; 
+                    break;
+                case 'ArrowLeft': 
+                    if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; 
+                    break;
+                case 'ArrowDown': 
+                    if (index === 0) next = 1; // Del título a la primera tarjeta
+                    else next = index + 3; 
+                    break;
+                case 'ArrowUp': 
+                    if (index <= 3 && index > 0) next = 0; // De la primera fila al título
+                    else if (index > 3) next = index - 3;
+                    break;
+                case 'Enter': 
+                    current.click(); 
+                    break;
+            }
+
+            if (totalElements[next] && !totalElements[next].classList.contains('empty')) {
+                totalElements[next].focus();
+                e.preventDefault();
+            }
+        } else {
+            const btns = Array.from(document.querySelectorAll('.btn-opcion'));
+            let act = btns.findIndex(b => b.classList.contains('focus'));
+            if(act === -1) act = 0;
+            btns[act].classList.remove('focus');
+            if(e.key === 'ArrowDown') act = (act + 1) % btns.length;
+            if(e.key === 'ArrowUp') act = (act - 1 + btns.length) % btns.length;
+            if(e.key === 'Enter') btns[act].click();
+            btns[act].classList.add('focus');
+            e.preventDefault();
+        }
+    });
+
+    validarAcceso();
+    setInterval(validarAcceso, 60000);
 </script>
 </body>
 </html>
