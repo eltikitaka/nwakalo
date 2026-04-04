@@ -4,356 +4,184 @@
     <meta charset="UTF-8">
     <title>NWAKALO TV - WHITE EDITION</title>
     <style>
-        :root { 
-            --main: #00cc6a;
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #1a1a1a;
-            --border: #e0e0e0;
-        }
+        :root { --main: #00cc6a; --bg: #f0f2f5; --card: #ffffff; --text: #1a1a1a; --border: #e0e0e0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            height: 100vh; background: var(--bg); color: var(--text); 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            display: flex; flex-direction: column; 
-            overflow: hidden; 
-            padding: 10px 15px;
-        }
-
-        h1 { 
-            color: var(--text); text-align: center; font-size: 18px; 
-            letter-spacing: 8px; text-transform: uppercase;
-            font-weight: 900;
-            padding: 15px 0;
-            background: var(--bg);
-            position: sticky; top: 0; z-index: 1000;
-            outline: none;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        h1:focus {
-            color: var(--main);
-            transform: scale(1.1);
-        }
-
-        #agenda { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            grid-auto-rows: calc((100vh - 100px) / 3); 
-            gap: 12px; 
-            width: 100%; 
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-bottom: 10px;
-        }
-        
-        .card { 
-            background: var(--card); border-radius: 15px; border: 1px solid var(--border); 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: space-between; position: relative; padding: 12px; 
-            text-decoration: none; color: inherit; outline: none; transition: 0.15s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.03);
-        }
-
-        .card:focus { 
-            border-color: var(--main);
-            transform: scale(1.03); z-index: 10;
-            box-shadow: 0 8px 20px rgba(0, 204, 106, 0.15);
-        }
-        
-        .card.blocked { opacity: 0.5; background: #fafafa; }
-        .card.empty { border: 2px dashed #ccc; background: transparent; opacity: 0.2; pointer-events: none; }
-
-        .fecha-badge { 
-            position: absolute; top: 10px; left: 10px; 
-            background: var(--main); color: #fff; 
-            padding: 2px 8px; border-radius: 5px; 
-            font-weight: bold; font-size: 10px; 
-            text-transform: uppercase;
-        }
-
-        .vs-container { 
-            display: flex; align-items: center; justify-content: center; 
-            width: 100%; gap: 10px; flex-grow: 1; margin-top: 15px;
-        }
-        
-        .img-box { 
-            background: #fff; width: 70px; height: 70px;
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; overflow: hidden; border: 1px solid #eee;
-        }
+        body { height: 100vh; background: var(--bg); color: var(--text); font-family: Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; padding: 10px 15px; }
+        h1 { color: var(--text); text-align: center; font-size: 18px; letter-spacing: 8px; text-transform: uppercase; font-weight: 900; padding: 15px 0; outline: none; }
+        #agenda { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc((100vh - 100px) / 3); gap: 12px; width: 100%; flex-grow: 1; overflow-y: auto; }
+        .card { background: var(--card); border-radius: 15px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative; padding: 12px; outline: none; }
+        .card:focus { border-color: var(--main); transform: scale(1.03); z-index: 10; }
+        .card.blocked { opacity: 0.5; }
+        .card.empty { border: 2px dashed #ccc; background: transparent; opacity: 0.2; }
+        .fecha-badge { position: absolute; top: 10px; left: 10px; background: var(--main); color: #fff; padding: 2px 8px; border-radius: 5px; font-weight: bold; font-size: 10px; }
+        .vs-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; flex-grow: 1; margin-top: 15px; }
+        .img-box { background: #fff; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #eee; }
         .img-box img { width: 75%; height: 75%; object-fit: contain; }
-        
-        .nombres-box { 
-            width: 100%; margin: 5px 0;
-            display: flex; align-items: center; justify-content: center;
-        }
-        
-        .nombres-box h3 { 
-            font-size: 12px; color: var(--text); text-transform: uppercase; 
-            font-weight: 800; text-align: center;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        .status-btn { 
-            width: 100%; padding: 6px; border-radius: 8px; font-size: 9px; 
-            border: 1.5px solid var(--main); text-transform: uppercase; 
-            font-weight: 900; text-align: center; color: var(--main);
-        }
+        .nombres-box { width: 100%; margin: 5px 0; text-align: center; }
+        .nombres-box h3 { font-size: 12px; text-transform: uppercase; }
+        .status-btn { width: 100%; padding: 6px; border-radius: 8px; font-size: 9px; border: 1.5px solid var(--main); font-weight: 900; text-align: center; color: var(--main); }
         .card:focus .status-btn { background: var(--main); color: #fff; }
-
-        #modal-opciones {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            display: none; align-items: center; justify-content: center; z-index: 10000;
-        }
-        .modal-content {
-            background: #fff; width: 400px; padding: 25px; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #eee; text-align: center;
-        }
-        .btn-opcion {
-            display: block; width: 100%; padding: 15px; margin: 10px 0;
-            background: #f8f9fa; border-radius: 12px; font-size: 16px;
-            font-weight: 800; color: var(--text); border: 3px solid transparent; outline: none;
-        }
+        #modal-opciones { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); display: none; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-content { background: #fff; width: 400px; padding: 25px; border-radius: 20px; border: 1px solid #eee; text-align: center; }
+        .btn-opcion { display: block; width: 100%; padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 12px; font-size: 16px; font-weight: 800; outline: none; border: 3px solid transparent; }
         .btn-opcion.focus { border-color: var(--main); background: var(--main); color: #fff; }
-
-        #bloqueo {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; display: none; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 99999;
-        }
+        #bloqueo { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
     </style>
 </head>
 <body>
 
     <div id="bloqueo">
-        <h1 style="font-size: 22px; letter-spacing: 2px;">ACCESO RESTRINGIDO</h1>
-        <div style="border: 2px solid var(--main); padding: 15px; border-radius: 15px; background: #f9f9f9; margin: 15px 0;">
-            <span id="display-code" style="font-size: 30px; font-weight: 900; color: var(--main); letter-spacing: 4px;"></span>
+        <h1>ACCESO RESTRINGIDO</h1>
+        <div style="border: 2px solid var(--main); padding: 15px; border-radius: 15px; margin: 15px;">
+            <span id="display-code" style="font-size: 30px; font-weight: 900; color: var(--main);"></span>
         </div>
-        <p style="font-size: 10px; font-weight: bold; color: var(--main);">SISTEMA NWAKALO CONTROL</p>
     </div>
 
     <h1 id="btn-refresh" tabindex="1" onclick="window.location.reload(true)">NWAKALO TV</h1>
-    
     <div id="agenda"></div>
 
     <div id="modal-opciones">
         <div class="modal-content">
-            <h2 id="modal-titulo" style="margin-bottom:15px; font-size:16px;">SELECCIONA OPCIÓN</h2>
+            <h2 id="modal-titulo" style="margin-bottom:15px; font-size:16px;">OPCIONES</h2>
             <div id="lista-links"></div>
         </div>
     </div>
 
 <script>
+    // 1. DECLARACIÓN DE VARIABLES GLOBALES
     const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
     const ASSETS = REPO + 'assets/';
+    const misIDsAdmin = ['NW-828277'];
     let modoMenu = false;
 
-    const misIDsAdmin = ['NW-828277']; 
-
-    let miID = localStorage.getItem('nw_device_id');
-    if (!miID) {
-        miID = "NW-" + Math.floor(100000 + Math.random() * 900000);
-        localStorage.setItem('nw_device_id', miID);
+    // 2. FUNCIÓN DECODIFICADORA (PRIMERO)
+    function decodeB64(str) {
+        try {
+            var s = window.atob(str.replace(/["\s\n\r]/g, ''));
+            return decodeURIComponent(Array.prototype.map.call(s, function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        } catch(e) {
+            return null;
+        }
     }
+
+    // 3. IDENTIFICACIÓN
+    let miID = localStorage.getItem('nw_device_id') || ("NW-" + Math.floor(100000 + Math.random() * 900000));
+    localStorage.setItem('nw_device_id', miID);
     document.getElementById('display-code').innerText = miID;
+
+    // 4. LÓGICA PRINCIPAL
+    async function actualizarTV() {
+        if(modoMenu) return;
+        const container = document.getElementById('agenda');
+        
+        try {
+            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+            const b64Raw = await r.text();
+            const jsonString = decodeB64(b64Raw);
+            
+            if(!jsonString) throw new Error("Base64 Invalido");
+            
+            const evs = JSON.parse(jsonString);
+            const ahora = new Date();
+            const soyAdmin = misIDsAdmin.includes(miID);
+            
+            evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+            container.innerHTML = '';
+            
+            let procesados = [];
+            let count = 0;
+
+            evs.forEach(ev => {
+                let id = ev.e1 + ev.hora;
+                if(procesados.indexOf(id) === -1) {
+                    const fEv = new Date(ev.fecha + 'T' + ev.hora);
+                    // Ocultar si pasaron 3 horas (solo no-admins)
+                    if (!soyAdmin && (ahora - fEv) > 10800000) return;
+
+                    const bloqueado = soyAdmin ? false : (fEv - ahora) > 900000;
+                    const links = evs.filter(x => x.e1 + x.hora === id);
+                    count++;
+
+                    const card = document.createElement('div');
+                    card.className = 'card' + (bloqueado ? ' blocked' : '');
+                    card.tabIndex = count + 1;
+                    card.onclick = function() { if(!bloqueado) abrirMenu(ev, links); };
+
+                    const rival = ev.e2 && ev.e2 !== "undefined" ? ev.e2 : "";
+                    card.innerHTML = `
+                        <div class="fecha-badge">${ev.hora}</div>
+                        <div class="vs-container">
+                            <div class="img-box"><img src="${ASSETS}${ev.logo1.includes('/')?'equipos/':'deporte/'}${ev.logo1}"></div>
+                            ${rival ? '<b>VS</b>' : ''}
+                            ${rival ? '<div class="img-box"><img src="'+ASSETS+'equipos/'+ev.logo2+'"></div>' : ''}
+                        </div>
+                        <div class="nombres-box"><h3>${rival ? ev.e1+' - '+ev.e2 : ev.e1}</h3></div>
+                        <div class="status-btn">${bloqueado ? 'BLOQUEADO' : 'VER CANALES'}</div>
+                    `;
+                    container.appendChild(card);
+                    procesados.push(id);
+                }
+            });
+
+            while(count < 9) {
+                const div = document.createElement('div'); div.className = 'card empty';
+                container.appendChild(div); count++;
+            }
+        } catch (e) {
+            container.innerHTML = '<h2 style="color:red; grid-column:1/4; text-align:center;">Error: ' + e.message + '</h2>';
+        }
+    }
 
     async function validarAcceso() {
         try {
             const res = await fetch(REPO + 'autorizado.json?v=' + Date.now());
             const data = await res.json();
-            if (data.usuarios.includes(miID)) {
+            if (data.usuarios.indexOf(miID) !== -1) {
                 document.getElementById('bloqueo').style.display = 'none';
-                if(!modoMenu) actualizarTV();
+                actualizarTV();
             } else {
                 document.getElementById('bloqueo').style.display = 'flex';
             }
-        } catch (e) { console.error("Error seguridad"); }
+        } catch(e) { console.log("error login"); }
     }
 
-    function resolverRuta(logo) {
-        if (!logo || logo === "" || logo === "undefined") return ASSETS + 'default.png';
-        return logo.includes('/') ? ASSETS + 'equipos/' + logo.trim() : ASSETS + 'deporte/' + (logo.includes('.') ? logo : logo + '.png');
-    }
-
-    function formatFullFecha(strFecha, strHora) {
-        const dias = ['DOM', 'LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SAB'];
-        const f = new Date(strFecha + 'T' + strHora);
-        const dNom = dias[f.getDay()];
-        const dNum = String(f.getDate()).padStart(2, '0');
-        const mNum = String(f.getMonth() + 1).padStart(2, '0');
-        return `${dNom} ${dNum}/${mNum} | ${strHora}`;
-    }
-
-    // --- FUNCIÓN DE DECODIFICACIÓN UNIVERSAL (Soporta tildes en cualquier navegador) ---
-    function b64DecodeUnicode(str) {
-        return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    }
-
-    async function actualizarTV() {
-        if(modoMenu) return;
-        const container = document.getElementById('agenda');
-        const soyAdmin = misIDsAdmin.includes(miID);
-
-        try {
-            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
-            const text = await r.text();
-            
-            // LIMPIEZA: Quitamos comillas y espacios
-            const b64 = text.trim().replace(/["\s]/g, '');
-            
-            // Decodificamos el JSON con el método universal
-            let evs = JSON.parse(b64DecodeUnicode(b64));
-            
-            evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
-            container.innerHTML = '';
-            const ahora = new Date();
-            let count = 0;
-
-            let partidosUnicos = [];
-            let procesados = [];
-
-            evs.forEach(ev => {
-                let idPartido = ev.e1 + ev.hora;
-                if(!procesados.includes(idPartido)){
-                    let linksDelPartido = evs.filter(x => x.e1 + x.hora === idPartido);
-                    ev.todosLosLinks = linksDelPartido;
-                    partidosUnicos.push(ev);
-                    procesados.push(idPartido);
-                }
-            });
-
-            partidosUnicos.forEach((ev) => {
-                const fEv = new Date(ev.fecha + 'T' + ev.hora); 
-                
-                // Si NO eres admin, ocultar tras 3 horas de inicio (10800000 ms)
-                if (!soyAdmin && (ahora - fEv) > 10800000) return; 
-
-                const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
-                count++;
-
-                const card = document.createElement('div');
-                card.className = "card" + (estaBloqueado ? " blocked" : "");
-                card.tabIndex = count + 1;
-
-                card.onclick = function() { if(!estaBloqueado) abrirMenu(ev); };
-
-                const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
-                card.innerHTML = 
-                    '<div class="fecha-badge">' + formatFullFecha(ev.fecha, ev.hora) + '</div>' +
-                    '<div class="vs-container">' +
-                        '<div class="img-box"><img src="' + resolverRuta(ev.logo1) + '" onerror="this.src=\'' + ASSETS + 'default.png\'"></div>' +
-                        (tieneRival ? '<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="' + resolverRuta(ev.logo2) + '" onerror="this.src=\'' + ASSETS + 'default.png\'"></div>' : '') +
-                    '</div>' +
-                    '<div class="nombres-box">' +
-                        '<h3>' + (tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1) + '</h3>' +
-                    '</div>' +
-                    '<div class="status-btn">' + (estaBloqueado ? 'BLOQUEADO' : 'VER CANALES') + '</div>';
-                
-                container.appendChild(card);
-            });
-
-            while (count < 9) {
-                count++;
-                const empty = document.createElement('div');
-                empty.className = 'card empty';
-                container.appendChild(empty);
-            }
-
-            if(!document.activeElement || document.activeElement.tagName === 'BODY') {
-                const first = container.querySelector('.card:not(.empty)');
-                if(first) first.focus();
-            }
-
-        } catch (e) { 
-            console.error("Error crítico:", e);
-            container.innerHTML = '<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">⚠️ ERROR: El archivo eventos.json no es un Base64 válido.</p>';
-        }
-    }
-
-    function abrirMenu(evento) {
+    function abrirMenu(ev, links) {
         modoMenu = true;
-        const modal = document.getElementById('modal-opciones');
-        const lista = document.getElementById('lista-links');
-        document.getElementById('modal-titulo').innerText = evento.e1 + (evento.e2 ? " vs " + evento.e2 : "");
-        
-        lista.innerHTML = "";
-        evento.todosLosLinks.forEach(function(item) {
-            const btn = document.createElement('div');
-            btn.className = "btn-opcion";
-            btn.innerText = item.canal || "Ver Canal";
-            btn.onclick = function() {
-                let idLimpia = item.link.replace('acestream://', '').trim();
-                window.location.href = "acestream://" + idLimpia;
-            };
-            lista.appendChild(btn);
+        const m = document.getElementById('modal-opciones');
+        const l = document.getElementById('lista-links');
+        document.getElementById('modal-titulo').innerText = ev.e1;
+        l.innerHTML = "";
+        links.forEach(link => {
+            const b = document.createElement('div');
+            b.className = "btn-opcion";
+            b.innerText = link.canal;
+            b.onclick = function() { window.location.href = "acestream://" + link.link; };
+            l.appendChild(b);
         });
-
-        const btnCerrar = document.createElement('div');
-        btnCerrar.className = "btn-opcion";
-        btnCerrar.innerText = "❌ VOLVER";
-        btnCerrar.style.color = "#ff4444";
-        btnCerrar.onclick = cerrarMenu;
-        lista.appendChild(btnCerrar);
-
-        modal.style.display = "flex";
-        lista.querySelector('.btn-opcion').classList.add('focus');
+        const c = document.createElement('div');
+        c.className = "btn-opcion"; c.innerText = "CERRAR"; c.onclick = function(){ m.style.display="none"; modoMenu=false; };
+        l.appendChild(c);
+        m.style.display = "flex";
+        l.querySelector('.btn-opcion').focus();
+        l.querySelector('.btn-opcion').classList.add('focus');
     }
 
-    function cerrarMenu() {
-        modoMenu = false;
-        document.getElementById('modal-opciones').style.display = "none";
-        actualizarTV(); 
-    }
-
+    // Manejo de mando
     document.addEventListener('keydown', function(e) {
-        if (e.keyCode === 27 || e.keyCode === 461 || e.keyCode === 10009) {
-            if(modoMenu) { cerrarMenu(); e.preventDefault(); }
-            return;
-        }
-
-        const current = document.activeElement;
-
-        if (!modoMenu) {
-            const h1 = document.getElementById('btn-refresh');
-            const cards = Array.from(document.querySelectorAll('.card'));
-            const totalElements = [h1].concat(cards);
-            const index = totalElements.indexOf(current);
-            let next = index;
-
-            switch(e.key) {
-                case 'ArrowRight': if (index > 0 && (index) % 3 !== 0) next = index + 1; break;
-                case 'ArrowLeft': if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; break;
-                case 'ArrowDown': if (index === 0) next = 1; else next = index + 3; break;
-                case 'ArrowUp': if (index <= 3 && index > 0) next = 0; else if (index > 3) next = index - 3; break;
-                case 'Enter': current.click(); break;
-            }
-
-            if (totalElements[next] && !totalElements[next].classList.contains('empty')) {
-                totalElements[next].focus();
-                e.preventDefault();
-            }
-        } else {
-            const btns = Array.from(document.querySelectorAll('.btn-opcion'));
-            let act = btns.findIndex(function(b) { return b.classList.contains('focus'); });
-            if(act === -1) act = 0;
-            btns[act].classList.remove('focus');
-            if(e.key === 'ArrowDown') act = (act + 1) % btns.length;
-            if(e.key === 'ArrowUp') act = (act - 1 + btns.length) % btns.length;
-            if(e.key === 'Enter') btns[act].click();
-            btns[act].classList.add('focus');
-            e.preventDefault();
+        const cur = document.activeElement;
+        if(e.key === "Enter") cur.click();
+        if(modoMenu) {
+            const btns = document.querySelectorAll('.btn-opcion');
+            let idx = Array.from(btns).indexOf(cur);
+            if(e.key === "ArrowDown") (btns[idx+1] || btns[0]).focus();
+            if(e.key === "ArrowUp") (btns[idx-1] || btns[btns.length-1]).focus();
+            btns.forEach(b => b.classList.toggle('focus', b === document.activeElement));
         }
     });
 
     validarAcceso();
-    setInterval(validarAcceso, 60000);
 </script>
 </body>
 </html>
