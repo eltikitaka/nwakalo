@@ -153,7 +153,6 @@
     const ASSETS = REPO + 'assets/';
     let modoMenu = false;
 
-    // --- CONFIGURACIÓN ADMIN ---
     const misIDsAdmin = ['NW-828277']; 
 
     let miID = localStorage.getItem('nw_device_id');
@@ -199,11 +198,17 @@
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
             const text = await r.text();
             
-            // LIMPIEZA CLAVE: Eliminamos comillas, espacios y saltos de línea del Base64
-            const b64 = text.trim().replace(/["\s\n\r]/g, '');
+            // LIMPIEZA: Quitamos comillas y espacios
+            const b64 = text.trim().replace(/["\s]/g, '');
             
-            // Decodificamos y parseamos el JSON
-            let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+            // DECODIFICACIÓN ROBUSTA (Soporta tildes y caracteres especiales)
+            const binString = window.atob(b64);
+            const bytes = new Uint8Array(binString.length);
+            for (let i = 0; i < binString.length; i++) {
+                bytes[i] = binString.charCodeAt(i);
+            }
+            const decodedText = new TextDecoder().decode(bytes);
+            let evs = JSON.parse(decodedText);
             
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
             container.innerHTML = '';
@@ -266,8 +271,8 @@
             }
 
         } catch (e) { 
-            console.error("Error cargando JSON:", e);
-            container.innerHTML = `<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">Error de datos en eventos.json</p>`;
+            console.error("Error crítico:", e);
+            container.innerHTML = `<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">⚠️ ERROR DE FORMATO EN JSON</p>`;
         }
     }
 
