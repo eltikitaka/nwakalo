@@ -189,6 +189,13 @@
         return `${dNom} ${dNum}/${mNum} | ${strHora}`;
     }
 
+    // --- FUNCIÓN DE DECODIFICACIÓN UNIVERSAL (Soporta tildes en cualquier navegador) ---
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
     async function actualizarTV() {
         if(modoMenu) return;
         const container = document.getElementById('agenda');
@@ -201,14 +208,8 @@
             // LIMPIEZA: Quitamos comillas y espacios
             const b64 = text.trim().replace(/["\s]/g, '');
             
-            // DECODIFICACIÓN ROBUSTA (Soporta tildes y caracteres especiales)
-            const binString = window.atob(b64);
-            const bytes = new Uint8Array(binString.length);
-            for (let i = 0; i < binString.length; i++) {
-                bytes[i] = binString.charCodeAt(i);
-            }
-            const decodedText = new TextDecoder().decode(bytes);
-            let evs = JSON.parse(decodedText);
+            // Decodificamos el JSON con el método universal
+            let evs = JSON.parse(b64DecodeUnicode(b64));
             
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
             container.innerHTML = '';
@@ -231,30 +232,30 @@
             partidosUnicos.forEach((ev) => {
                 const fEv = new Date(ev.fecha + 'T' + ev.hora); 
                 
-                // Si NO eres admin, ocultar tras 3 horas de inicio
-                if (!soyAdmin && (ahora - fEv) / 3600000 > 3) return; 
+                // Si NO eres admin, ocultar tras 3 horas de inicio (10800000 ms)
+                if (!soyAdmin && (ahora - fEv) > 10800000) return; 
 
                 const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
                 count++;
 
                 const card = document.createElement('div');
-                card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
+                card.className = "card" + (estaBloqueado ? " blocked" : "");
                 card.tabIndex = count + 1;
 
-                card.onclick = () => { if(!estaBloqueado) abrirMenu(ev); };
+                card.onclick = function() { if(!estaBloqueado) abrirMenu(ev); };
 
                 const tieneRival = ev.e2 && ev.e2 !== "" && ev.e2 !== "undefined";
-                card.innerHTML = `
-                    <div class="fecha-badge">${formatFullFecha(ev.fecha, ev.hora)}</div>
-                    <div class="vs-container">
-                        <div class="img-box"><img src="${resolverRuta(ev.logo1)}" onerror="this.src='${ASSETS}default.png'"></div>
-                        ${tieneRival ? `<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="${resolverRuta(ev.logo2)}" onerror="this.src='${ASSETS}default.png'"></div>` : ''}
-                    </div>
-                    <div class="nombres-box">
-                        <h3>${tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1}</h3>
-                    </div>
-                    <div class="status-btn">${estaBloqueado ? 'BLOQUEADO' : 'VER CANALES'}</div>
-                `;
+                card.innerHTML = 
+                    '<div class="fecha-badge">' + formatFullFecha(ev.fecha, ev.hora) + '</div>' +
+                    '<div class="vs-container">' +
+                        '<div class="img-box"><img src="' + resolverRuta(ev.logo1) + '" onerror="this.src=\'' + ASSETS + 'default.png\'"></div>' +
+                        (tieneRival ? '<b style="color:var(--main); font-size: 14px;">VS</b><div class="img-box"><img src="' + resolverRuta(ev.logo2) + '" onerror="this.src=\'' + ASSETS + 'default.png\'"></div>' : '') +
+                    '</div>' +
+                    '<div class="nombres-box">' +
+                        '<h3>' + (tieneRival ? ev.e1 + " - " + ev.e2 : ev.e1) + '</h3>' +
+                    '</div>' +
+                    '<div class="status-btn">' + (estaBloqueado ? 'BLOQUEADO' : 'VER CANALES') + '</div>';
+                
                 container.appendChild(card);
             });
 
@@ -272,7 +273,7 @@
 
         } catch (e) { 
             console.error("Error crítico:", e);
-            container.innerHTML = `<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">⚠️ ERROR DE FORMATO EN JSON</p>`;
+            container.innerHTML = '<p style="grid-column: 1/4; color:red; text-align:center; padding: 20px;">⚠️ ERROR: El archivo eventos.json no es un Base64 válido.</p>';
         }
     }
 
@@ -283,11 +284,11 @@
         document.getElementById('modal-titulo').innerText = evento.e1 + (evento.e2 ? " vs " + evento.e2 : "");
         
         lista.innerHTML = "";
-        evento.todosLosLinks.forEach(item => {
+        evento.todosLosLinks.forEach(function(item) {
             const btn = document.createElement('div');
             btn.className = "btn-opcion";
             btn.innerText = item.canal || "Ver Canal";
-            btn.onclick = () => {
+            btn.onclick = function() {
                 let idLimpia = item.link.replace('acestream://', '').trim();
                 window.location.href = "acestream://" + idLimpia;
             };
@@ -311,7 +312,7 @@
         actualizarTV(); 
     }
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', function(e) {
         if (e.keyCode === 27 || e.keyCode === 461 || e.keyCode === 10009) {
             if(modoMenu) { cerrarMenu(); e.preventDefault(); }
             return;
@@ -322,28 +323,16 @@
         if (!modoMenu) {
             const h1 = document.getElementById('btn-refresh');
             const cards = Array.from(document.querySelectorAll('.card'));
-            const totalElements = [h1, ...cards];
+            const totalElements = [h1].concat(cards);
             const index = totalElements.indexOf(current);
             let next = index;
 
             switch(e.key) {
-                case 'ArrowRight': 
-                    if (index > 0 && (index) % 3 !== 0) next = index + 1; 
-                    break;
-                case 'ArrowLeft': 
-                    if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; 
-                    break;
-                case 'ArrowDown': 
-                    if (index === 0) next = 1; 
-                    else next = index + 3; 
-                    break;
-                case 'ArrowUp': 
-                    if (index <= 3 && index > 0) next = 0; 
-                    else if (index > 3) next = index - 3;
-                    break;
-                case 'Enter': 
-                    current.click(); 
-                    break;
+                case 'ArrowRight': if (index > 0 && (index) % 3 !== 0) next = index + 1; break;
+                case 'ArrowLeft': if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; break;
+                case 'ArrowDown': if (index === 0) next = 1; else next = index + 3; break;
+                case 'ArrowUp': if (index <= 3 && index > 0) next = 0; else if (index > 3) next = index - 3; break;
+                case 'Enter': current.click(); break;
             }
 
             if (totalElements[next] && !totalElements[next].classList.contains('empty')) {
@@ -352,7 +341,7 @@
             }
         } else {
             const btns = Array.from(document.querySelectorAll('.btn-opcion'));
-            let act = btns.findIndex(b => b.classList.contains('focus'));
+            let act = btns.findIndex(function(b) { return b.classList.contains('focus'); });
             if(act === -1) act = 0;
             btns[act].classList.remove('focus');
             if(e.key === 'ArrowDown') act = (act + 1) % btns.length;
