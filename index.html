@@ -223,7 +223,7 @@
 
             partidosUnicos.forEach((ev) => {
                 const fEv = new Date(ev.fecha + 'T' + ev.hora); 
-                if (!soyAdmin && (ahora - fEv) / 3600000 > 3) return; 
+                if ((ahora - fEv) / 3600000 > 3) return; 
 
                 // Lógica de bloqueo: Admin siempre false, otros 15 minutos antes.
                 const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
