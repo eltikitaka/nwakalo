@@ -33,7 +33,6 @@
             cursor: pointer;
         }
 
-        /* Efecto visual al seleccionar el título con el mando */
         h1:focus {
             color: var(--main);
             transform: scale(1.1);
@@ -154,8 +153,6 @@
     const ASSETS = REPO + 'assets/';
     let modoMenu = false;
 
-    // --- CONFIGURACIÓN ADMIN ---
-    // Pon aquí tu ID (la que sale en el bloqueo) para que nunca se te bloqueen los canales
     const misIDsAdmin = ['NW-828277']; 
 
     let miID = localStorage.getItem('nw_device_id');
@@ -200,6 +197,8 @@
         try {
             const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
             const text = await r.text();
+            
+            // Reparación del Base64 (limpia comillas y espacios antes de decodificar)
             const b64 = text.trim().replace(/["\s]/g, '');
             let evs = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
             
@@ -223,15 +222,16 @@
 
             partidosUnicos.forEach((ev) => {
                 const fEv = new Date(ev.fecha + 'T' + ev.hora); 
-                if ((ahora - fEv) / 3600000 > 3) return; 
+                
+                // Si NO eres admin, ocultar tras 3 horas de inicio
+                if (!soyAdmin && (ahora - fEv) / 3600000 > 3) return; 
 
-                // Lógica de bloqueo: Admin siempre false, otros 15 minutos antes.
                 const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
                 count++;
 
                 const card = document.createElement('div');
                 card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
-                card.tabIndex = count + 1; // +1 porque el h1 es el 1
+                card.tabIndex = count + 1;
 
                 card.onclick = () => { if(!estaBloqueado) abrirMenu(ev); };
 
@@ -301,7 +301,6 @@
     }
 
     document.addEventListener('keydown', (e) => {
-        // Gestión del botón Atrás para cerrar menús
         if (e.keyCode === 27 || e.keyCode === 461 || e.keyCode === 10009) {
             if(modoMenu) { cerrarMenu(); e.preventDefault(); }
             return;
@@ -324,11 +323,11 @@
                     if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; 
                     break;
                 case 'ArrowDown': 
-                    if (index === 0) next = 1; // Del título a la primera tarjeta
+                    if (index === 0) next = 1; 
                     else next = index + 3; 
                     break;
                 case 'ArrowUp': 
-                    if (index <= 3 && index > 0) next = 0; // De la primera fila al título
+                    if (index <= 3 && index > 0) next = 0; 
                     else if (index > 3) next = index - 3;
                     break;
                 case 'Enter': 
