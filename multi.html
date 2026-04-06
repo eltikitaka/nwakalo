@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - ULTIMATE</title>
+    <title>NWAKALO DUAL - FORCE MODE</title>
     <style>
         :root { --main: #00cc6a; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,8 +11,8 @@
         .player-box:focus { border-color: var(--main); outline: none; }
         .player-box.audio-on { border-bottom: 8px solid var(--main); }
         video { width: 100%; height: 100%; object-fit: contain; display: none; background: #000; }
-        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; z-index: 5; background: rgba(0,0,0,0.5); }
-        #selector-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; z-index: 5; background: rgba(0,0,0,0.6); text-align: center; }
+        #selector-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { width: 85%; max-width: 500px; background: #fff; padding: 20px; border-radius: 20px; color: #000; }
         .event-item { padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-weight: bold; text-align: center; text-transform: uppercase; font-size: 13px; }
         .event-item.focus { background: var(--main); color: #fff; }
@@ -93,26 +93,33 @@
         const v = document.getElementById(`video${ladoSeleccionando}`);
         const ov = document.getElementById(`ov${ladoSeleccionando}`);
         
-        // RESET TOTAL DEL VÍDEO ANTES DE CARGAR
+        // Limpieza profunda del buffer del vídeo
         v.pause();
-        v.removeAttribute('src');
+        v.src = "";
         v.load();
 
-        // Parámetro SID aleatorio para que AceStream no se lie
-        const sid = Math.floor(Math.random() * 1000);
-        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8&sid=${sid}`;
+        // USAMOS IDENTIFICADORES DIFERENTES PARA CADA LADO (Crucial)
+        const sid = "pantalla_" + ladoSeleccionando + "_" + Math.floor(Math.random() * 999);
+        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8&_=${Date.now()}&sid=${sid}`;
+        
+        ov.innerHTML = "<h2>CARGANDO...</h2><p>ESPERA 5 SEG</p>";
         
         setTimeout(() => {
             v.src = streamUrl;
             v.style.display = "block";
-            ov.style.display = "none";
             v.muted = true;
-            v.play().then(() => {
-                actualizarAudio();
-            }).catch(err => {
-                console.log("Esperando datos...");
-            });
-        }, 400);
+            
+            const promise = v.play();
+            if (promise !== undefined) {
+                promise.then(() => {
+                    ov.style.display = "none";
+                    actualizarAudio();
+                }).catch(err => {
+                    // Si falla el primer intento, reintentamos a los 2 segundos
+                    setTimeout(() => { v.play(); ov.style.display = "none"; }, 2000);
+                });
+            }
+        }, 800);
         
         document.getElementById('selector-modal').style.display = "none";
     }
