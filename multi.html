@@ -2,61 +2,90 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - FINAL FIX</title>
+    <title>NWAKALO DUAL - WHITE EDITION</title>
     <style>
         :root { --main: #00cc6a; --bg: #000; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { height: 100vh; width: 100vw; background: #000; display: flex; overflow: hidden; font-family: sans-serif; color: #fff; }
+        
+        body { 
+            height: 100vh; width: 100vw; background: #000; 
+            display: flex; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; 
+        }
 
         .player-box {
             flex: 1; height: 100%; border: 3px solid #333;
             position: relative; background: #000;
             display: flex; align-items: center; justify-content: center;
         }
-        .player-box:focus { border-color: var(--main); outline: none; }
-        
-        /* REPRODUCTOR (CSS CLAVE PARA ANDROID TV) */
+
+        /* EFECTO DE FOCO MANDOPEPE */
+        .player-box:focus { border-color: var(--main); outline: none; z-index: 10; }
+        .player-box.audio-on { border-bottom: 10px solid var(--main); }
+
+        /* REPRODUCTOR NATIVO */
         video { 
             width: 100%; height: 100%; 
             object-fit: contain; 
             display: none; 
             position: absolute; top: 0; left: 0;
-            pointer-events: none; /* Evita que el mando se atasque en los controles de vídeo */
+            pointer-events: none; 
         }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: flex; flex-direction: column; 
+            background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
             align-items: center; justify-content: center;
-            z-index: 5; text-align: center; font-size: 11px;
+            z-index: 5; text-align: center; color: #fff;
         }
+        .overlay h2 { font-size: 1.5rem; color: var(--main); margin-bottom: 10px; }
 
-        /* MODAL */
+        /* MODAL DE SELECCIÓN */
         #selector-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95); display: none; 
+            background: rgba(255,255,255,0.96); display: none; 
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
         }
-        .modal-content { width: 80%; background: #fff; padding: 20px; border-radius: 20px; color: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .event-item { padding: 12px; margin: 5px 0; border: 1px solid #eee; border-radius: 10px; font-weight: bold; text-align: center; text-transform: uppercase; font-size: 12px; }
-        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); }
+        .modal-content { 
+            width: 85%; max-width: 500px; background: #fff; padding: 25px; 
+            border-radius: 25px; color: #000; box-shadow: 0 15px 50px rgba(0,0,0,0.2); 
+        }
+        .event-item { 
+            padding: 15px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; 
+            font-weight: 800; text-align: center; text-transform: uppercase; font-size: 13px; 
+        }
+        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); transform: scale(1.03); }
+
+        #info-audio {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--main); color: #fff; padding: 8px 25px;
+            border-radius: 30px; font-size: 11px; font-weight: 900; z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
-    <div id="slot1" class="player-box focus" tabindex="1">
-        <div class="overlay" id="ov1">PANTALLA 1<br>PULSA OK</div>
-        <video id="video1" preload="metadata" playsinline></video>
+    <div id="info-audio">AUDIO: LADO IZQUIERDO</div>
+
+    <div id="slot1" class="player-box focus audio-on" tabindex="1">
+        <div class="overlay" id="ov1">
+            <h2>PANTALLA 1</h2>
+            <p>PULSA OK PARA ELEGIR</p>
+        </div>
+        <video id="video1" preload="auto" autoplay muted playsinline></video>
     </div>
 
     <div id="slot2" class="player-box" tabindex="2">
-        <div class="overlay" id="ov2">PANTALLA 2<br>PULSA OK</div>
-        <video id="video2" preload="metadata" playsinline></video>
+        <div class="overlay" id="ov2">
+            <h2>PANTALLA 2</h2>
+            <p>PULSA OK PARA ELEGIR</p>
+        </div>
+        <video id="video2" preload="auto" autoplay muted playsinline></video>
     </div>
 
     <div id="selector-modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-bottom:15px; text-align:center; font-size:16px;"></h2>
+            <h2 id="modal-title" style="margin-bottom:20px; text-align:center; font-size:18px; color:#333;"></h2>
             <div id="event-list"></div>
         </div>
     </div>
@@ -67,8 +96,8 @@
     let partidosUnicos = [];
     let ladoSeleccionando = 1;
     let menuNivel = "partidos";
+    let partidoElegido = null;
 
-    // Decodificador B64 seguro
     function b64DecodeUnicode(str) {
         try { return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); } 
         catch(e) { return decodeURIComponent(escape(window.atob(str))); }
@@ -80,7 +109,9 @@
             const text = await r.text();
             const b64 = text.trim().replace(/["\s]/g, '');
             todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
+            
             let procesados = [];
+            partidosUnicos = [];
             todosLosEventos.forEach(ev => {
                 let id = ev.e1 + ev.hora;
                 if(!procesados.includes(id)){
@@ -89,7 +120,7 @@
                     procesados.push(id);
                 }
             });
-        } catch (e) { console.error("Error multi-load"); }
+        } catch (e) { console.error("Error cargando eventos"); }
     }
 
     function abrirMenu(lado) {
@@ -101,17 +132,20 @@
 
     function renderizar(lista) {
         const divLista = document.getElementById('event-list');
-        divLista.innerHTML = "";
         const titleModal = document.getElementById('modal-title');
-        titleModal.innerText = menuNivel === "partidos" ? "ELIGE PARTIDO" : "ELIGE CANAL";
+        divLista.innerHTML = "";
+        
+        titleModal.innerText = menuNivel === "partidos" ? "SELECCIONA PARTIDO" : "SELECCIONA CANAL";
         
         lista.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
-            el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "Canal");
+            el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "CANAL " + (i+1));
+            
             el.onclick = () => {
                 if(menuNivel === "partidos") {
                     menuNivel = "canales";
+                    partidoElegido = item;
                     renderizar(item.linksDelPartido);
                 } else {
                     lanzarVideo(item.link);
@@ -126,40 +160,94 @@
         const v = document.getElementById(`video${ladoSeleccionando}`);
         const ov = document.getElementById(`ov${ladoSeleccionando}`);
         
-        // --- CAMBIO CLAVE: URL CORRECTA PARA HLS EN ANDROID TV (m3u8) ---
-        // Usamos http://127.0.0.1 porque corre en el mismo stick
+        // URL EXACTA PARA ANDROID WEBVIEW
         const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8`;
         
         v.src = streamUrl;
         v.style.display = "block";
         ov.style.display = "none";
         
-        // Truco para silenciar el segundo si el primero ya suena
-        if(ladoSeleccionando === 2) v.muted = true;
+        // El truco del silencio para forzar el arranque
+        v.muted = true;
+        v.load();
         
-        v.load(); // Carga la metadata
-        v.play().catch(e => console.error("Auto-play blocked")); 
+        setTimeout(() => {
+            v.play().then(() => {
+                // Si este lado es el que tiene el foco, le damos voz
+                actualizarAudio();
+            }).catch(e => {
+                ov.style.display = "flex";
+                ov.innerHTML = "ERROR REPRODUCCIÓN<br>REINTENTA CANAL";
+            });
+        }, 600);
         
         document.getElementById('selector-modal').style.display = "none";
     }
 
+    function actualizarAudio() {
+        const v1 = document.getElementById('video1');
+        const v2 = document.getElementById('video2');
+        const indicador = document.getElementById('info-audio');
+        const s1 = document.getElementById('slot1');
+        const s2 = document.getElementById('slot2');
+
+        if (document.activeElement.id === 'slot1') {
+            v1.muted = false;
+            v2.muted = true;
+            indicador.innerText = "AUDIO: LADO IZQUIERDO";
+            s1.classList.add('audio-on');
+            s2.classList.remove('audio-on');
+        } else {
+            v1.muted = true;
+            v2.muted = false;
+            indicador.innerText = "AUDIO: LADO DERECHO";
+            s1.classList.remove('audio-on');
+            s2.classList.add('audio-on');
+        }
+    }
+
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('selector-modal');
+        const current = document.activeElement;
+
+        // CONTROLES DENTRO DEL MENÚ
         if (modal.style.display === "flex") {
             const items = Array.from(document.querySelectorAll('.event-item'));
             let idx = items.findIndex(i => i.classList.contains('focus'));
-            items[idx].classList.remove('focus');
-            if(e.key === 'ArrowDown') idx = (idx + 1) % items.length;
-            if(e.key === 'ArrowUp') idx = (idx - 1 + items.length) % items.length;
-            if(e.key === 'Enter') items[idx].click();
-            if(e.key === 'Backspace' || e.keyCode === 461) modal.style.display = "none";
-            items[idx].classList.add('focus');
+            
+            if(e.key === 'ArrowDown') {
+                items[idx].classList.remove('focus');
+                idx = (idx + 1) % items.length;
+                items[idx].classList.add('focus');
+            } else if(e.key === 'ArrowUp') {
+                items[idx].classList.remove('focus');
+                idx = (idx - 1 + items.length) % items.length;
+                items[idx].classList.add('focus');
+            } else if(e.key === 'Enter') {
+                items[idx].click();
+            } else if(e.key === 'Backspace' || e.keyCode === 461) {
+                if(menuNivel === "canales") {
+                    menuNivel = "partidos";
+                    renderizar(partidosUnicos);
+                } else {
+                    modal.style.display = "none";
+                }
+            }
             e.preventDefault();
-        } else {
-            if(e.key === 'ArrowRight') document.getElementById('slot2').focus();
-            if(e.key === 'ArrowLeft') document.getElementById('slot1').focus();
-            if(e.key === 'Enter') abrirMenu(document.activeElement.id === 'slot1' ? 1 : 2);
-            if(e.key === 'Backspace' || e.keyCode === 461) window.location.href = 'index.html';
+            return;
+        }
+
+        // NAVEGACIÓN ENTRE PANTALLAS
+        if(e.key === 'ArrowRight') {
+            document.getElementById('slot2').focus();
+            actualizarAudio();
+        } else if(e.key === 'ArrowLeft') {
+            document.getElementById('slot1').focus();
+            actualizarAudio();
+        } else if(e.key === 'Enter') {
+            abrirMenu(current.id === 'slot1' ? 1 : 2);
+        } else if(e.key === 'Backspace' || e.keyCode === 461) {
+            window.location.href = 'index.html';
         }
     });
 
