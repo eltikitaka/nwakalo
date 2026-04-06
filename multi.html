@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - TVBRO EDITION</title>
+    <title>NWAKALO DUAL - TVBRO AUTOFIX</title>
     <style>
         :root { --main: #00cc6a; --bg: #000; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,44 +18,48 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* FOCO DEL MANDO */
+        /* EFECTO FOCO MANDOPEPE */
         .player-box:focus { border-color: var(--main); outline: none; z-index: 10; }
-        .player-box.audio-active { border-bottom: 10px solid var(--main); }
+        .player-box.audio-on { border-bottom: 10px solid var(--main); }
 
-        /* VIDEO NATIVO (HLS) */
+        /* REPRODUCTOR NATIVO */
         video { 
             width: 100%; height: 100%; 
             object-fit: contain; 
             display: none; 
             position: absolute; top: 0; left: 0;
-            background: #000;
+            pointer-events: none; /* Evita que el mando se atasque en los controles de vídeo nativos */
         }
 
         .overlay {
-            position: absolute; z-index: 5; text-align: center; color: #fff;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
+            z-index: 5; text-align: center; color: #fff;
         }
-        .overlay h2 { font-size: 1.2rem; color: var(--main); margin-bottom: 5px; }
+        .overlay h2 { font-size: 1.5rem; color: var(--main); margin-bottom: 10px; }
 
         /* MODAL DE SELECCIÓN */
         #selector-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95); display: none; 
+            background: rgba(255,255,255,0.96); display: none; 
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
         }
         .modal-content { 
-            width: 80%; max-width: 500px; background: #fff; padding: 20px; 
-            border-radius: 20px; color: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            width: 85%; max-width: 500px; background: #fff; padding: 25px; 
+            border-radius: 25px; color: #000; box-shadow: 0 15px 50px rgba(0,0,0,0.2); 
         }
         .event-item { 
-            padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; 
-            font-weight: bold; text-align: center; text-transform: uppercase; font-size: 13px; 
+            padding: 15px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; 
+            font-weight: 800; text-align: center; text-transform: uppercase; font-size: 13px; 
         }
-        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); transform: scale(1.05); }
+        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); transform: scale(1.03); }
 
         #bar-info {
-            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
-            background: var(--main); color: #fff; padding: 5px 20px;
-            border-radius: 20px; font-size: 10px; font-weight: 900; z-index: 100;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--main); color: #fff; padding: 8px 25px;
+            border-radius: 30px; font-size: 11px; font-weight: 900; z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -63,25 +67,25 @@
 
     <div id="bar-info">AUDIO: LADO IZQUIERDO</div>
 
-    <div id="slot1" class="player-box focus audio-active" tabindex="1">
+    <div id="slot1" class="player-box focus audio-on" tabindex="1">
         <div class="overlay" id="ov1">
             <h2>PANTALLA 1</h2>
-            <p>PULSA OK</p>
+            <p>PULSA OK PARA ELEGIR</p>
         </div>
-        <video id="video1" autoplay muted playsinline></video>
+        <video id="video1" autoplay muted playsinline webkit-playsinline></video>
     </div>
 
     <div id="slot2" class="player-box" tabindex="2">
         <div class="overlay" id="ov2">
             <h2>PANTALLA 2</h2>
-            <p>PULSA OK</p>
+            <p>PULSA OK PARA ELEGIR</p>
         </div>
-        <video id="video2" autoplay muted playsinline></video>
+        <video id="video2" autoplay muted playsinline webkit-playsinline></video>
     </div>
 
     <div id="selector-modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-bottom:15px; text-align:center; font-size:16px;"></h2>
+            <h2 id="modal-title" style="margin-bottom:20px; text-align:center; font-size:18px; color:#333;">ELIGE</h2>
             <div id="event-list"></div>
         </div>
     </div>
@@ -92,6 +96,7 @@
     let partidosUnicos = [];
     let ladoSeleccionando = 1;
     let menuNivel = "partidos";
+    let partidoElegido = null;
 
     function b64DecodeUnicode(str) {
         try { return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); } 
@@ -99,19 +104,23 @@
     }
 
     async function cargarDatos() {
-        const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
-        const text = await r.text();
-        const b64 = text.trim().replace(/["\s]/g, '');
-        todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
-        let procesados = [];
-        todosLosEventos.forEach(ev => {
-            let id = ev.e1 + ev.hora;
-            if(!procesados.includes(id)){
-                ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
-                partidosUnicos.push(ev);
-                procesados.push(id);
-            }
-        });
+        try {
+            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+            const text = await r.text();
+            const b64 = text.trim().replace(/["\s]/g, '');
+            todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
+            
+            let procesados = [];
+            partidosUnicos = [];
+            todosLosEventos.forEach(ev => {
+                let id = ev.e1 + ev.hora;
+                if(!procesados.includes(id)){
+                    ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
+                    partidosUnicos.push(ev);
+                    procesados.push(id);
+                }
+            });
+        } catch (e) { console.error("Error cargando eventos"); }
     }
 
     function abrirMenu(lado) {
@@ -123,16 +132,20 @@
 
     function renderizar(lista) {
         const divLista = document.getElementById('event-list');
+        const titleModal = document.getElementById('modal-title');
         divLista.innerHTML = "";
-        document.getElementById('modal-title').innerText = menuNivel === "partidos" ? "ELIGE PARTIDO" : "ELIGE CANAL";
+        
+        titleModal.innerText = menuNivel === "partidos" ? "SELECCIONA PARTIDO" : "SELECCIONA CANAL";
         
         lista.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
             el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "CANAL " + (i+1));
+            
             el.onclick = () => {
                 if(menuNivel === "partidos") {
                     menuNivel = "canales";
+                    partidoElegido = item;
                     renderizar(item.linksDelPartido);
                 } else {
                     lanzarVideo(item.link);
@@ -143,45 +156,64 @@
     }
 
     function lanzarVideo(acelink) {
-        const id = acelink.replace('acestream://', '').trim();
+        const idAce = acelink.replace('acestream://', '').trim();
         const v = document.getElementById(`video${ladoSeleccionando}`);
         const ov = document.getElementById(`ov${ladoSeleccionando}`);
         
-        // URL PARA HLS NATIVO EN NAVEGADOR
-        v.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${id}&output=m3u8`;
+        // URL PARA HLS NATIVO EN NAVEGADOR (TVBro)
+        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8`;
+        
+        v.src = streamUrl;
         v.style.display = "block";
         ov.style.display = "none";
-        v.muted = true; // Imprescindible para autoplay
+        
+        // --- EL TRUCO FINAL ---
+        v.muted = true; // Imprescindible para autoplay, forzamos mute antes de cargar.
         v.load();
-        v.play();
+        
+        setTimeout(() => {
+            v.play().then(() => {
+                // Si este lado es el que tiene el foco, le damos voz tras un pequeño delay
+                setTimeout(actualizarAudio, 100);
+            }).catch(e => {
+                ov.style.display = "flex";
+                ov.innerHTML = "ERROR REPRODUCCIÓN<br>REINTENTA CANAL";
+            });
+        }, 500);
         
         document.getElementById('selector-modal').style.display = "none";
-        setTimeout(actualizarAudio, 1000);
     }
 
     function actualizarAudio() {
         const v1 = document.getElementById('video1');
         const v2 = document.getElementById('video2');
+        const indicador = document.getElementById('bar-info');
         const s1 = document.getElementById('slot1');
         const s2 = document.getElementById('slot2');
-        const info = document.getElementById('bar-info');
 
         if (document.activeElement.id === 'slot1') {
-            v1.muted = false; v2.muted = true;
-            s1.classList.add('audio-active'); s2.classList.remove('audio-active');
-            info.innerText = "AUDIO: LADO IZQUIERDO";
+            v1.muted = false;
+            v2.muted = true;
+            indicador.innerText = "AUDIO: LADO IZQUIERDO";
+            s1.classList.add('audio-on');
+            s2.classList.remove('audio-on');
         } else {
-            v1.muted = true; v2.muted = false;
-            s1.classList.remove('audio-active'); s2.classList.add('audio-active');
-            info.innerText = "AUDIO: LADO DERECHO";
+            v1.muted = true;
+            v2.muted = false;
+            indicador.innerText = "AUDIO: LADO DERECHO";
+            s1.classList.remove('audio-on');
+            s2.classList.add('audio-on');
         }
     }
 
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('selector-modal');
+        const current = document.activeElement;
+
         if (modal.style.display === "flex") {
             const items = Array.from(document.querySelectorAll('.event-item'));
             let idx = items.findIndex(i => i.classList.contains('focus'));
+            
             if(e.key === 'ArrowDown') {
                 items[idx].classList.remove('focus');
                 idx = (idx + 1) % items.length;
@@ -193,15 +225,27 @@
             } else if(e.key === 'Enter') {
                 items[idx].click();
             } else if(e.key === 'Backspace' || e.keyCode === 461) {
-                if(menuNivel === "canales") { menuNivel = "partidos"; renderizar(partidosUnicos); }
-                else modal.style.display = "none";
+                if(menuNivel === "canales") {
+                    menuNivel = "partidos";
+                    renderizar(partidosUnicos);
+                } else {
+                    modal.style.display = "none";
+                }
             }
             e.preventDefault();
-        } else {
-            if(e.key === 'ArrowRight') { document.getElementById('slot2').focus(); actualizarAudio(); }
-            if(e.key === 'ArrowLeft') { document.getElementById('slot1').focus(); actualizarAudio(); }
-            if(e.key === 'Enter') abrirMenu(document.activeElement.id === 'slot1' ? 1 : 2);
-            if(e.key === 'Backspace' || e.keyCode === 461) window.location.href = 'index.html';
+            return;
+        }
+
+        if(e.key === 'ArrowRight') {
+            document.getElementById('slot2').focus();
+            actualizarAudio();
+        } else if(e.key === 'ArrowLeft') {
+            document.getElementById('slot1').focus();
+            actualizarAudio();
+        } else if(e.key === 'Enter') {
+            abrirMenu(current.id === 'slot1' ? 1 : 2);
+        } else if(e.key === 'Backspace' || e.keyCode === 461) {
+            window.location.href = 'index.html';
         }
     });
 
