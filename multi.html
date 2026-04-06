@@ -2,155 +2,104 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO PiP - XIAOMI EDITION</title>
+    <title>NWAKALO PiP FINAL</title>
     <style>
         :root { --main: #00cc6a; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { height: 100vh; width: 100vw; background: #000; overflow: hidden; font-family: sans-serif; position: relative; }
+        body { height: 100vh; width: 100vw; background: #000; overflow: hidden; font-family: sans-serif; }
 
-        /* PANTALLA PRINCIPAL (FONDO) */
-        #slot1 {
+        /* FONDO COMPLETO */
+        .slot-main {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; border: 5px solid transparent; transition: 0.3s;
+            z-index: 1; border: 5px solid transparent;
         }
-        #slot1:focus { border-color: var(--main); z-index: 2; }
+        .slot-main:focus { border-color: var(--main); outline: none; }
 
-        /* PANTALLA PEQUEÑA (PiP) */
-        #slot2 {
-            position: absolute; bottom: 30px; right: 30px; 
-            width: 30%; height: 30%; /* Tamaño del cuadro pequeño */
-            z-index: 10; border: 3px solid #333; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            background: #111; transition: 0.3s;
+        /* CUADRO FLOTANTE */
+        .slot-pip {
+            position: absolute; bottom: 50px; right: 50px; 
+            width: 400px; height: 225px; /* Proporción 16:9 */
+            z-index: 10; border: 3px solid #444; 
+            background: #000; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-        #slot2:focus { border-color: var(--main); transform: scale(1.05); }
+        .slot-pip:focus { border-color: var(--main); outline: none; transform: scale(1.05); }
 
         video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-
+        
         .overlay { 
             position: absolute; top:0; left:0; width:100%; height:100%; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: #fff; background: rgba(0,0,0,0.5); text-align: center; font-size: 12px;
+            display: flex; align-items: center; justify-content: center; 
+            color: #fff; background: rgba(0,0,0,0.5); z-index: 5; text-align: center;
         }
 
         #selector-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.95); display: none; 
+            background: rgba(255,255,255,0.96); display: none; 
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000; 
         }
-        .modal-content { width: 80%; max-width: 450px; background: #fff; padding: 20px; border-radius: 20px; color: #000; }
+        .modal-content { width: 85%; max-width: 450px; background: #fff; padding: 20px; border-radius: 20px; color: #000; }
         .event-item { padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-weight: bold; text-align: center; text-transform: uppercase; }
         .event-item.focus { background: var(--main); color: #fff; }
-
-        #info-bar {
-            position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.7);
-            color: var(--main); padding: 5px 15px; border-radius: 10px; font-weight: bold; z-index: 100;
-        }
     </style>
 </head>
 <body>
 
-    <div id="info-bar">AUDIO: PRINCIPAL</div>
-
-    <div id="slot1" class="player-box" tabindex="1">
-        <div class="overlay" id="ov1"><h2>PRINCIPAL</h2><p>OK PARA ELEGIR</p></div>
+    <div id="slot1" class="slot-main" tabindex="1">
+        <div class="overlay" id="ov1"><h2>PRINCIPAL</h2><p>PULSA OK</p></div>
         <video id="video1" autoplay muted playsinline></video>
     </div>
 
-    <div id="slot2" class="player-box" tabindex="2">
-        <div class="overlay" id="ov2"><h3>PiP</h3><p>OK</p></div>
+    <div id="slot2" class="slot-pip" tabindex="2">
+        <div class="overlay" id="ov2"><h3>PiP</h3><p>PULSA OK</p></div>
         <video id="video2" autoplay muted playsinline></video>
     </div>
 
     <div id="selector-modal">
-        <div class="modal-content">
-            <h2 id="modal-title" style="text-align:center; margin-bottom:15px;">SELECCIONAR</h2>
-            <div id="event-list"></div>
-        </div>
+        <div class="modal-content"><h2 style="text-align:center;margin-bottom:10px;">ELIGE CANAL</h2><div id="event-list"></div></div>
     </div>
 
 <script>
     const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
     let todosLosEventos = [];
-    let partidosUnicos = [];
     let ladoSeleccionando = 1;
-    let menuNivel = "partidos";
-
-    function b64DecodeUnicode(str) {
-        try { return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); } 
-        catch(e) { return decodeURIComponent(escape(window.atob(str))); }
-    }
 
     async function cargarDatos() {
         const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
         const text = await r.text();
         const b64 = text.trim().replace(/["\s]/g, '');
-        todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
-        let procesados = [];
-        todosLosEventos.forEach(ev => {
-            let id = ev.e1 + ev.hora;
-            if(!procesados.includes(id)){
-                ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
-                partidosUnicos.push(ev);
-                procesados.push(id);
-            }
-        });
+        todosLosEventos = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
     }
 
     function abrirMenu(lado) {
         ladoSeleccionando = lado;
-        menuNivel = "partidos";
-        renderizar(partidosUnicos);
-        document.getElementById('selector-modal').style.display = "flex";
-    }
-
-    function renderizar(lista) {
         const divLista = document.getElementById('event-list');
         divLista.innerHTML = "";
-        lista.forEach((item, i) => {
+        todosLosEventos.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
-            el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "CANAL " + (i+1));
+            el.innerText = `${item.hora} - ${item.e1} (${item.canal})`;
             el.onclick = () => {
-                if(menuNivel === "partidos") { menuNivel = "canales"; renderizar(item.linksDelPartido); }
-                else { lanzarVideo(item.link); }
+                const idAce = item.link.replace('acestream://', '').trim();
+                const v = document.getElementById(`video${ladoSeleccionando}`);
+                const ov = document.getElementById(`ov${ladoSeleccionando}`);
+                
+                v.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8&sid=x_${ladoSeleccionando}`;
+                v.play().then(() => { 
+                    ov.style.display = "none"; 
+                    actualizarAudio();
+                });
+                document.getElementById('selector-modal').style.display = "none";
             };
             divLista.appendChild(el);
         });
-    }
-
-    function lanzarVideo(acelink) {
-        const idAce = acelink.replace('acestream://', '').trim();
-        const v = document.getElementById(`video${ladoSeleccionando}`);
-        const ov = document.getElementById(`ov${ladoSeleccionando}`);
-        v.pause(); v.src = ""; v.load();
-
-        const sid = "pip_" + ladoSeleccionando;
-        v.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8&sid=${sid}&transcode=0`;
-        
-        setTimeout(() => {
-            v.style.display = "block";
-            v.muted = true;
-            v.play().then(() => { 
-                ov.style.display = "none"; 
-                actualizarAudio(); 
-            });
-        }, 1000);
-        
-        document.getElementById('selector-modal').style.display = "none";
+        document.getElementById('selector-modal').style.display = "flex";
     }
 
     function actualizarAudio() {
         const v1 = document.getElementById('video1');
         const v2 = document.getElementById('video2');
-        const info = document.getElementById('info-bar');
-        if (document.activeElement.id === 'slot1') {
-            v1.muted = false; v2.muted = true;
-            info.innerText = "AUDIO: PANTALLA GRANDE";
-        } else {
-            v1.muted = true; v2.muted = false;
-            info.innerText = "AUDIO: PANTALLA PiP";
-        }
+        if (document.activeElement.id === 'slot1') { v1.muted = false; v2.muted = true; } 
+        else { v1.muted = true; v2.muted = false; }
     }
 
     document.addEventListener('keydown', (e) => {
