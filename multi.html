@@ -2,90 +2,58 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - WHITE EDITION</title>
+    <title>NWAKALO DUAL - COMPATIBILITY MODE</title>
     <style>
-        :root { --main: #00cc6a; --bg: #000; }
+        :root { --main: #00cc6a; --bg: #1a1a1a; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            height: 100vh; width: 100vw; background: #000; 
-            display: flex; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; 
-        }
+        body { height: 100vh; width: 100vw; background: #000; display: flex; overflow: hidden; font-family: sans-serif; }
 
         .player-box {
-            flex: 1; height: 100%; border: 3px solid #333;
-            position: relative; background: #000;
-            display: flex; align-items: center; justify-content: center;
+            flex: 1; height: 100%; border: 4px solid #333;
+            position: relative; background: #111;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; color: #fff;
+        }
+        .player-box:focus { border-color: var(--main); outline: none; background: #222; }
+        
+        .status-tag { 
+            margin-top: 10px; padding: 5px 15px; background: var(--main); 
+            border-radius: 5px; font-weight: bold; font-size: 12px; display: none;
         }
 
-        /* EFECTO DE FOCO MANDOPEPE */
-        .player-box:focus { border-color: var(--main); outline: none; z-index: 10; }
-        .player-box.audio-on { border-bottom: 10px solid var(--main); }
-
-        /* REPRODUCTOR NATIVO */
-        video { 
-            width: 100%; height: 100%; 
-            object-fit: contain; 
-            display: none; 
-            position: absolute; top: 0; left: 0;
-            pointer-events: none; 
-        }
-
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
-            align-items: center; justify-content: center;
-            z-index: 5; text-align: center; color: #fff;
-        }
-        .overlay h2 { font-size: 1.5rem; color: var(--main); margin-bottom: 10px; }
-
-        /* MODAL DE SELECCIÓN */
+        /* MODAL */
         #selector-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.96); display: none; 
+            background: rgba(255,255,255,0.95); display: none; 
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
         }
-        .modal-content { 
-            width: 85%; max-width: 500px; background: #fff; padding: 25px; 
-            border-radius: 25px; color: #000; box-shadow: 0 15px 50px rgba(0,0,0,0.2); 
-        }
-        .event-item { 
-            padding: 15px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; 
-            font-weight: 800; text-align: center; text-transform: uppercase; font-size: 13px; 
-        }
-        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); transform: scale(1.03); }
+        .modal-content { width: 85%; max-width: 500px; background: #fff; padding: 25px; border-radius: 25px; color: #000; }
+        .event-item { padding: 15px; margin: 8px 0; border: 1px solid #eee; border-radius: 12px; font-weight: 800; text-align: center; text-transform: uppercase; }
+        .event-item.focus { background: var(--main); color: #fff; }
 
-        #info-audio {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--main); color: #fff; padding: 8px 25px;
-            border-radius: 30px; font-size: 11px; font-weight: 900; z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
+        h2 { font-size: 18px; color: var(--main); margin-bottom: 5px; }
+        p { font-size: 12px; opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <div id="info-audio">AUDIO: LADO IZQUIERDO</div>
-
-    <div id="slot1" class="player-box focus audio-on" tabindex="1">
-        <div class="overlay" id="ov1">
-            <h2>PANTALLA 1</h2>
-            <p>PULSA OK PARA ELEGIR</p>
-        </div>
-        <video id="video1" preload="auto" autoplay muted playsinline></video>
+    <div id="slot1" class="player-box focus" tabindex="1">
+        <h2>PANTALLA 1</h2>
+        <p id="p1-name">VACÍO</p>
+        <div id="tag1" class="status-tag">CARGANDO...</div>
+        <p style="position:absolute; bottom:20px; font-size:10px;">PULSA OK PARA ELEGIR</p>
     </div>
 
     <div id="slot2" class="player-box" tabindex="2">
-        <div class="overlay" id="ov2">
-            <h2>PANTALLA 2</h2>
-            <p>PULSA OK PARA ELEGIR</p>
-        </div>
-        <video id="video2" preload="auto" autoplay muted playsinline></video>
+        <h2>PANTALLA 2</h2>
+        <p id="p2-name">VACÍO</p>
+        <div id="tag2" class="status-tag">CARGANDO...</div>
+        <p style="position:absolute; bottom:20px; font-size:10px;">PULSA OK PARA ELEGIR</p>
     </div>
 
     <div id="selector-modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-bottom:20px; text-align:center; font-size:18px; color:#333;"></h2>
+            <h2 id="modal-title" style="color:#000; margin-bottom:20px; text-align:center;"></h2>
             <div id="event-list"></div>
         </div>
     </div>
@@ -96,7 +64,6 @@
     let partidosUnicos = [];
     let ladoSeleccionando = 1;
     let menuNivel = "partidos";
-    let partidoElegido = null;
 
     function b64DecodeUnicode(str) {
         try { return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); } 
@@ -104,23 +71,19 @@
     }
 
     async function cargarDatos() {
-        try {
-            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
-            const text = await r.text();
-            const b64 = text.trim().replace(/["\s]/g, '');
-            todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
-            
-            let procesados = [];
-            partidosUnicos = [];
-            todosLosEventos.forEach(ev => {
-                let id = ev.e1 + ev.hora;
-                if(!procesados.includes(id)){
-                    ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
-                    partidosUnicos.push(ev);
-                    procesados.push(id);
-                }
-            });
-        } catch (e) { console.error("Error cargando eventos"); }
+        const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+        const text = await r.text();
+        const b64 = text.trim().replace(/["\s]/g, '');
+        todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
+        let procesados = [];
+        todosLosEventos.forEach(ev => {
+            let id = ev.e1 + ev.hora;
+            if(!procesados.includes(id)){
+                ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
+                partidosUnicos.push(ev);
+                procesados.push(id);
+            }
+        });
     }
 
     function abrirMenu(lado) {
@@ -132,122 +95,59 @@
 
     function renderizar(lista) {
         const divLista = document.getElementById('event-list');
-        const titleModal = document.getElementById('modal-title');
         divLista.innerHTML = "";
-        
-        titleModal.innerText = menuNivel === "partidos" ? "SELECCIONA PARTIDO" : "SELECCIONA CANAL";
-        
         lista.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
-            el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "CANAL " + (i+1));
-            
+            el.innerText = menuNivel === "partidos" ? item.e1 : (item.canal || "Canal");
             el.onclick = () => {
                 if(menuNivel === "partidos") {
                     menuNivel = "canales";
-                    partidoElegido = item;
                     renderizar(item.linksDelPartido);
                 } else {
-                    lanzarVideo(item.link);
+                    lanzarVideo(item);
                 }
             };
             divLista.appendChild(el);
         });
     }
 
-    function lanzarVideo(acelink) {
-        const idAce = acelink.replace('acestream://', '').trim();
-        const v = document.getElementById(`video${ladoSeleccionando}`);
-        const ov = document.getElementById(`ov${ladoSeleccionando}`);
+    function lanzarVideo(canal) {
+        const idAce = canal.link.replace('acestream://', '').trim();
+        document.getElementById(`p${ladoSeleccionando}-name`).innerText = canal.e1;
+        document.getElementById(`tag${ladoSeleccionando}`).style.display = "block";
         
-        // URL EXACTA PARA ANDROID WEBVIEW
-        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8`;
+        // --- LA SOLUCIÓN FINAL ---
+        // En lugar de un iframe o video, usamos una redirección invisible 
+        // que el motor de AceStream captura sin cerrar tu web.
+        const intentUrl = `acestream://?content_id=${idAce}&transport_type=hls&multi=true`;
         
-        v.src = streamUrl;
-        v.style.display = "block";
-        ov.style.display = "none";
-        
-        // El truco del silencio para forzar el arranque
-        v.muted = true;
-        v.load();
-        
-        setTimeout(() => {
-            v.play().then(() => {
-                // Si este lado es el que tiene el foco, le damos voz
-                actualizarAudio();
-            }).catch(e => {
-                ov.style.display = "flex";
-                ov.innerHTML = "ERROR REPRODUCCIÓN<br>REINTENTA CANAL";
-            });
-        }, 600);
-        
+        const launcher = document.createElement('iframe');
+        launcher.style.display = 'none';
+        launcher.src = intentUrl;
+        document.body.appendChild(launcher);
+
+        setTimeout(() => { document.body.removeChild(launcher); }, 2000);
         document.getElementById('selector-modal').style.display = "none";
-    }
-
-    function actualizarAudio() {
-        const v1 = document.getElementById('video1');
-        const v2 = document.getElementById('video2');
-        const indicador = document.getElementById('info-audio');
-        const s1 = document.getElementById('slot1');
-        const s2 = document.getElementById('slot2');
-
-        if (document.activeElement.id === 'slot1') {
-            v1.muted = false;
-            v2.muted = true;
-            indicador.innerText = "AUDIO: LADO IZQUIERDO";
-            s1.classList.add('audio-on');
-            s2.classList.remove('audio-on');
-        } else {
-            v1.muted = true;
-            v2.muted = false;
-            indicador.innerText = "AUDIO: LADO DERECHO";
-            s1.classList.remove('audio-on');
-            s2.classList.add('audio-on');
-        }
     }
 
     document.addEventListener('keydown', (e) => {
         const modal = document.getElementById('selector-modal');
-        const current = document.activeElement;
-
-        // CONTROLES DENTRO DEL MENÚ
         if (modal.style.display === "flex") {
             const items = Array.from(document.querySelectorAll('.event-item'));
             let idx = items.findIndex(i => i.classList.contains('focus'));
-            
-            if(e.key === 'ArrowDown') {
-                items[idx].classList.remove('focus');
-                idx = (idx + 1) % items.length;
-                items[idx].classList.add('focus');
-            } else if(e.key === 'ArrowUp') {
-                items[idx].classList.remove('focus');
-                idx = (idx - 1 + items.length) % items.length;
-                items[idx].classList.add('focus');
-            } else if(e.key === 'Enter') {
-                items[idx].click();
-            } else if(e.key === 'Backspace' || e.keyCode === 461) {
-                if(menuNivel === "canales") {
-                    menuNivel = "partidos";
-                    renderizar(partidosUnicos);
-                } else {
-                    modal.style.display = "none";
-                }
-            }
+            items[idx].classList.remove('focus');
+            if(e.key === 'ArrowDown') idx = (idx + 1) % items.length;
+            if(e.key === 'ArrowUp') idx = (idx - 1 + items.length) % items.length;
+            if(e.key === 'Enter') items[idx].click();
+            if(e.key === 'Backspace' || e.keyCode === 461) modal.style.display = "none";
+            items[idx].classList.add('focus');
             e.preventDefault();
-            return;
-        }
-
-        // NAVEGACIÓN ENTRE PANTALLAS
-        if(e.key === 'ArrowRight') {
-            document.getElementById('slot2').focus();
-            actualizarAudio();
-        } else if(e.key === 'ArrowLeft') {
-            document.getElementById('slot1').focus();
-            actualizarAudio();
-        } else if(e.key === 'Enter') {
-            abrirMenu(current.id === 'slot1' ? 1 : 2);
-        } else if(e.key === 'Backspace' || e.keyCode === 461) {
-            window.location.href = 'index.html';
+        } else {
+            if(e.key === 'ArrowRight') document.getElementById('slot2').focus();
+            if(e.key === 'ArrowLeft') document.getElementById('slot1').focus();
+            if(e.key === 'Enter') abrirMenu(document.activeElement.id === 'slot1' ? 1 : 2);
+            if(e.key === 'Backspace' || e.keyCode === 461) window.location.href = 'index.html';
         }
     });
 
