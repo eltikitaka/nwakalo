@@ -1,1 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NWAKALO DUAL - WHITE EDITION</title>
+    <style>
+        :root { --main: #00cc6a; --bg: #f0f2f5; --text: #1a1a1a; }
+        body { 
+            margin: 0; padding: 0; background: var(--bg); 
+            font-family: 'Segoe UI', sans-serif; overflow: hidden; 
+            display: flex; height: 100vh; width: 100vw;
+        }
+
+        /* Contenedores de los dos reproductores */
+        .player-container {
+            flex: 1; height: 100%; border: 2px solid transparent;
+            position: relative; background: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* El que tenga el FOCO del mando se verá con borde verde */
+        .player-container.focus { border-color: var(--main); z-index: 10; }
+
+        iframe, video { width: 100%; height: 100%; border: none; }
+
+        /* Superposición para elegir canal */
+        .selector-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); display: flex; 
+            flex-direction: column; align-items: center; justify-content: center;
+            z-index: 20;
+        }
+
+        .btn-select {
+            padding: 15px; margin: 10px; background: #fff; 
+            border: 2px solid var(--main); border-radius: 10px;
+            font-weight: bold; cursor: pointer;
+        }
+        .btn-select.focus { background: var(--main); color: #fff; }
+
+        #info-footer {
+            position: fixed; bottom: 0; width: 100%; 
+            background: rgba(255,255,255,0.8); height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold; color: var(--text);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="p1" class="player-container focus" tabindex="1">
+        <div class="selector-overlay" id="overlay1">
+            <p>PRESIONA OK PARA ELEGIR CANAL 1</p>
+        </div>
+        <div id="video1"></div>
+    </div>
+
+    <div id="p2" class="player-container" tabindex="2">
+        <div class="selector-overlay" id="overlay2">
+            <p>PRESIONA OK PARA ELEGIR CANAL 2</p>
+        </div>
+        <div id="video2"></div>
+    </div>
+
+    <div id="info-footer">
+        USA LAS FLECHAS PARA CAMBIAR EL AUDIO | OK PARA CAMBIAR CANAL
+    </div>
+
+    <script>
+        // Aquí iría la lógica para leer tu eventos.json de GitHub
+        // y generar los enlaces usando el motor local:
+        // http://127.0.0.1:6878/ace/getstream?id=[CID]
+    </script>
+</body>
+</html>
 
