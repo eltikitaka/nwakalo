@@ -2,25 +2,33 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - FIX EDITION</title>
+    <title>NWAKALO DUAL - FINAL FIX</title>
     <style>
         :root { --main: #00cc6a; --bg: #000; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { height: 100vh; width: 100vw; background: #000; display: flex; overflow: hidden; font-family: sans-serif; }
+        body { height: 100vh; width: 100vw; background: #000; display: flex; overflow: hidden; font-family: sans-serif; color: #fff; }
 
         .player-box {
-            flex: 1; height: 100%; border: 2px solid #333;
+            flex: 1; height: 100%; border: 3px solid #333;
             position: relative; background: #000;
+            display: flex; align-items: center; justify-content: center;
         }
         .player-box:focus { border-color: var(--main); outline: none; }
         
-        /* EL REPRODUCTOR REAL */
-        video { width: 100%; height: 100%; object-fit: contain; display: none; }
+        /* REPRODUCTOR (CSS CLAVE PARA ANDROID TV) */
+        video { 
+            width: 100%; height: 100%; 
+            object-fit: contain; 
+            display: none; 
+            position: absolute; top: 0; left: 0;
+            pointer-events: none; /* Evita que el mando se atasque en los controles de vídeo */
+        }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
-            color: #fff; z-index: 5; text-align: center;
+            background: rgba(0,0,0,0.7); display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
+            z-index: 5; text-align: center; font-size: 11px;
         }
 
         /* MODAL */
@@ -29,26 +37,26 @@
             background: rgba(255,255,255,0.95); display: none; 
             flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
         }
-        .modal-content { width: 80%; background: #fff; padding: 20px; border-radius: 20px; color: #000; }
-        .event-item { padding: 12px; margin: 5px 0; border: 1px solid #eee; border-radius: 10px; font-weight: bold; text-align: center; }
-        .event-item.focus { background: var(--main); color: #fff; }
+        .modal-content { width: 80%; background: #fff; padding: 20px; border-radius: 20px; color: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .event-item { padding: 12px; margin: 5px 0; border: 1px solid #eee; border-radius: 10px; font-weight: bold; text-align: center; text-transform: uppercase; font-size: 12px; }
+        .event-item.focus { background: var(--main); color: #fff; border-color: var(--main); }
     </style>
 </head>
 <body>
 
     <div id="slot1" class="player-box focus" tabindex="1">
         <div class="overlay" id="ov1">PANTALLA 1<br>PULSA OK</div>
-        <video id="video1" controls autoplay></video>
+        <video id="video1" preload="metadata" playsinline></video>
     </div>
 
     <div id="slot2" class="player-box" tabindex="2">
         <div class="overlay" id="ov2">PANTALLA 2<br>PULSA OK</div>
-        <video id="video2" controls autoplay></video>
+        <video id="video2" preload="metadata" playsinline></video>
     </div>
 
     <div id="selector-modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-bottom:15px; text-align:center;"></h2>
+            <h2 id="modal-title" style="margin-bottom:15px; text-align:center; font-size:16px;"></h2>
             <div id="event-list"></div>
         </div>
     </div>
@@ -60,25 +68,28 @@
     let ladoSeleccionando = 1;
     let menuNivel = "partidos";
 
+    // Decodificador B64 seguro
     function b64DecodeUnicode(str) {
         try { return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2); }).join('')); } 
         catch(e) { return decodeURIComponent(escape(window.atob(str))); }
     }
 
     async function cargarDatos() {
-        const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
-        const text = await r.text();
-        const b64 = text.trim().replace(/["\s]/g, '');
-        todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
-        let procesados = [];
-        todosLosEventos.forEach(ev => {
-            let id = ev.e1 + ev.hora;
-            if(!procesados.includes(id)){
-                ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
-                partidosUnicos.push(ev);
-                procesados.push(id);
-            }
-        });
+        try {
+            const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
+            const text = await r.text();
+            const b64 = text.trim().replace(/["\s]/g, '');
+            todosLosEventos = JSON.parse(b64DecodeUnicode(b64));
+            let procesados = [];
+            todosLosEventos.forEach(ev => {
+                let id = ev.e1 + ev.hora;
+                if(!procesados.includes(id)){
+                    ev.linksDelPartido = todosLosEventos.filter(x => (x.e1 + x.hora) === id);
+                    partidosUnicos.push(ev);
+                    procesados.push(id);
+                }
+            });
+        } catch (e) { console.error("Error multi-load"); }
     }
 
     function abrirMenu(lado) {
@@ -91,10 +102,13 @@
     function renderizar(lista) {
         const divLista = document.getElementById('event-list');
         divLista.innerHTML = "";
+        const titleModal = document.getElementById('modal-title');
+        titleModal.innerText = menuNivel === "partidos" ? "ELIGE PARTIDO" : "ELIGE CANAL";
+        
         lista.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
-            el.innerText = menuNivel === "partidos" ? item.e1 : (item.canal || "Canal");
+            el.innerText = menuNivel === "partidos" ? `${item.hora} - ${item.e1}` : (item.canal || "Canal");
             el.onclick = () => {
                 if(menuNivel === "partidos") {
                     menuNivel = "canales";
@@ -108,15 +122,23 @@
     }
 
     function lanzarVideo(acelink) {
-        const id = acelink.replace('acestream://', '').trim();
+        const idAce = acelink.replace('acestream://', '').trim();
         const v = document.getElementById(`video${ladoSeleccionando}`);
         const ov = document.getElementById(`ov${ladoSeleccionando}`);
         
-        // Probamos con el stream directo del motor
-        v.src = `http://127.0.0.1:6878/ace/getstream?id=${id}&format=hls`;
+        // --- CAMBIO CLAVE: URL CORRECTA PARA HLS EN ANDROID TV (m3u8) ---
+        // Usamos http://127.0.0.1 porque corre en el mismo stick
+        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8`;
+        
+        v.src = streamUrl;
         v.style.display = "block";
         ov.style.display = "none";
-        v.play();
+        
+        // Truco para silenciar el segundo si el primero ya suena
+        if(ladoSeleccionando === 2) v.muted = true;
+        
+        v.load(); // Carga la metadata
+        v.play().catch(e => console.error("Auto-play blocked")); 
         
         document.getElementById('selector-modal').style.display = "none";
     }
