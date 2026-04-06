@@ -64,7 +64,7 @@
         #agenda { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            grid-auto-rows: calc((100vh - 120px) / 3); 
+            grid-auto-rows: calc((100vh - 100px) / 3); 
             gap: 12px; 
             width: 100%; 
             flex-grow: 1;
@@ -127,14 +127,18 @@
         }
         .card:focus .status-btn { background: var(--main); color: #fff; }
 
-        /* ESTILO AVISO LEGAL */
+        /* ESTILO AVISO LEGAL (MODIFICADO PARA NO ROMPER EL 3X3) */
         .aviso-legal {
-            font-size: 9px;
-            color: #999;
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            font-size: 7px;
+            color: #bbb;
             text-align: center;
-            padding: 10px;
-            line-height: 1.2;
-            background: var(--bg);
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 5;
         }
 
         #modal-opciones {
@@ -178,7 +182,7 @@
     <div id="agenda"></div>
 
     <div class="aviso-legal">
-        <strong>Aviso legal:</strong> Esta plataforma muestra únicamente enlaces a contenido audiovisual ubicado en servidores de terceros. No alojamos ni transmitimos contenido propio y no controlamos ni influimos en dicho contenido. No nos hacemos responsables del contenido transmitido por terceros. No estamos afiliados a ninguno de los propietarios de las transmisiones y/o vídeos referenciados. Todo el contenido es propiedad de sus respectivos titulares.
+        Aviso legal: Esta plataforma muestra únicamente enlaces a contenido audiovisual ubicado en servidores de terceros. No alojamos ni transmitimos contenido propio y no controlamos ni influimos en dicho contenido. No nos hacemos responsables del contenido transmitido por terceros. No estamos afiliados a ninguno de los propietarios de las transmisiones y/o vídeos referenciados. Todo el contenido es propiedad de sus respectivos titulares.
     </div>
 
     <div id="modal-opciones">
