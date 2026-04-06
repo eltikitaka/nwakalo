@@ -2,16 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO DUAL - PERFORMANCE FIX</title>
+    <title>NWAKALO DUAL - ULTIMATE</title>
     <style>
-        :root { --main: #00cc6a; --bg: #000; }
+        :root { --main: #00cc6a; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { height: 100vh; width: 100vw; background: #000; display: flex; overflow: hidden; font-family: sans-serif; }
-        .player-box { flex: 1; height: 100%; border: 3px solid #333; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
+        .player-box { flex: 1; height: 100%; border: 2px solid #333; position: relative; background: #000; }
         .player-box:focus { border-color: var(--main); outline: none; }
-        .player-box.audio-on { border-bottom: 10px solid var(--main); }
-        video { width: 100%; height: 100%; object-fit: contain; display: none; position: absolute; top: 0; left: 0; background: #000; }
-        .overlay { position: absolute; z-index: 5; text-align: center; color: #fff; }
+        .player-box.audio-on { border-bottom: 8px solid var(--main); }
+        video { width: 100%; height: 100%; object-fit: contain; display: none; background: #000; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; z-index: 5; background: rgba(0,0,0,0.5); }
         #selector-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { width: 85%; max-width: 500px; background: #fff; padding: 20px; border-radius: 20px; color: #000; }
         .event-item { padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-weight: bold; text-align: center; text-transform: uppercase; font-size: 13px; }
@@ -21,18 +21,18 @@
 <body>
 
     <div id="slot1" class="player-box focus audio-on" tabindex="1">
-        <div class="overlay" id="ov1"><h2>PANTALLA 1</h2><p>PULSA OK</p></div>
+        <div class="overlay" id="ov1"><h2>IZQUIERDA</h2><p>PULSA OK</p></div>
         <video id="video1" autoplay muted playsinline></video>
     </div>
 
     <div id="slot2" class="player-box" tabindex="2">
-        <div class="overlay" id="ov2"><h2>PANTALLA 2</h2><p>PULSA OK</p></div>
+        <div class="overlay" id="ov2"><h2>DERECHA</h2><p>PULSA OK</p></div>
         <video id="video2" autoplay muted playsinline></video>
     </div>
 
     <div id="selector-modal">
         <div class="modal-content">
-            <h2 id="modal-title" style="text-align:center; margin-bottom:15px;"></h2>
+            <h2 id="modal-title" style="text-align:center; margin-bottom:15px; color:#000;"></h2>
             <div id="event-list"></div>
         </div>
     </div>
@@ -75,7 +75,7 @@
     function renderizar(lista) {
         const divLista = document.getElementById('event-list');
         divLista.innerHTML = "";
-        document.getElementById('modal-title').innerText = menuNivel === "partidos" ? "PARTIDO" : "CANAL";
+        document.getElementById('modal-title').innerText = menuNivel === "partidos" ? "ELIGE PARTIDO" : "ELIGE CANAL";
         lista.forEach((item, i) => {
             const el = document.createElement('div');
             el.className = "event-item" + (i === 0 ? " focus" : "");
@@ -89,28 +89,30 @@
     }
 
     function lanzarVideo(acelink) {
-        const id = acelink.replace('acestream://', '').trim();
+        const idAce = acelink.replace('acestream://', '').trim();
         const v = document.getElementById(`video${ladoSeleccionando}`);
         const ov = document.getElementById(`ov${ladoSeleccionando}`);
         
-        // Limpiamos el vídeo anterior para liberar RAM del Stick
+        // RESET TOTAL DEL VÍDEO ANTES DE CARGAR
         v.pause();
-        v.src = "";
+        v.removeAttribute('src');
         v.load();
 
-        // Pequeña espera para que el motor AceStream respire
+        // Parámetro SID aleatorio para que AceStream no se lie
+        const sid = Math.floor(Math.random() * 1000);
+        const streamUrl = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${idAce}&output=m3u8&sid=${sid}`;
+        
         setTimeout(() => {
-            v.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${id}&output=m3u8`;
+            v.src = streamUrl;
             v.style.display = "block";
             ov.style.display = "none";
             v.muted = true;
             v.play().then(() => {
                 actualizarAudio();
-            }).catch(e => {
-                ov.style.display = "flex";
-                ov.innerHTML = "REINTENTA CANAL";
+            }).catch(err => {
+                console.log("Esperando datos...");
             });
-        }, 300);
+        }, 400);
         
         document.getElementById('selector-modal').style.display = "none";
     }
@@ -118,15 +120,14 @@
     function actualizarAudio() {
         const v1 = document.getElementById('video1');
         const v2 = document.getElementById('video2');
-        const s1 = document.getElementById('slot1');
-        const s2 = document.getElementById('slot2');
-
         if (document.activeElement.id === 'slot1') {
             v1.muted = false; v2.muted = true;
-            s1.classList.add('audio-on'); s2.classList.remove('audio-on');
+            document.getElementById('slot1').classList.add('audio-on');
+            document.getElementById('slot2').classList.remove('audio-on');
         } else {
             v1.muted = true; v2.muted = false;
-            s1.classList.remove('audio-on'); s2.classList.add('audio-on');
+            document.getElementById('slot1').classList.remove('audio-on');
+            document.getElementById('slot2').classList.add('audio-on');
         }
     }
 
