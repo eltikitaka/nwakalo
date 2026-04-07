@@ -21,7 +21,6 @@
             padding: 10px 15px;
         }
 
-        /* CONTENEDOR PARA TITULO + ID */
         .header-box {
             display: flex;
             align-items: center;
@@ -48,7 +47,6 @@
             transform: scale(1.1);
         }
 
-        /* ESTILO DEL CODIGO AL LADO DEL TITULO */
         .id-top-display {
             margin-left: 20px;
             font-size: 14px;
@@ -59,26 +57,6 @@
             border-radius: 8px;
             background: #fff;
             letter-spacing: 1px;
-        }
-
-        /* BOTON MODO DUAL */
-        .btn-dual {
-            margin-left: 10px;
-            font-size: 14px;
-            font-weight: 900;
-            color: #fff;
-            background: var(--main);
-            border: 2px solid var(--main);
-            padding: 4px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            outline: none;
-            transition: 0.2s;
-        }
-        .btn-dual:focus {
-            background: #fff;
-            color: var(--main);
-            transform: scale(1.1);
         }
 
         #agenda { 
@@ -147,18 +125,9 @@
         }
         .card:focus .status-btn { background: var(--main); color: #fff; }
 
-        /* ESTILO AVISO LEGAL (MODIFICADO PARA NO ROMPER EL 3X3) */
         .aviso-legal {
-            position: absolute;
-            bottom: 2px;
-            left: 0;
-            width: 100%;
-            font-size: 7px;
-            color: #bbb;
-            text-align: center;
-            padding: 0 20px;
-            pointer-events: none;
-            z-index: 5;
+            position: absolute; bottom: 2px; left: 0; width: 100%; font-size: 7px;
+            color: #bbb; text-align: center; padding: 0 20px; pointer-events: none; z-index: 5;
         }
 
         #modal-opciones {
@@ -197,13 +166,12 @@
     <div class="header-box">
         <h1 id="btn-refresh" tabindex="1" onclick="window.location.reload(true)">NWAKALO TV</h1>
         <div id="id-top" class="id-top-display">...</div>
-        <button id="btn-dual" class="btn-dual" tabindex="2" onclick="window.location.href='multi.html'">2P</button>
-    </div>
+        </div>
     
     <div id="agenda"></div>
 
     <div class="aviso-legal">
-        Aviso legal: Esta plataforma muestra únicamente enlaces a contenido audiovisual ubicado en servidores de terceros. No alojamos ni transmitimos contenido propio y no controlamos ni influimos en dicho contenido. No nos hacemos responsables del contenido transmitido por terceros. No estamos afiliados a ninguno de los propietarios de las transmisiones y/o vídeos referenciados. Todo el contenido es propiedad de sus respectivos titulares.
+        Aviso legal: Esta plataforma muestra únicamente enlaces a contenido audiovisual ubicado en servidores de terceros...
     </div>
 
     <div id="modal-opciones">
@@ -279,10 +247,10 @@
             
             evs.sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
             container.innerHTML = '';
-            const ahora = new Date();
             let count = 0;
             let partidosUnicos = [];
             let procesados = [];
+            const ahora = new Date();
 
             evs.forEach(ev => {
                 let idPartido = ev.e1 + ev.hora;
@@ -297,13 +265,12 @@
             partidosUnicos.forEach((ev) => {
                 const fEv = new Date(ev.fecha + 'T' + ev.hora); 
                 if (!soyAdmin && (ahora - fEv) / 3600000 > 3) return; 
-
                 const estaBloqueado = soyAdmin ? false : (fEv - ahora) / 60000 > 15;
                 count++;
 
                 const card = document.createElement('div');
                 card.className = `card ${estaBloqueado ? 'blocked' : ''}`;
-                card.tabIndex = count + 2; // Ajustado por los botones del header
+                card.tabIndex = count + 1; // Ajustado al quitar el botón 2P
 
                 card.onclick = () => { if(!estaBloqueado) abrirMenu(ev); };
 
@@ -328,7 +295,7 @@
                 empty.className = 'card empty';
                 container.appendChild(empty);
             }
-        } catch (e) { console.error("Error cargando JSON"); }
+        } catch (e) { console.error("Error JSON"); }
     }
 
     function abrirMenu(evento) {
@@ -336,26 +303,20 @@
         const modal = document.getElementById('modal-opciones');
         const lista = document.getElementById('lista-links');
         document.getElementById('modal-titulo').innerText = evento.e1 + (evento.e2 ? " vs " + evento.e2 : "");
-        
         lista.innerHTML = "";
         evento.todosLosLinks.forEach(item => {
             const btn = document.createElement('div');
             btn.className = "btn-opcion";
             btn.innerText = item.canal || "Ver Canal";
-            btn.onclick = () => {
-                let idLimpia = item.link.replace('acestream://', '').trim();
-                window.location.href = "acestream://" + idLimpia;
-            };
+            btn.onclick = () => { window.location.href = "acestream://" + item.link.replace('acestream://', '').trim(); };
             lista.appendChild(btn);
         });
-
         const btnCerrar = document.createElement('div');
         btnCerrar.className = "btn-opcion";
         btnCerrar.innerText = "❌ VOLVER";
         btnCerrar.style.color = "#ff4444";
         btnCerrar.onclick = cerrarMenu;
         lista.appendChild(btnCerrar);
-
         modal.style.display = "flex";
         lista.querySelector('.btn-opcion').classList.add('focus');
     }
@@ -376,28 +337,26 @@
 
         if (!modoMenu) {
             const h1 = document.getElementById('btn-refresh');
-            const dual = document.getElementById('btn-dual');
             const cards = Array.from(document.querySelectorAll('.card'));
-            const totalElements = [h1, dual, ...cards];
+            const totalElements = [h1, ...cards]; // NAVEGACIÓN SIN BOTÓN DUAL
             const index = totalElements.indexOf(current);
             let next = index;
 
             switch(e.key) {
                 case 'ArrowRight': 
-                    if (index === 0) next = 1;
-                    else if (index > 1 && (index - 1) % 3 !== 0) next = index + 1; 
+                    if (index > 0 && (index - 1) % 3 !== 2) next = index + 1; 
                     break;
                 case 'ArrowLeft': 
-                    if (index === 1) next = 0;
-                    else if (index > 2 && (index - 2) % 3 !== 0) next = index - 1; 
+                    if (index > 1 && (index - 1) % 3 !== 0) next = index - 1; 
+                    else if (index === 1) next = 0;
                     break;
                 case 'ArrowDown': 
-                    if (index <= 1) next = 2; 
+                    if (index === 0) next = 1; 
                     else next = index + 3; 
                     break;
                 case 'ArrowUp': 
-                    if (index >= 2 && index <= 4) next = 0; 
-                    else if (index > 4) next = index - 3;
+                    if (index >= 1 && index <= 3) next = 0; 
+                    else if (index > 3) next = index - 3;
                     break;
                 case 'Enter': 
                     current.click(); 
