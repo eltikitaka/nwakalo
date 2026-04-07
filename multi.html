@@ -2,29 +2,29 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NWAKALO ULTRA LIGHT</title>
+    <title>NWAKALO ULTIMATUM</title>
     <style>
         :root { --main: #00cc6a; }
-        body { height: 100vh; width: 100vw; display: flex; margin: 0; background: #000; font-family: sans-serif; }
-        .slot { flex: 1; border: 2px solid #222; position: relative; }
-        .slot:focus { border: 5px solid var(--main); outline: none; }
-        video { width: 100%; height: 100%; background: #000; }
-        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        .item { padding: 15px; margin: 5px; border: 1px solid #ddd; border-radius: 10px; width: 80%; text-align: center; color: #000; font-weight: bold; }
-        .item.focus { background: var(--main); color: #fff; }
+        body { height: 100vh; width: 100vw; display: flex; margin: 0; background: #000; overflow: hidden; }
+        .slot { flex: 1; border: 2px solid #111; position: relative; height: 100vh; }
+        .slot:focus { border: 6px solid var(--main); outline: none; z-index: 99; }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .item { padding: 15px; margin: 5px; border-radius: 10px; width: 80%; text-align: center; color: #fff; border: 1px solid #444; font-size: 1.2rem; }
+        .item.focus { background: var(--main); border-color: var(--main); }
     </style>
 </head>
 <body>
 
-    <div id="s1" class="slot" tabindex="1"><video id="v1" autoplay muted></video></div>
-    <div id="s2" class="slot" tabindex="2"><video id="v2" autoplay muted></video></div>
+    <div id="s1" class="slot" tabindex="1"><video id="v1" autoplay muted playsinline></video></div>
+    <div id="s2" class="slot" tabindex="2"><video id="v2" autoplay muted playsinline></video></div>
 
     <div id="modal"><div id="list" style="width:100%; display:flex; flex-direction:column; align-items:center;"></div></div>
 
 <script>
     const REPO = 'https://raw.githubusercontent.com/eltikitaka/nwakalo/main/';
     let eventos = [];
-    let lado = 1;
+    let activo = 1;
 
     async function carga() {
         const r = await fetch(REPO + 'eventos.json?v=' + Date.now());
@@ -33,14 +33,14 @@
         eventos = JSON.parse(decodeURIComponent(escape(window.atob(b))));
     }
 
-    function menu(l) {
-        lado = l;
+    function menu(n) {
+        activo = n;
         const div = document.getElementById('list');
-        div.innerHTML = "<h2 style='color:#000'>CANAL " + l + "</h2>";
+        div.innerHTML = "<h1 style='color:#fff; margin-bottom:20px;'>CARGAR LADO " + (n==1?"IZQ":"DER") + "</h1>";
         eventos.forEach((ev, i) => {
             const d = document.createElement('div');
             d.className = "item" + (i===0?" focus":"");
-            d.innerText = ev.e1 + " (" + ev.canal + ")";
+            d.innerText = ev.e1 + " [" + ev.canal + "]";
             d.onclick = () => play(ev.link);
             div.appendChild(d);
         });
@@ -49,18 +49,22 @@
 
     function play(link) {
         const id = link.replace('acestream://', '').trim();
-        const vid = document.getElementById('v' + lado);
+        const vid = document.getElementById('v' + activo);
         
-        // LIMPIEZA TOTAL ANTES DE CARGAR
+        // RESET AGRESIVO
         vid.pause();
-        vid.removeAttribute('src');
+        vid.src = "";
         vid.load();
-        
-        // USAMOS UN SID MUY CORTO Y FORZAMOS HLS SIN TRANSCODE
-        vid.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${id}&sid=l${lado}_${Math.floor(Math.random()*9)}&transcode=0`;
-        
-        vid.play().then(() => audio());
-        document.getElementById('modal').style.display = "none";
+
+        // EL TRUCO: Añadimos un pequeño delay para que AceStream respire
+        setTimeout(() => {
+            // Quitamos transcodificación y forzamos un sid que no use caché de disco
+            vid.src = `http://127.0.0.1:6878/ace/manifest.m3u8?id=${id}&sid=x${activo}_${Date.now()}&transcode=0&buffer=10`;
+            vid.play().then(() => {
+                document.getElementById('modal').style.display = "none";
+                audio();
+            }).catch(e => console.log("Error play"));
+        }, 500);
     }
 
     function audio() {
@@ -79,6 +83,7 @@
             else if(e.key === 'ArrowUp') { its[i].classList.remove('focus'); i = (i-1+its.length)%its.length; its[i].classList.add('focus'); }
             else if(e.key === 'Enter') its[i].click();
             else if(e.key === 'Backspace' || e.keyCode === 461) m.style.display = "none";
+            e.preventDefault();
         } else {
             if(e.key === 'ArrowRight') { document.getElementById('s2').focus(); audio(); }
             else if(e.key === 'ArrowLeft') { document.getElementById('s1').focus(); audio(); }
