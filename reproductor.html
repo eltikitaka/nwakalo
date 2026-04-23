@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Deportivo Pro</title>
+    <title>Panel Deportivo Navegador</title>
     <script src="https://acestream.net"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; }
-        
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: sans-serif; color: white; overflow: hidden; }
         #menu-eventos { 
-            height: 70px; background: rgba(0,0,0,0.8); display: flex; 
+            height: 70px; background: rgba(0,0,0,0.9); display: flex; 
             align-items: center; padding: 0 15px; gap: 10px; 
             overflow-x: auto; border-bottom: 1px solid #333;
         }
         .btn-evento { 
             background: #222; color: #fff; border: 1px solid #444; padding: 8px 12px; 
             border-radius: 4px; cursor: pointer; white-space: nowrap; font-size: 12px;
-            min-width: 160px; text-align: left; transition: 0.2s;
+            min-width: 160px; text-align: left;
         }
         .btn-evento:hover { background: #cc0000; }
-        .btn-evento span { display: block; font-size: 9px; color: #999; text-transform: uppercase; }
+        .btn-evento span { display: block; font-size: 9px; color: #999; }
 
-        #player-container { width: 100%; height: calc(100vh - 110px); display: flex; align-items: center; justify-content: center; background: #000; }
+        /* Contenedor que ocupará el reproductor */
+        #player-container { width: 100%; height: calc(100vh - 110px); background: #000; display: flex; align-items: center; justify-content: center; }
 
         .ticker-wrap {
             position: fixed; bottom: 0; width: 100%; height: 40px;
             background: rgba(204, 0, 0, 0.6); backdrop-filter: blur(5px);
-            overflow: hidden; line-height: 40px; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.2); z-index: 999;
+            overflow: hidden; line-height: 40px; font-weight: bold;
         }
         .ticker-move {
             display: inline-block; white-space: nowrap; padding-left: 100%;
-            animation: marquee 25s linear infinite; font-size: 15px; text-transform: uppercase;
+            animation: marquee 25s linear infinite; font-size: 15px;
         }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
     </style>
@@ -38,40 +38,33 @@
 <body>
 
     <div id="menu-eventos">Cargando eventos...</div>
-
     <div id="player-container">
-        <p style="text-align: center; color: #666;">📺 Selecciona un canal.<br><small>En móvil se abrirá la App directamente.</small></p>
+        <p style="text-align: center; color: #666;">Selecciona un canal para reproducir aquí.</p>
     </div>
 
     <div class="ticker-wrap">
-        <div class="ticker-move" id="ticker">⚽ CARGANDO MARCADORES ESPN...</div>
+        <div class="ticker-move" id="ticker">⚽ LALIGA | PREMIER | NBA | CHAMPIONS | ACB...</div>
     </div>
 
     <script>
-        // Detectar si es móvil
-        const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
         function cargarCanal(id) {
-            if (esMovil) {
-                // SI ES MÓVIL: Abrir la App de AceStream directamente
-                window.location.href = "acestream://" + id;
-            } else {
-                // SI ES PC: Usar el reproductor web
-                document.getElementById("player-container").innerHTML = "<p>Conectando en PC...</p>";
-                if (typeof AceStream !== 'undefined') {
-                    AceStream.createPlayer("#player-container", {
-                        onLoad: function (player) { player.loadContentId(id); },
-                        onError: function() { 
-                            document.getElementById("player-container").innerHTML = "<p style='color:red'>Error: Abre AceStream en tu PC.</p>"; 
-                        }
-                    });
-                } else {
-                    document.getElementById("player-container").innerHTML = "<p>ID: <b>" + id + "</b><br>Instala AceStream para verlo aquí.</p>";
-                }
+            document.getElementById("player-container").innerHTML = ""; // Limpiar
+            
+            // Forzamos la reproducción en el navegador usando la API
+            if (typeof AceStream !== 'undefined') {
+                AceStream.createPlayer("#player-container", {
+                    onLoad: function (player) {
+                        player.loadContentId(id);
+                    },
+                    onError: function(err) {
+                        document.getElementById("player-container").innerHTML = 
+                        "<p style='text-align:center; padding:20px;'>Asegúrate de que la App AceStream esté ABIERTA en tu móvil/PC y recarga.</p>";
+                    }
+                });
             }
         }
 
-        // --- Lógica del Ticker ESPN (Mantenida) ---
+        // --- Lógica de noticias ESPN (Mantenida) ---
         async function fetchESPN(url, label) {
             try {
                 const res = await fetch(url);
@@ -83,38 +76,31 @@
         async function actualizarTicker() {
             const endpoints = [
                 { url: 'https://espn.com', label: 'LALIGA' },
-                { url: 'https://espn.com', label: 'LALIGA 2' },
                 { url: 'https://espn.com', label: 'PREMIER' },
-                { url: 'https://espn.com', label: 'SERIE A' },
-                { url: 'https://espn.com', label: 'UCL' },
                 { url: 'https://espn.com', label: 'NBA' },
-                { url: 'https://espn.com', label: 'EUROLEAGUE' },
                 { url: 'https://espn.com', label: 'ACB' }
             ];
-            let todosLosResultados = [];
+            let resultados = [];
             for (const league of endpoints) {
-                const res = await fetchESPN(league.url, league.label);
-                if (res) todosLosResultados.push(res);
+                const text = await fetchESPN(league.url, league.label);
+                if (text) resultados.push(text);
             }
-            const textoFinal = todosLosResultados.join(" | ") || "ESPERANDO RESULTADOS...";
-            document.getElementById("ticker").innerText = textoFinal + " | " + textoFinal;
+            document.getElementById("ticker").innerText = resultados.join(" | ") || "ESPERANDO DATOS...";
         }
 
         // --- Leer eventos.json (Base64) ---
-        fetch('./eventos.json')
-            .then(res => res.text())
-            .then(base64 => {
-                const data = JSON.parse(atob(base64.trim()));
-                const menu = document.getElementById("menu-eventos");
-                menu.innerHTML = ""; 
-                data.forEach(ev => {
-                    let btn = document.createElement("button");
-                    btn.className = "btn-evento";
-                    btn.innerHTML = `<span>${ev.hora} - ${ev.canal}</span> ${ev.e1} vs ${ev.e2}`;
-                    btn.onclick = () => cargarCanal(ev.link);
-                    menu.appendChild(btn);
-                });
+        fetch('./eventos.json').then(res => res.text()).then(base64 => {
+            const data = JSON.parse(atob(base64.trim()));
+            const menu = document.getElementById("menu-eventos");
+            menu.innerHTML = ""; 
+            data.forEach(ev => {
+                let btn = document.createElement("button");
+                btn.className = "btn-evento";
+                btn.innerHTML = `<span>${ev.hora} - ${ev.canal}</span> ${ev.e1} vs ${ev.e2}`;
+                btn.onclick = () => cargarCanal(ev.link);
+                menu.appendChild(btn);
             });
+        });
 
         actualizarTicker();
         setInterval(actualizarTicker, 60000);
