@@ -7,14 +7,11 @@
     <script src="https://acestream.net"></script>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; background: #111; font-family: sans-serif; color: white; overflow: hidden; }
-        
-        /* Menú superior */
         #menu-eventos { 
             height: 75px; background: #000; display: flex; 
             align-items: center; padding: 0 15px; gap: 10px; 
             overflow-x: auto; border-bottom: 2px solid #333;
         }
-        
         .btn-evento { 
             background: #222; color: #fff; border: 1px solid #444; padding: 10px 15px; 
             border-radius: 5px; cursor: pointer; white-space: nowrap; font-size: 13px;
@@ -22,11 +19,7 @@
         }
         .btn-evento:hover { background: #cc0000; border-color: #ff0000; }
         .btn-evento span { display: block; font-size: 10px; color: #aaa; text-transform: uppercase; }
-
-        /* Contenedor del reproductor */
         #player-container { width: 100%; height: calc(100vh - 115px); display: flex; align-items: center; justify-content: center; background: #000; }
-
-        /* Ticker inferior (Barra de noticias) */
         .ticker-wrap {
             position: fixed; bottom: 0; width: 100%; height: 40px;
             background: #cc0000; overflow: hidden; line-height: 40px; 
@@ -34,69 +27,64 @@
         }
         .ticker-move {
             display: inline-block; white-space: nowrap; padding-right: 100%;
-            animation: marquee 30s linear infinite;
-            font-size: 16px;
+            animation: marquee 30s linear infinite; font-size: 16px;
         }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
-    <div id="menu-eventos">Cargando eventos de eventos.json...</div>
+    <div id="menu-eventos">Cargando y decodificando eventos...</div>
 
     <div id="player-container">
         <p style="text-align: center; color: #888;">
             <span style="font-size: 24px;">📺</span><br>
             Selecciona un partido arriba para ver.<br>
-            <small>(Necesitas tener AceStream abierto en tu dispositivo)</small>
+            <small>(Necesitas tener AceStream abierto)</small>
         </p>
     </div>
 
     <div class="ticker-wrap">
         <div class="ticker-move" id="ticker">
-            ⚽ BIENVENIDOS A TU PANEL DEPORTIVO | SIGUE LOS MEJORES EVENTOS EN DIRECTO | 🏀 NBA, LALIGA, F1 Y MUCHO MÁS | ⚽ RECUERDA TENER INSTALADO ACESTREAM ENGINE PARA VER EL CONTENIDO
+            ⚽ BIENVENIDOS | SIGUE LOS MEJORES EVENTOS EN DIRECTO | 🏀 NBA, LALIGA, F1 Y MUCHO MÁS | ⚽ RECUERDA TENER INSTALADO ACESTREAM ENGINE
         </div>
     </div>
 
     <script>
-        // Función para cargar el canal
         function cargarCanal(id) {
             document.getElementById("player-container").innerHTML = "<p>Conectando con AceStream...</p>";
             AceStream.createPlayer("#player-container", {
-                onLoad: function (player) {
-                    player.loadContentId(id);
-                },
+                onLoad: function (player) { player.loadContentId(id); },
                 onError: function(err) {
                     document.getElementById("player-container").innerHTML = 
-                    "<p style='color:red; text-align:center;'>Error: AceStream Engine no detectado.<br>Abre la App de AceStream y recarga la página.</p>";
+                    "<p style='color:red; text-align:center;'>Error: AceStream Engine no detectado.</p>";
                 }
             });
         }
 
-        // Cargar eventos desde tu archivo JSON
+        // LEER Y DECODIFICAR EL JSON (Base64)
         fetch('./eventos.json')
-            .then(response => {
-                if (!response.ok) throw new Error("No se pudo leer el archivo");
-                return response.json();
-            })
-            .then(data => {
+            .then(response => response.text()) // Leemos como texto puro (el código Base64)
+            .then(base64String => {
+                // Decodificamos el Base64 a texto normal y luego a JSON
+                const decodedText = atob(base64String.trim());
+                const data = JSON.parse(decodedText);
+                
                 const menu = document.getElementById("menu-eventos");
                 menu.innerHTML = ""; 
                 
                 data.forEach(evento => {
                     let btn = document.createElement("button");
                     btn.className = "btn-evento";
-                    // Adaptado a los nombres de tu JSON (e1, e2, hora, canal, link)
                     btn.innerHTML = `<span>${evento.hora} - ${evento.canal}</span> ${evento.e1} vs ${evento.e2}`;
                     btn.onclick = () => cargarCanal(evento.link);
                     menu.appendChild(btn);
                 });
             })
             .catch(err => {
-                document.getElementById("menu-eventos").innerHTML = "<p style='color:red'>Error: No se encontró eventos.json</p>";
-                console.error(err);
+                document.getElementById("menu-eventos").innerHTML = "<p style='color:red'>Error al procesar el archivo.</p>";
+                console.error("Error detallado:", err);
             });
-
     </script>
 </body>
 </html>
