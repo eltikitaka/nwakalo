@@ -32,6 +32,14 @@
         { "n": "Arsenal FC", "a": "clars.png" }, { "n": "Real Madrid", "a": "clrma.png" }, { "n": "FC Barcelona", "a": "clfcb.png" }, { "n": "Atletico de Madrid", "a": "clatm.png" }, { "n": "PSG", "a": "clpsg.png" }, { "n": "Liverpool", "a": "clliv.png" }, { "n": "Bayern Munchen", "a": "clbay.png" }, { "n": "Sporting de Lisboa", "a": "clspor.png" }
       ]
     },
+    "WORLD CUP": {
+      "id": "world cup",
+      "logo": "world cup.png",
+      "modo": "duelo",
+      "equipos": [
+        { "n": "Arsenal FC", "a": "clars.png" }, { "n": "Real Madrid", "a": "clrma.png" }, { "n": "FC Barcelona", "a": "clfcb.png" }, { "n": "Atletico de Madrid", "a": "clatm.png" }, { "n": "PSG", "a": "clpsg.png" }, { "n": "Liverpool", "a": "clliv.png" }, { "n": "Bayern Munchen", "a": "clbay.png" }, { "n": "Sporting de Lisboa", "a": "clspor.png" }
+      ]
+    },
     "MOTOGP": {
       "id": "MotoGP",
       "logo": "motogp.png",
